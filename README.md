@@ -21,6 +21,8 @@ Hi, I'm Kyle. I plan on studying data science after graduating; I am interested 
 
 ### Madeeha
 
+Hi! I'm a senior Computer Science and Psychology major. After graduating I want to gain experience in web and mobile development as a full stack developer, though I'm not yet fully sure where I want to end up.
+
 ### Marvin
 Hello, my name is Marvin Zavala, I am a computer science major and a math minor. I like video games, so game programming sounds like something fun to do after I graduate.
 
