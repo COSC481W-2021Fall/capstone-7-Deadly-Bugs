@@ -2,6 +2,8 @@
 
 **Team Name: To Be Determined**
 
+An application for creating, sharing, and studying flashcards easily, simply, and quickly.
+
 ## Team Member Bios
 
 ### Ron (Team Lead)
