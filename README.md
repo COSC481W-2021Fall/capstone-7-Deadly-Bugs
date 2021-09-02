@@ -1,6 +1,6 @@
 # Nameless Flash Card Program
 
-**Team 3: To Be Determined**
+**Team 3: 7 Deadly Bugs**
 
 ## Project Description
 An application for creating, sharing, and studying flashcards easily, simply, and quickly.
