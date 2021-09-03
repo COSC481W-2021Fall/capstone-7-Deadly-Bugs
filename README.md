@@ -15,6 +15,8 @@ Senior Computer Science major with a minor in Classical Studies. Big fan of low 
 
 ### Alex
 
+Hello! I am a Senior CompSci major. I enjoy playing and now creating video games. After school I would love to cut my teeth at a large company while creating video games in any spare time I could find.
+
 ### Kyle
 
 Hi, I'm Kyle. I plan on studying data science after graduating; I am interested in gaining experience with cloud computing and artificial intelligence ✌
