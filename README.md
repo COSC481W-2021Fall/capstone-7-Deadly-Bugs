@@ -13,6 +13,8 @@ Senior Computer Science major with a minor in Classical Studies. Big fan of low 
 
 ### Erik (Deputy Team Lead)
 
+Senior in computer science who has an interest in pursuing android app developement.
+
 ### Alex
 
 Hello! I am a Senior CompSci major. I enjoy playing and now creating video games. After school I would love to cut my teeth at a large company while creating video games in any spare time I could find.
