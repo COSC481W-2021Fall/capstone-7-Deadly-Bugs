@@ -31,4 +31,4 @@ Hi! I'm a senior Computer Science and Psychology major. After graduating I want 
 Hello, my name is Marvin Zavala, I am a computer science major and a math minor. I like video games, so game programming sounds like something fun to do after I graduate.
 
 ### Shefali
-
+Hi, my name is Shefali! I'm a senior majoring in Computer Science. Post graduation, I'm interested in working in cloud computing.
