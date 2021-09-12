@@ -24,6 +24,8 @@ If a commit changes mutliple aspects of the source code in one of the previously
 
 e.g. "test-doc: Update documentation and unit tests for module M" 
 
+Commit messages should indicate *why* a change was made and what the intentions were for the commit. Escpecially if the commit changes a large portion of code.
+
 ## Pull Request Guideline
 
 1) PRs are only to be made upon the (percieved) completion of an issue (e.g. every PR should have a "closes issue #______" associated to it.
