@@ -54,6 +54,7 @@ If you are removing another developers code due to conflicts, please tag them so
   * Poor Documentation
   * Bad coding practices
   * et cetera
+
 The reviewer may choose to reject the PR if any of these errors appear, or may document the error as something that needs to be fixed later.
 
 3) If a unit test is failing, the unit must be rejected, or an exception must be made and an issue must be created to resolve the failure.
