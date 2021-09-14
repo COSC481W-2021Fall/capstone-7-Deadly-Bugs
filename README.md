@@ -44,6 +44,26 @@ If you are removing another developers code due to conflicts, please tag them so
 
 6) If a new known bug is introduced, please create an issue for the bug and link the issue in your PR. If you have a rough idea where the bug is occuring in your code please point it out in a comment somewhere in the code.
 
+## Code Review Checklist
+
+1) All unit tests are run.
+
+2) Each affected unit has been manually reviewed for potential issues, including:
+  * Logical Errors
+  * Stylistic Errors
+  * Poor Documentation
+  * Bad coding practices
+  * et cetera
+The reviewer may choose to reject the PR if any of these errors appear, or may document the error as something that needs to be fixed later.
+
+3) If a unit test is failing, the unit must be rejected, or an exception must be made and an issue must be created to resolve the failure.
+
+4) If potential improvements or optimizations have been determined, these must be documented in the PR's comments.
+
+5) Manual testing may be completed at the reviewer's discretion. Any bugs found by the reviewer in manual testing must be documented & an issue created.
+
+6) The reviewer may make small changes to the code, but larger changes should be the duty of the developer.
+
 ## Team Member Bios
 
 ### Ron (Team Lead)
