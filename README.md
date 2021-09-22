@@ -65,6 +65,35 @@ The reviewer may choose to reject the PR if any of these errors appear, or may d
 
 6) The reviewer may make small changes to the code, but larger changes should be the duty of the developer.
 
+## Project Layout
+
+### React
+
+We will be grouping files inside folders bearing the name of the associated feature.
+
+Example:
+
+- Common/
+  - Avatar.js
+  - Avatar.css
+  - APIUtils.js
+  - APIUtils.test.js
+- feed/
+  - index.js
+  - Feed.js
+  - Feed.css
+  - FeedStory.js
+  - FeedStory.test.js
+  - FeedAPI.js
+- profile/
+  - index.js
+  - Profile.js
+  - ProfileHeader.js
+  - ProfileHeader.css
+  - ProfileAPI.js
+
+### Go
+
 ## Team Member Bios
 
 ### Ron (Team Lead)
