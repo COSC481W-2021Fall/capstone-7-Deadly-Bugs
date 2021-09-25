@@ -94,6 +94,27 @@ Example:
 
 ### Go
 
+Files will be grouped according to their use and position within the workflow.
+
+Example:
+
+ - /cmd  -  main application directories.
+   - /cmd/flashfolio
+     - main.go
+     - main_test.go
+   - /cmd/login
+     - main.go
+     - main_test.go
+     - debug.go
+ - /internal  -  main go code directory.
+   - backend.go
+   - cli.go
+   - hashutil.go
+ - /api  -  api
+   - aggregator_violation_exceptions.list
+   - apiextensions_violation_exceptions.list
+   - swagger.json
+
 ## Team Member Bios
 
 ### Ron (Team Lead)
