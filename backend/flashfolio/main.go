@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 	"encoding/json"
-//	"io/ioutil"
+	"io/ioutil"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/handlers"
 
@@ -72,6 +72,17 @@ func getDeckReq(w http.ResponseWriter, r *http.Request) {
 	// TODO: Switch to Deck upon implementation
 	var deck Card
 
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	var req struct {
+		ID int `json:"ID"`
+	}
+
+	json.Unmarshal(reqBody, &req)
+
 	// get collection
 	// TODO: Switch collection to "decks" upon implementing decks.
 	collection := mongoClient.Database("flashfolio").Collection("cards")
@@ -80,7 +91,7 @@ func getDeckReq(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	err := collection.FindOne(ctx, bson.D{{"ID", 0}}).Decode(&deck)
+	err = collection.FindOne(ctx, bson.D{{"ID", req.ID}}).Decode(&deck)
 	if err != nil {
 		panic(err)
 	}
