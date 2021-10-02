@@ -12,7 +12,7 @@ import (
 	"context"
 	"time"
 
-//	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -25,15 +25,6 @@ var mongoClient *mongo.Client
 func main() {
 
 	fmt.Println("Starting flashfolio back end...")
-
-	connectToMongo()
-
-	handleRequests()
-
-}
-
-
-func connectToMongo() {
 
 	fmt.Println("Connecting to MongoDB...")
 
@@ -57,8 +48,10 @@ func connectToMongo() {
 	}
 
 	fmt.Println("Successfully connected to MongoDB")
-}
 
+	handleRequests()
+
+}
 
 func handleRequests() {
 	router := mux.NewRouter().StrictSlash(true)
@@ -74,11 +67,25 @@ func handleRequests() {
 }
 
 
-
 func getDeckReq(w http.ResponseWriter, r *http.Request) {
-	tc := Card{"This is the front :)", "This is the back :("}
 
-	json.NewEncoder(w).Encode(tc)
+	// TODO: Switch to Deck upon implementation
+	var deck Card
+
+	// get collection
+	// TODO: Switch collection to "decks" upon implementing decks.
+	collection := mongoClient.Database("flashfolio").Collection("cards")
+
+	// set up context for call
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	err := collection.FindOne(ctx, bson.D{{"ID", 0}}).Decode(&deck)
+	if err != nil {
+		panic(err)
+	}
+
+	json.NewEncoder(w).Encode(deck)
 }
 
 
