@@ -1,0 +1,11 @@
+.card {
+	border:1px;
+	border-style:solid;
+	height:200px;
+	width:500px;
+
+	/* Center Text */
+	display: grid;
+	place-items: center;
+}
+
