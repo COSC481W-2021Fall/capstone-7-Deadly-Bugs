@@ -1,11 +1,29 @@
 import React, {useState, useEffect} from "react";
+import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 import Viewer from "./Viewer.js";
+
 
 function App() {
 
-
 	return (
-		<Viewer />
+		<Router>
+			<Switch>
+			<Route path="/view/:deckId">
+				<Viewer />
+			</Route>
+			<Route path="/">
+				<Home />
+			</Route>
+			</Switch>
+		</Router>
+	);
+}
+
+function Home() {
+	return (
+		<div>
+			Homepage placeholder
+		</div>
 	);
 }
 
