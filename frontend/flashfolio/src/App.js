@@ -1,20 +1,27 @@
-import React, {useState} from "react";
-import Flashdeck from "./Flashdeck";
+import React, {useState, useEffect} from "react";
+import Flashcard from "./Flashcard";
 
- function App() {
-	 const [flashcards] = useState(FLASHCARD)
+function App() {
+
+	const [flashcard, setFlashcard] = useState("");
+
+	useEffect(() => {
+
+		const reqOpt = {
+			method: 'post',
+			headers: {'Content-Type': 'application/json'},
+			body: {'ID': 0}
+		}
+
+		fetch('http://localhost:1337/getDeck', reqOpt)
+			.then(resp => resp.json())
+			.then(data => setFlashcard(data))
+
+	}, [])
+
 	return (
-			<Flashdeck flashcards={flashcards} />
+			<Flashcard flashcard={flashcard} />
 	);
 }
-
-const FLASHCARD=[{
-	front:'front',
-	back:'back'
-},
-{
-	front:'front',
-	back:'back'
-}]
 
 export default App;
