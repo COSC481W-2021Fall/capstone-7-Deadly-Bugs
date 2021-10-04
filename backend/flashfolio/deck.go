@@ -1,7 +1,7 @@
-package main;
+package main
 
 type Deck struct {
-	ID        int    `json:"ID"`
-	Cards	  []Card `json:"Cards"`
-	isPublic  bool 	 `json:"isPublic"`
+	ID       int    `json:"ID"`
+	Cards    []Card `json:"Cards"`
+	IsPublic bool   `json:"IsPublic"`
 }

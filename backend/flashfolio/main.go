@@ -1,13 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
+	"io/ioutil"
 	"log"
 	"net/http"
-	"encoding/json"
-	"io/ioutil"
-	"github.com/gorilla/mux"
-	"github.com/gorilla/handlers"
 
 	"context"
 	"time"
@@ -60,17 +60,16 @@ func handleRequests() {
 
 	log.Fatal(http.ListenAndServe(":1337",
 		handlers.CORS(
-		handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
-		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
-		handlers.AllowedOrigins([]string{"*"}))(router)))
+			handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
+			handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
+			handlers.AllowedOrigins([]string{"*"}))(router)))
 
 }
-
 
 func getDeckReq(w http.ResponseWriter, r *http.Request) {
 
 	// TODO: Switch to Deck upon implementation
-	var deck Card
+	var deck Deck
 
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -84,8 +83,7 @@ func getDeckReq(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal(reqBody, &req)
 
 	// get collection
-	// TODO: Switch collection to "decks" upon implementing decks.
-	collection := mongoClient.Database("flashfolio").Collection("cards")
+	collection := mongoClient.Database("flashfolio").Collection("decks")
 
 	// set up context for call
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -93,7 +91,7 @@ func getDeckReq(w http.ResponseWriter, r *http.Request) {
 
 	err = collection.FindOne(ctx, bson.D{{"ID", req.ID}}).Decode(&deck)
 	if err != nil {
-		json.NewEncoder(w).Encode(Card{-1, "Card Not found", ":("})
+		json.NewEncoder(w).Encode(Deck{-1, []Card{Card{"Card Not found", ":("}}, true})
 		return
 	}
 
@@ -101,7 +99,3 @@ func getDeckReq(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(deck)
 }
-
-
-
-
