@@ -4,6 +4,8 @@ import Flashcard from "./Flashcard";
 
 export default function Viewer() {
 
+	let flashdeck = "";
+
 	const [flashcard, setFlashcard] = useState("");
 
 	let { deckId } = useParams();
@@ -18,13 +20,19 @@ export default function Viewer() {
 
 		fetch('http://localhost:1337/getDeck', reqOpt)
 			.then(resp => resp.json())
-			.then(data => setFlashcard(data))
+			.then(data => {
+					flashdeck = data;
+					setFlashcard(flashdeck.Cards[0]);
+				 });
+
+
+		console.log(flashcard)
 
 	}, [])
 
 	return (
 		<div>
-		CardId: {deckId}	
+		CardId: {deckId}
 		<Flashcard flashcard={flashcard} />
 		</div>
 	);
