@@ -29,21 +29,25 @@ func main() {
 
 	fmt.Println("Connecting to MongoDB...")
 
+	/* Create contenxt for initial mongo connection*/
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
+	/* Connect to mongo */
 	var err error
 	mongoClient, err = mongo.Connect(ctx, options.Client().ApplyURI(mongoURI))
 	if err != nil {
 		panic(err)
 	}
 
+	/* Safely disconnect from Mongo once server is shut down */
 	defer func() {
 		if err = mongoClient.Disconnect(ctx); err != nil {
 			panic(err)
 		}
 	}()
 
+	/* Ping Mongo to test connection */
 	if err := mongoClient.Ping(ctx, readpref.Primary()); err != nil {
 		panic(err)
 	}
@@ -53,6 +57,11 @@ func main() {
 	handleRequests()
 }
 
+/*
+handleRequests
+
+Creates the backend HTTP server & sets up CORS & routing.
+*/
 func handleRequests() {
 	router := mux.NewRouter().StrictSlash(true)
 
@@ -65,6 +74,11 @@ func handleRequests() {
 			handlers.AllowedOrigins([]string{"*"}))(router)))
 }
 
+/*
+getDeck/
+
+returns a deck in it's entirety to the frontend
+*/
 func getDeckReq(w http.ResponseWriter, r *http.Request) {
 	var deck Deck
 
@@ -79,10 +93,10 @@ func getDeckReq(w http.ResponseWriter, r *http.Request) {
 
 	json.Unmarshal(reqBody, &req)
 
-	// get collection
+	/* get collection */
 	collection := mongoClient.Database("flashfolio").Collection("decks")
 
-	// set up context for call
+	/* set up context for call */
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
