@@ -3,11 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
 	"io/ioutil"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
 
 	"context"
 	"time"
@@ -50,7 +51,6 @@ func main() {
 	fmt.Println("Successfully connected to MongoDB")
 
 	handleRequests()
-
 }
 
 func handleRequests() {
@@ -63,12 +63,9 @@ func handleRequests() {
 			handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
 			handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
 			handlers.AllowedOrigins([]string{"*"}))(router)))
-
 }
 
 func getDeckReq(w http.ResponseWriter, r *http.Request) {
-
-	// TODO: Switch to Deck upon implementation
 	var deck Deck
 
 	reqBody, err := ioutil.ReadAll(r.Body)
@@ -89,9 +86,9 @@ func getDeckReq(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	err = collection.FindOne(ctx, bson.D{{"ID", req.ID}}).Decode(&deck)
+	err = collection.FindOne(ctx, bson.D{{Key: "ID", Value: req.ID}}).Decode(&deck)
 	if err != nil {
-		json.NewEncoder(w).Encode(Deck{-1, []Card{Card{"Card Not found", ":("}}, true})
+		json.NewEncoder(w).Encode(Deck{-1, []Card{{"Card Not found", ":("}}, true})
 		return
 	}
 
