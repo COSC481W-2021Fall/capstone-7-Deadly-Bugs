@@ -19,7 +19,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-const mongoURI string = "mongodb://localhost:27017/"
+const MongoURI string = "mongodb://localhost:27017/"
 
 var mongoClient *mongo.Client
 
@@ -35,7 +35,7 @@ func main() {
 
 	/* Connect to mongo */
 	var err error
-	mongoClient, err = mongo.Connect(ctx, options.Client().ApplyURI(mongoURI))
+	mongoClient, err = mongo.Connect(ctx, options.Client().ApplyURI(MongoURI))
 	if err != nil {
 		panic(err)
 	}
