@@ -27,7 +27,7 @@ export default function Viewer() {
 
 	return (
 		<div>
-		CardId: {deckId}
+		DeckId: {deckId}
 		<Flashcard flashcard={flashcard} />
 		</div>
 	);
