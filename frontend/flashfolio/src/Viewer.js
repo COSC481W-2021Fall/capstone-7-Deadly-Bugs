@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import {useParams} from "react-router-dom";
 import Flashcard from "./Flashcard";
 
@@ -11,9 +11,11 @@ Displays a single card at a time to the screen.
 */
 export default function Viewer() {
 
-	let flashdeck = "";
+	const flashdeck = useRef("");
+	const isInitialMount = useRef(true);
 
 	const [flashcard, setFlashcard] = useState("");
+	const [cardIterator, setCardIterator] = useState(0);
 
 	let { deckId } = useParams();
 
@@ -34,15 +36,31 @@ export default function Viewer() {
 					/* Update the deck to reflect what is on the server 
 					   Warning is ignored as this Effect is only triggered once */
 					// eslint-disable-next-line
-					flashdeck = data;
-					setFlashcard(flashdeck.Cards[0]);
+					flashdeck.current = data;
+					setFlashcard(flashdeck.current.Cards[0]);
 				});
-	}, [])
+	}, []);
+
+	useEffect(() => {
+		if (isInitialMount.current) {
+			isInitialMount.current = false;
+		} 
+		else {
+			 // useEffect code here to be run on count update only
+			if(cardIterator < flashdeck.current.Cards.length) {
+				setFlashcard(flashdeck.current.Cards[cardIterator]);
+			}
+			else { setCardIterator(0); }
+		}
+	}, [cardIterator])
 
 	return (
 		<div>
 		CardId: {deckId}
 		<Flashcard flashcard={flashcard} />
+		<button
+			onClick={() => setCardIterator(cardIterator + 1)}
+			>Next Card</button>
 		</div>
 	);
 }
