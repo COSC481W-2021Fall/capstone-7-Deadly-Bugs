@@ -6,14 +6,20 @@ export default function Flashcard({flashcard, editMode=false}) {
 	const [flip, setFlip] = useState(false);
 	const [showEditor, setShowEditor] = useState(false);	
 
+	/* Returns appropriate side according to flip state */
 	const currentSide = () => flip ? flashcard.BackSide : flashcard.FrontSide;
 
+	/* Ref for the actual textarea (maybe can be removed?)*/
 	const editor = useRef(null);
+
+	/* State for the editor textarea's value */
 	const [editVal, setEditVal] = useState("");
 
+	/* Executed when editor textarea is changed by user */
 	const updateCard = () => {
-		console.log("updated!!!");
+		/* update editVal to reflect changes */
 		setEditVal(editor.current.value);
+		/* update actual card to reflect changes */
 		if (flip) {
 			flashcard.BackSide = editor.current.value;
 		} else {
@@ -21,10 +27,12 @@ export default function Flashcard({flashcard, editMode=false}) {
 		}
 	}
 
+	/* Gets the card divs current contents (View/Edit Mode) */
 	const cardContents = () => {
 		if (!editMode || !showEditor) {
 			return currentSide();
 		} else {
+			/* Place edit mode editor */
 			return (
 				<textarea className="cardEditor" onChange={updateCard}
 					value={editVal} ref={editor} />
@@ -32,6 +40,7 @@ export default function Flashcard({flashcard, editMode=false}) {
 		}
 	}
 
+	/* flip the card */
 	const flipCard = () => {
 		/* This is very ugly and will need to be cleaned up */
 		if (showEditor) {
@@ -40,8 +49,10 @@ export default function Flashcard({flashcard, editMode=false}) {
 		setFlip(!flip)
 	}
 
+	/* If in edit mode, do nothing when card clicked */
 	const cardClick = () => !editMode || !showEditor ? flipCard() : "";
 
+	/* Show card editor */
 	const editCard = () => {
 		if (!showEditor) {
 			setEditVal(currentSide());
