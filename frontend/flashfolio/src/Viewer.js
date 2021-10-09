@@ -45,7 +45,7 @@ export default function Viewer({viewMode="view"}) {
 			isInitialMount.current = false;
 		} 
 		else {
-			 // useEffect code here to be run on count update only
+			/* useEffect code here to be run on count update only */
 			if(cardIterator < flashdeck.current.Cards.length) {
 				setFlashcard(flashdeck.current.Cards[cardIterator]);
 			}
