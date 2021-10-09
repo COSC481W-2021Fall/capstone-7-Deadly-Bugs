@@ -24,12 +24,16 @@ export default function Flashcard({flashcard, editMode=false}) {
 		} else {
 			return (
 				<textarea className="cardEditor" onChange={updateCard}
-					defaultValue={currentSide()} ref={editor}/>
+					defaultValue={currentSide()} ref={editor} />
 			)
 		}
 	}
 
-	const cardClick = () => !editMode || !showEditor ? setFlip(!flip) : "";
+	const flipCard = () => {
+		setFlip(!flip)
+	}
+
+	const cardClick = () => !editMode || !showEditor ? flipCard() : "";
 
 	return (
 		<div>
@@ -37,6 +41,9 @@ export default function Flashcard({flashcard, editMode=false}) {
 			<button onClick={()=>{setShowEditor(!showEditor)}}>
 				{showEditor ? "Done" : "Edit Card"} 
 			</button>:""}
+		<button onClick={flipCard}>
+			Flip
+		</button>
 		<div onClick={cardClick} class="card">
 			{cardContents()}
 		</div>
