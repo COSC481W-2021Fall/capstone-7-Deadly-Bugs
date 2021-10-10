@@ -2,14 +2,13 @@ import React, {useState, useEffect, useRef} from "react";
 import {useParams} from "react-router-dom";
 import Flashcard from "./Flashcard";
 
-
 /*
 Viewer
 
 Grabs a deck from the backend.
 Displays a single card at a time to the screen.
 */
-export default function Viewer() {
+export default function Viewer({viewMode="view"}) {
 
 	const flashdeck = useRef("");
 	const isInitialMount = useRef(true);
@@ -46,7 +45,7 @@ export default function Viewer() {
 			isInitialMount.current = false;
 		} 
 		else {
-			 // useEffect code here to be run on count update only
+			/* useEffect code here to be run on count update only */
 			if(cardIterator < flashdeck.current.Cards.length) {
 				setFlashcard(flashdeck.current.Cards[cardIterator]);
 			}
@@ -57,7 +56,7 @@ export default function Viewer() {
 	return (
 		<div>
 		CardId: {deckId}
-		<Flashcard flashcard={flashcard} />
+		<Flashcard flashcard={flashcard} editMode={viewMode == "edit"} />
 		<button
 			onClick={() => setCardIterator(cardIterator + 1)}
 			>Next Card</button>
