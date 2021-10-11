@@ -1,11 +1,25 @@
+
+/*
+visual styling for the flashcard
+*/
 .card {
-	border:1px;
-	border-style:solid;
-	height:200px;
-	width:500px;
+	border: 1px;
+	border-style: solid;
+	height: 200px;
+	width: 500px;
 
 	/* Center Text */
 	display: grid;
 	place-items: center;
 }
+
+/*
+For the text area of the card editor
+*/
+.cardEditor {
+	height: 90%;
+	width: 90%;
+	resize: none;
+}
+
 
