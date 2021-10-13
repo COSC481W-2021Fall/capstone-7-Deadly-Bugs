@@ -17,6 +17,9 @@ function App() {
 			<Route path="/view/:deckId">
 				<Viewer />
 			</Route>
+			<Route path="/edit/:deckId">
+				<Viewer viewMode="edit"/>
+			</Route>
 			<Route path="/">
 				<Home />
 			</Route>
