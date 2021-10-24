@@ -60,6 +60,12 @@ export default function Viewer({viewMode="view"}) {
 		<button
 			onClick={() => setCardIterator(cardIterator + 1)}
 			>Next Card</button>
+		<a
+            href={`data:text/json;charset=utf-8,${encodeURIComponent(
+              JSON.stringify(flashdeck.current, null, '\t')
+            )}`}
+            download="myDeck.json"
+          >{`Download`}</a>
 		</div>
 	);
 }
