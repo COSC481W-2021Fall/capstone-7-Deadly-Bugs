@@ -7,10 +7,13 @@ import (
 	"github.com/gorilla/mux"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"net/http"
+
 
 	"context"
 	"time"
+
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -54,7 +57,10 @@ func main() {
 	fmt.Println("Successfully connected to MongoDB")
 
 	fmt.Println("Attempting to save deck to database")
+
+	//*** THIS METHOD IS FOR TESTING SAVING DECK TO DATABASE ***
 	saveDeckToDB()
+	//**********************************************************
 
 	handleRequests()
 }
@@ -114,24 +120,33 @@ func getDeckReq(w http.ResponseWriter, r *http.Request) {
 }
 
 func saveDeckToDB(){
-	// Create Static deck for testing purposes
+	// Create a random number to be used as Deck ID later
+	rand.Seed(time.Now().UnixNano())
+	genID := rand.Intn(99999999)
+	fmt.Print("random numbers generated: ")
+	fmt.Println(genID)
+
+	// Check db to make sure there isn't a deck with the same ID
+
+	// Create Static deck
+	fmt.Println("Creating deck...")
 	d := Deck{10, []Card{{"front","back"}}, true}
 
 	// Turn deck object into json
-	b, err := json.Marshal(d)
-
+	/*b, err := json.Marshal(d)
 	if err != nil {
 		fmt.Println("Something went wrong with marshaling json")
-	}
+	}*/
 
-	/* Get collection.
-	NOTE: if the specified collection doesn't exist, create one.
-	NOTE: Can allow user input for unique collection names */
+	// Get collection from mongo
+	fmt.Println("Getting collection...")
 	collection := mongoClient.Database("flashfolio").Collection("decks")
 
-	// Set up context
+	// Set up context for Mongo
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	collection.InsertOne(ctx, b)
+	// Insert to the collection
+	fmt.Println("Inserting deck...")
+	collection.InsertOne(ctx, d)
 }
