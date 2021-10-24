@@ -3,12 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
 	"io/ioutil"
 	"log"
 	"net/http"
-
-	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
 
 	"context"
 	"time"
@@ -53,6 +52,9 @@ func main() {
 	}
 
 	fmt.Println("Successfully connected to MongoDB")
+
+	fmt.Println("Attempting to save deck to database")
+	saveDeckToDB()
 
 	handleRequests()
 }
@@ -109,4 +111,27 @@ func getDeckReq(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Got a request for card: ", req.ID)
 
 	json.NewEncoder(w).Encode(deck)
+}
+
+func saveDeckToDB(){
+	// Create Static deck for testing purposes
+	d := Deck{10, []Card{{"front","back"}}, true}
+
+	// Turn deck object into json
+	b, err := json.Marshal(d)
+
+	if err != nil {
+		fmt.Println("Something went wrong with marshaling json")
+	}
+
+	/* Get collection.
+	NOTE: if the specified collection doesn't exist, create one.
+	NOTE: Can allow user input for unique collection names */
+	collection := mongoClient.Database("flashfolio").Collection("decks")
+
+	// Set up context
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	collection.InsertOne(ctx, b)
 }
