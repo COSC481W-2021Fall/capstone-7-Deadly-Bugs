@@ -19,3 +19,20 @@ export async function getDeck(deckID) {
 	let resp = await fetch(API_URL + "/getDeck", reqOpt);
 	return resp.json();
 }
+
+/*
+getSecret
+
+just a temp method used to test user auth
+*/
+export async function getSecret(token) {
+	let reqOpt = {
+		method: "POST",
+		headers: {"Content-Type": "application/json"},
+		body: JSON.stringify({'Token': token}),
+	}
+
+	let resp = await fetch(API_URL + "/getSecret", reqOpt);
+	return resp.json();
+}
+

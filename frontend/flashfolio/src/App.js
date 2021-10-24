@@ -1,7 +1,8 @@
 import React from "react";
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 import Viewer from "./Viewer.js";
-
+import LoginButton from "./LoginButton.js"
+import LogoutButton from "./LogoutButton.js"
 
 /*
 App
@@ -39,6 +40,8 @@ function Home() {
 	return (
 		<div>
 			Homepage placeholder
+			<LoginButton />
+			<LogoutButton />
 		</div>
 	);
 }

@@ -17,6 +17,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
+
+	"google.golang.org/api/oauth2/v2"
 )
 
 const MongoURI string = "mongodb://localhost:27017/"
@@ -66,6 +68,7 @@ func handleRequests() {
 	router := mux.NewRouter().StrictSlash(true)
 
 	router.HandleFunc("/getDeck", getDeckReq)
+	router.HandleFunc("/getSecret", getSecretReq)
 
 	log.Fatal(http.ListenAndServe(":1337",
 		handlers.CORS(
@@ -110,3 +113,58 @@ func getDeckReq(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(deck)
 }
+
+/*
+verifyIdToken
+
+Verifies that a google ID token is genuine & returns token/User info
+
+Tokeninfo Struct found here: https://github.com/googleapis/google-api-go-client/blob/2447556ecdd4aae37b4cff8c46fc88a25036e7a1/oauth2/v2/oauth2-gen.go#L182
+
+*/
+func verifyIdToken(idToken string) (*oauth2.Tokeninfo, error) {
+	httpClient := http.Client{}
+	oauth2Service, err := oauth2.New(&httpClient)
+	tokenInfoCall := oauth2Service.Tokeninfo()
+	tokenInfoCall.IdToken(idToken)
+	tokenInfo, err := tokenInfoCall.Do()
+	if err != nil {
+		return nil, err
+	}
+	return tokenInfo, nil
+}
+
+
+func getSecretReq(w http.ResponseWriter, r *http.Request) {
+
+
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	var req struct {
+		Token string `json:"Token"`
+	}
+
+	json.Unmarshal(reqBody, &req)
+
+	tokenInfo, err := verifyIdToken(req.Token)
+
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(tokenInfo)
+
+	var ret struct {
+		Secret string `json:"Secret"`
+	}
+
+	ret.Secret = "It's a secret to everybody. Actually this seceret is for " + tokenInfo.Email
+
+	fmt.Println("Got a req for the secret!")
+
+	json.NewEncoder(w).Encode(ret)
+}
+
