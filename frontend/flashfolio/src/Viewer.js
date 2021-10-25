@@ -3,6 +3,8 @@ import {useParams} from "react-router-dom";
 import Flashcard from "./Flashcard";
 import {getDeck} from "./Calls.js";
 
+import UserInfoPreview from "./UserInfoPreview.js";
+
 /*
 Viewer
 
@@ -42,6 +44,7 @@ export default function Viewer({viewMode="view"}) {
 
 	return (
 		<div>
+		<UserInfoPreview />
 		DeckId: {deckId}
 		<Flashcard flashcard={flashcard} editMode={viewMode == "edit"} />
 		<button
