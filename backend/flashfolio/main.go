@@ -56,10 +56,9 @@ func main() {
 
 	fmt.Println("Successfully connected to MongoDB")
 
-	fmt.Println("Attempting to save deck to database")
-
-	//*** THIS METHOD IS FOR TESTING SAVING DECK TO DATABASE ***
-	saveDeckToDB()
+	//*** THIS METHOD IS FOR TESTING OVERWRITING DECK WITHIN DATABASE ***
+	deck := Deck{10, []Card{{"This is a new front!","This is a new back!"}}, true}
+	overwriteDeck(deck)
 	//**********************************************************
 
 	handleRequests()
@@ -126,17 +125,12 @@ func saveDeckToDB(){
 	fmt.Print("random numbers generated: ")
 	fmt.Println(genID)
 
-	// Check db to make sure there isn't a deck with the same ID
+	// Set ID to be same for both the deck being created and where it wants to save
+	checkID := 10
 
 	// Create Static deck
 	fmt.Println("Creating deck...")
-	d := Deck{10, []Card{{"front","back"}}, true}
-
-	// Turn deck object into json
-	/*b, err := json.Marshal(d)
-	if err != nil {
-		fmt.Println("Something went wrong with marshaling json")
-	}*/
+	d := Deck{checkID, []Card{{"front","back"}}, true}
 
 	// Get collection from mongo
 	fmt.Println("Getting collection...")
@@ -146,7 +140,28 @@ func saveDeckToDB(){
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
+	// Check db to make sure there isn't a deck with the same ID
+	cDeck := collection.FindOne(ctx, bson.D{{Key: "ID", Value: checkID}})
+	if cDeck != nil{
+		for {
+			checkID += 1
+			cDeck = collection.FindOne(ctx, bson.D{{Key: "ID", Value: checkID}})
+			if cDeck == nil {
+				break
+			}
+		}
+	}
+
 	// Insert to the collection
 	fmt.Println("Inserting deck...")
 	collection.InsertOne(ctx, d)
+}
+
+func overwriteDeck(deck Deck){
+	fmt.Println("Attempting to overwrite deck...")
+	collection := mongoClient.Database("flashfolio").Collection("decks")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	collection.ReplaceOne(ctx, bson.D{{Key:"ID", Value: deck.ID}}, deck)
 }
