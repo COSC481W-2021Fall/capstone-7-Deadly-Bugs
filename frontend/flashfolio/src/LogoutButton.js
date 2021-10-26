@@ -15,7 +15,7 @@ function LogoutButton() {
 	return (
 		<div>
 			<GoogleLogout
-				clientId={process.env.GOOGLE_CLIENT_ID}
+				clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
 				buttonText="Logout"
 				onLogoutSuccess={success}
 			></GoogleLogout>
