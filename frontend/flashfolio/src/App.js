@@ -24,10 +24,12 @@ function App() {
 				setLoginState(res);
 				console.log("signed in!");
 			},
-		clientId: "684589850875-dsqqk7pdtbuto6k2mcvgedicvdv9c63q.apps.googleusercontent.com",
+		clientId: process.env.REACT_APP_GOOGLE_CLIENT_ID,
 		isSignedIn: true,
 		accessType: "offline",
 	});
+
+	console.log("Hello!", process.env.REACT_APP_GOOGLE_CLIENT_ID)
 
 	return (
 		<loginContext.Provider value={{loginState, setLoginState}}>

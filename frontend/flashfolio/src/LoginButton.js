@@ -4,7 +4,6 @@ import { getSecret } from "./Calls.js";
 
 import { loginContext } from "./App.js";
 
-const googleClientId = "684589850875-dsqqk7pdtbuto6k2mcvgedicvdv9c63q.apps.googleusercontent.com";
 
 function LoginButton() {
 
@@ -19,7 +18,7 @@ function LoginButton() {
 	return (
 		<div>
 			<GoogleLogin
-				clientId={googleClientId}
+				clientId={process.env.GOOGLE_CLIENT_ID}
 				buttonText="Login"
 				cookiePolicy={'single_host_origin'}
 				isSignedIn={false}

@@ -3,8 +3,6 @@ import { GoogleLogout } from "react-google-login";
 
 import { loginContext } from "./App.js";
 
-const googleClientId = "684589850875-dsqqk7pdtbuto6k2mcvgedicvdv9c63q.apps.googleusercontent.com";
-
 function LogoutButton() {
 
 	const { setLoginState } = useContext(loginContext);
@@ -17,7 +15,7 @@ function LogoutButton() {
 	return (
 		<div>
 			<GoogleLogout
-				clientId={googleClientId}
+				clientId={process.env.GOOGLE_CLIENT_ID}
 				buttonText="Logout"
 				onLogoutSuccess={success}
 			></GoogleLogout>
