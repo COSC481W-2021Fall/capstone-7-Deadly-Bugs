@@ -130,15 +130,16 @@ func verifyIdToken(idToken string) (*oauth2.Tokeninfo, error) {
 	tokenInfoCall := oauth2Service.Tokeninfo()
 	tokenInfoCall.IdToken(idToken)
 	tokenInfo, err := tokenInfoCall.Do()
+
 	if err != nil {
 		return nil, err
 	}
+
 	return tokenInfo, nil
 }
 
 
 func getSecretReq(w http.ResponseWriter, r *http.Request) {
-
 
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
