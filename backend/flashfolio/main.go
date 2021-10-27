@@ -58,7 +58,7 @@ func main() {
 
 	//*******************************************************************
 	//*** THIS METHOD IS FOR TESTING OVERWRITING DECK WITHIN DATABASE ***
-	deck := Deck{10, []Card{{"This is a new front!","This is a new back!"}}, true}
+	deck := Deck{10, []Card{{"Changed the front!","Changed the back!"}}, true, "6175d94b13e446a3f0fa7752"}
 	overwriteDeck(deck)
 	//*******************************************************************
 
@@ -110,7 +110,7 @@ func getDeckReq(w http.ResponseWriter, r *http.Request) {
 
 	err = collection.FindOne(ctx, bson.D{{Key: "ID", Value: req.ID}}).Decode(&deck)
 	if err != nil {
-		json.NewEncoder(w).Encode(Deck{-1, []Card{{"Card Not found", ":("}}, true})
+		//json.NewEncoder(w).Encode(Deck{-1, []Card{{"Card Not found", ":("}}, true})
 		return
 	}
 
@@ -132,7 +132,7 @@ func saveDeckToDB(){
 	// Create Static deck
 	fmt.Println("Creating deck...")
 
-	d := Deck{checkID, []Card{{"front","back"}}, true}
+	d := Deck{checkID, []Card{{"front","back"}}, true, "6175d94b13e446a3f0fa7752"}
 
 
 	// Get collection from mongo
@@ -162,10 +162,13 @@ func saveDeckToDB(){
 
 func overwriteDeck(deck Deck){
 	fmt.Println("UPDATED: Attempting to overwrite deck...")
+	fmt.Println("Deck ID for testing is 10")
+
 	collection := mongoClient.Database("flashfolio").Collection("decks")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	filter := bson.M{"ID": deck.ID}
+	opt := options.Replace().SetUpsert(true)
+	filter := bson.D{{Key: "_id", Value: deck.Mid}}
 
-	collection.ReplaceOne(ctx, filter, deck)
+	collection.ReplaceOne(ctx, filter, deck, opt)
 }
