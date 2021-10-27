@@ -131,7 +131,9 @@ func saveDeckToDB(){
 
 	// Create Static deck
 	fmt.Println("Creating deck...")
+
 	d := Deck{checkID, []Card{{"front","back"}}, true}
+
 
 	// Get collection from mongo
 	fmt.Println("Getting collection...")
