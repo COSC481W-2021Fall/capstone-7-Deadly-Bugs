@@ -102,7 +102,7 @@ func getDeckReq(w http.ResponseWriter, r *http.Request) {
 
 	err = collection.FindOne(ctx, bson.D{{Key: "ID", Value: req.ID}}).Decode(&deck)
 	if err != nil {
-		json.NewEncoder(w).Encode(Deck{-1, []Card{{"Card Not found", ":("}}, true})
+		json.NewEncoder(w).Encode(Deck{-1, "Deck does not exist.", []Card{{"Card Not found", ":("}}, true})
 		return
 	}
 

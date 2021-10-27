@@ -42,6 +42,7 @@ export default function Viewer({viewMode="view"}) {
 
 	return (
 		<div>
+		Title: {flashdeck.current.Title}
 		DeckId: {deckId}
 		<Flashcard flashcard={flashcard} editMode={viewMode == "edit"} />
 		<button
