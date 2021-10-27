@@ -159,7 +159,7 @@ func saveDeckToDB(){
 }
 
 func overwriteDeck(deck Deck){
-	fmt.Println("Attempting to overwrite deck...")
+	fmt.Println("UPDATED: Attempting to overwrite deck...")
 	collection := mongoClient.Database("flashfolio").Collection("decks")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
