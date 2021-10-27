@@ -163,6 +163,7 @@ func overwriteDeck(deck Deck){
 	collection := mongoClient.Database("flashfolio").Collection("decks")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+	filter := bson.M{"ID": deck.ID}
 
-	collection.ReplaceOne(ctx, bson.D{{Key: "ID", Value: deck.ID}}, deck)
+	collection.ReplaceOne(ctx, filter, deck)
 }
