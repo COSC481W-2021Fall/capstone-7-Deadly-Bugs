@@ -18,12 +18,12 @@ export default function Viewer({viewMode="view"}) {
 
 	const [flashcard, setFlashcard] = useState("");
 	const [cardIterator, setCardIterator] = useState(0);
-	const [shufOn, setShufOn] = useState(0);
+	const [shufOn, setShufOn] = useState(false);
 
 	function shufFunction(){
 		hidden = false;
 		setCardIterator(0);
-		setShufOn(1);
+		setShufOn(true);
 		shufOrder = [];
 		while(shufOrder.length < flashdeck.current.Cards.length){
 			var num = Math.floor(Math.random()*flashdeck.current.Cards.length);
@@ -37,7 +37,7 @@ export default function Viewer({viewMode="view"}) {
 	function unshufFunction(){
 		hidden = true;
 		setCardIterator(0);
-		setShufOn(0);
+		setShufOn(false);
 		setFlashcard(flashdeck.current.Cards[cardIterator]);
 	}
 
@@ -58,7 +58,7 @@ export default function Viewer({viewMode="view"}) {
 		else {
 			/* useEffect code here to be run on count update only */
 			if(cardIterator < flashdeck.current.Cards.length) {
-				if((shufOn===0))
+				if((!shufOn))
 					setFlashcard(flashdeck.current.Cards[cardIterator]);
 				else
 					setFlashcard(flashdeck.current.Cards[shufOrder[cardIterator]]);		
@@ -74,9 +74,12 @@ export default function Viewer({viewMode="view"}) {
 		<button
 			onClick={() => setCardIterator(cardIterator + 1)}
 			>Next Card</button>
-		{hidden ?
+		{!flashcard.showEditor ? 
+		hidden ?
 		<button id= "shuf" onClick = {() => shufFunction()}>Shuffle</button> :
-		<button id="unshuf" onClick = {() => shufOn===1 ? unshufFunction() : null}>Unshuffle</button>
+		<button id="unshuf" onClick = {() => shufOn ? unshufFunction() : null}>Unshuffle</button>
+		:
+		null
 	}
 		</div>
 	);
