@@ -130,7 +130,7 @@ func saveDeckToDB(){
 
 	// Create Static deck
 	fmt.Println("Creating deck...")
-	d := Deck{10, []Card{{"front","back"}}, true}
+	d := Deck{10, []Card{{"New Front!","Fresh Smell"}}, true}
 
 	// Turn deck object into json
 	/*b, err := json.Marshal(d)
