@@ -23,7 +23,7 @@ import (
 
 const MongoURI string = "mongodb://localhost:27017/"
 
-var mongoClient *mongo.Client
+var MongoClient *mongo.Client
 
 func main() {
 
@@ -37,20 +37,20 @@ func main() {
 
 	/* Connect to mongo */
 	var err error
-	mongoClient, err = mongo.Connect(ctx, options.Client().ApplyURI(MongoURI))
+	MongoClient, err = mongo.Connect(ctx, options.Client().ApplyURI(MongoURI))
 	if err != nil {
 		panic(err)
 	}
 
 	/* Safely disconnect from Mongo once server is shut down */
 	defer func() {
-		if err = mongoClient.Disconnect(ctx); err != nil {
+		if err = MongoClient.Disconnect(ctx); err != nil {
 			panic(err)
 		}
 	}()
 
 	/* Ping Mongo to test connection */
-	if err := mongoClient.Ping(ctx, readpref.Primary()); err != nil {
+	if err := MongoClient.Ping(ctx, readpref.Primary()); err != nil {
 		panic(err)
 	}
 
@@ -97,7 +97,7 @@ func getDeckReq(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal(reqBody, &req)
 
 	/* get collection */
-	collection := mongoClient.Database("flashfolio").Collection("decks")
+	collection := MongoClient.Database("flashfolio").Collection("decks")
 
 	/* set up context for call */
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
