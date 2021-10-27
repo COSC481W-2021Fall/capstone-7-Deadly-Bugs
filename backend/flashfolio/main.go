@@ -56,10 +56,11 @@ func main() {
 
 	fmt.Println("Successfully connected to MongoDB")
 
+	//*******************************************************************
 	//*** THIS METHOD IS FOR TESTING OVERWRITING DECK WITHIN DATABASE ***
 	deck := Deck{10, []Card{{"This is a new front!","This is a new back!"}}, true}
 	overwriteDeck(deck)
-	//**********************************************************
+	//*******************************************************************
 
 	handleRequests()
 }
@@ -163,5 +164,5 @@ func overwriteDeck(deck Deck){
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	collection.ReplaceOne(ctx, bson.D{{Key:"ID", Value: deck.ID}}, deck)
+	collection.ReplaceOne(ctx, bson.D{{Key: "ID", Value: deck.ID}}, deck)
 }
