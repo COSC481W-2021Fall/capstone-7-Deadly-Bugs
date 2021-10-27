@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useRef} from "react";
 import {useParams} from "react-router-dom";
 import Flashcard from "./Flashcard";
+import {getDeck} from "./Calls.js";
 
 /*
 Viewer
@@ -19,26 +20,12 @@ export default function Viewer({viewMode="view"}) {
 	let { deckId } = useParams();
 
 	useEffect(() => {
-
-
-		/* Set up and send req to get deck from backend */
-		let reqOpt = {
-			method: 'post',
-			headers: {'Content-Type': 'application/json'},
-			body: JSON.stringify({'ID': Number(deckId)}),
-		}
-
-		/* Send the Request */
-		fetch('http://localhost:1337/getDeck', reqOpt)
-			.then(resp => resp.json())
-			.then(data => {
-					/* Update the deck to reflect what is on the server 
-					   Warning is ignored as this Effect is only triggered once */
-					// eslint-disable-next-line
-					flashdeck.current = data;
-					setFlashcard(flashdeck.current.Cards[0]);
-				});
-	}, []);
+		getDeck(Number(deckId))
+			.then(deck => {
+				flashdeck.current = deck;
+				setFlashcard(flashdeck.current.Cards[0]);
+			});
+	}, [deckId]);
 
 	useEffect(() => {
 		if (isInitialMount.current) {
@@ -56,7 +43,7 @@ export default function Viewer({viewMode="view"}) {
 	return (
 		<div>
 		Title: {flashdeck.current.Title}
-		CardId: {deckId}
+		DeckId: {deckId}
 		<Flashcard flashcard={flashcard} editMode={viewMode == "edit"} />
 		<button
 			onClick={() => setCardIterator(cardIterator + 1)}
