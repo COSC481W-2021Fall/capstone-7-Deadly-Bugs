@@ -9,6 +9,8 @@ Viewer
 Grabs a deck from the backend.
 Displays a single card at a time to the screen.
 */
+var shufOrder = [];
+var hidden = true;
 export default function Viewer({viewMode="view"}) {
 
 	const flashdeck = useRef("");
@@ -16,6 +18,28 @@ export default function Viewer({viewMode="view"}) {
 
 	const [flashcard, setFlashcard] = useState("");
 	const [cardIterator, setCardIterator] = useState(0);
+	const [shufOn, setShufOn] = useState(0);
+
+	function shufFunction(){
+		hidden = false;
+		setCardIterator(0);
+		setShufOn(1);
+		shufOrder = [];
+		while(shufOrder.length < flashdeck.current.Cards.length){
+			var num = Math.floor(Math.random()*flashdeck.current.Cards.length);
+			if(shufOrder.indexOf(num)===-1)
+				shufOrder.push(num);
+		}
+		document.getElementById('shuf').style.visibility="visible";
+		setFlashcard(flashdeck.current.Cards[shufOrder[cardIterator]]);
+	}
+
+	function unshufFunction(){
+		hidden = true;
+		setCardIterator(0);
+		setShufOn(0);
+		setFlashcard(flashdeck.current.Cards[cardIterator]);
+	}
 
 	let { deckId } = useParams();
 
@@ -34,7 +58,10 @@ export default function Viewer({viewMode="view"}) {
 		else {
 			/* useEffect code here to be run on count update only */
 			if(cardIterator < flashdeck.current.Cards.length) {
-				setFlashcard(flashdeck.current.Cards[cardIterator]);
+				if((shufOn===0))
+					setFlashcard(flashdeck.current.Cards[cardIterator]);
+				else
+					setFlashcard(flashdeck.current.Cards[shufOrder[cardIterator]]);		
 			}
 			else { setCardIterator(0); }
 		}
@@ -47,6 +74,10 @@ export default function Viewer({viewMode="view"}) {
 		<button
 			onClick={() => setCardIterator(cardIterator + 1)}
 			>Next Card</button>
+		{hidden ?
+		<button id= "shuf" onClick = {() => shufFunction()}>Shuffle</button> :
+		<button id="unshuf" onClick = {() => shufOn===1 ? unshufFunction() : null}>Unshuffle</button>
+	}
 		</div>
 	);
 }
