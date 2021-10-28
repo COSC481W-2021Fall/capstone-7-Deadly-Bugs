@@ -1,0 +1,115 @@
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+  }
+  
+.container {
+	background-color: white;
+	display: -webkit-box;  /* OLD - iOS 6-, Safari 3.1-6, BB7 */
+  	display: -ms-flexbox;  /* TWEENER - IE 10 */
+  	display: -webkit-flex; /* NEW - Safari 6.1+. iOS 7.1+, BB10 */
+  	display: flex;         /* NEW, Spec - Firefox, Chrome, Opera */
+	font-family: Garamond;
+	font-size:1.7em;
+	font-weight: 300;
+	height:100%;
+	min-height:100vh;
+	min-width:717.56pt;
+	width:100%;
+}
+  
+h1, h2, h3, h4, h5, h6 {
+	font-family: 'Archivo', sans-serif;
+   	font-weight: 500;
+}
+
+h1 {
+	font-size:3.25em;
+}
+  
+/* Visual styling for the two main divs in main container.*/
+.left {
+	background-color:#F76C6C;
+	background-image: linear-gradient(to bottom right,#F76C6C,#054790);
+	box-shadow: 5px 0px 15px rgba(0, 0, 0, 0.4);
+	width:60%;
+}
+
+.right {
+	background-color:white;
+	padding: 50px 80px;
+	text-align: center;
+	width:40%;
+}
+
+/* Visual styling for the logo. (left side of body)*/
+.logoCard, .slide {
+	display: inline-block;
+	position: relative;
+	top:35%;
+	left:13%;
+	vertical-align:middle;
+}
+
+.logoCard {
+	-webkit-animation: twirl 8s 1;
+	animation: twirl 8s 1;
+	background-color: #24305E;
+	border-radius: 8px;
+	box-shadow: 2.5px 5px 5px rgba(0, 0, 0, 0.4);
+	color: white;
+	padding: 16px 12px;
+}
+  
+.slide {
+	overflow:hidden;
+}
+  
+.slide h1 {
+	-webkit-animation: 2s slide-right 6s forwards;
+	animation: 2s slide-right 6s forwards;
+	-webkit-transform: translateX(-100%); /* Ch <36, Saf 5.1+, iOS < 9.2, An =<4.4.4 */
+    -ms-transform: translateX(-100%); /* IE 9 */
+	transform: translateX(-100%); /* IE 10, Fx 16+, Op 12.1+ */
+}
+
+/* Visual styling for the introduction and buttons (right side of body)*/
+.intro {
+	line-height: 1.5;
+}
+
+.buttons button {
+	background-color: #F76C6C;
+	border-style: none;
+	border-radius: 8px;
+	box-shadow: 2.5px 5px 5px rgba(0, 0, 0, 0.4);
+	font-size:1em;
+	margin:50px 20px 20px 20px;
+	padding:10px;	
+}
+
+/* Animations for the logo.*/
+@keyframes slide-right {
+	to {transform:translateX(0);
+		-webkit-transform:translateX(0);
+	}
+}
+  
+@keyframes twirl {
+	100% {transform: rotateY(1turn);
+		-webkit-transform: rotateY(1turn);
+	}
+}
+
+@-webkit-keyframes slide-right {
+	to {transform:translateX(0);
+		-webkit-transform:translateX(0);
+	}
+}
+
+@-webkit-keyframes twirl {
+	100% {transform: rotateY(1turn);
+		-webkit-transform: rotateY(1turn);
+	}
+}

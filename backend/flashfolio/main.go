@@ -107,7 +107,7 @@ func getDeckReq(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		// TODO: There has gotta be a better way to do this haha
 		// Maybe send a 404 response?
-		json.NewEncoder(w).Encode(Deck{-1, []Card{{"Card Not found", ":("}}, true, ""})
+		json.NewEncoder(w).Encode(Deck{-1, "Deck does not exist.", []Card{{"Card Not found", ":("}}, true, ""})
 		return
 	}
 

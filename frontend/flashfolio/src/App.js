@@ -1,9 +1,10 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useState, useContext } from "react";
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 import Viewer from "./Viewer.js";
 import LoginButton from "./LoginButton.js"
 import LogoutButton from "./LogoutButton.js"
 import UserInfoPreview from "./UserInfoPreview.js"
+import './App.css'
 
 import { useGoogleLogin } from "react-google-login";
 
@@ -59,12 +60,35 @@ Shown when the user loads the root directory
 TODO: When Hompage PBI is created, move this to it's own component.
 */
 function Home() {
+
+	const { loginState } = useContext(loginContext);
+
 	return (
-		<div>
-			<UserInfoPreview />
-			Homepage placeholder
-			<LoginButton />
-			<LogoutButton />
+		<div class="container">
+			<div class="left">
+				<div class="logoCard">
+    				<h1 class="logo">FLASH</h1>
+  				</div>
+  				<div class="slide">
+    				<h1 class="logo">FOLIO</h1>
+  				</div>
+			</div>
+			
+			<div class="right">
+				<div class="intro">
+					Hi! We're Flashfolio! A flashcard website you can use to study to your heart's desire.
+					If you would like to create a deck, please click "Sign Up." Otherwise, to peruse
+					our large variety of public decks, hit "Discover."
+				</div>
+				<div class ="buttons">
+					<button>Discover</button>
+					{/*<button>Sign Up</button>*/}
+					{ loginState === null ?
+						<LoginButton /> :
+						<LogoutButton />}
+					{/*<UserInfoPreview />*/}
+				</div>
+			</div>
 		</div>
 	);
 }
