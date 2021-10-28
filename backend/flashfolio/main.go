@@ -9,7 +9,7 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
-
+	"strconv"
 
 	"context"
 	"time"
@@ -58,7 +58,13 @@ func main() {
 
 	//*******************************************************************
 	//*** THIS METHOD IS FOR TESTING OVERWRITING DECK WITHIN DATABASE ***
-	deck := Deck{10, []Card{{"Changed the front!","Changed the back!"}}, true, "6175d94b13e446a3f0fa7752"}
+
+	deck := Deck{10,
+		[]Card{{
+			"Can This change?",
+			"can this change?"}},
+		true,
+		strconv.Itoa(rand.Intn(9999999999999))}
 	overwriteDeck(deck)
 	//*******************************************************************
 
