@@ -63,8 +63,7 @@ func main() {
 		[]Card{{
 			"Can This change?",
 			"can this change?"}},
-		true,
-		strconv.Itoa(rand.Intn(9999999999999))}
+		true}
 	overwriteDeck(deck)
 	//*******************************************************************
 
@@ -125,56 +124,57 @@ func getDeckReq(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(deck)
 }
 
-func saveDeckToDB(){
-	// Create a random number to be used as Deck ID later
+// Generates a random integer for use as deck ID
+func generateID() int {
+	// Create new seed for number generation
 	rand.Seed(time.Now().UnixNano())
 	genID := rand.Intn(99999999)
-	fmt.Print("random numbers generated: ")
-	fmt.Println(genID)
 
-	// Set ID to be same for both the deck being created and where it wants to save
-	checkID := 10
-
-	// Create Static deck
-	fmt.Println("Creating deck...")
-
-	d := Deck{checkID, []Card{{"front","back"}}, true, "6175d94b13e446a3f0fa7752"}
-
-
-	// Get collection from mongo
-	fmt.Println("Getting collection...")
+	// Check collection to guarantee generated ID isn't a duplicate value
 	collection := mongoClient.Database("flashfolio").Collection("decks")
-
-	// Set up context for Mongo
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+	filter := bson.D{{Key: "id", Value: genID}}
+	err := collection.FindOne(ctx, filter)
+	if err != nil {
 
-	// Check db to make sure there isn't a deck with the same ID
-	cDeck := collection.FindOne(ctx, bson.D{{Key: "ID", Value: checkID}})
-	if cDeck != nil{
-		for {
-			checkID += 1
-			cDeck = collection.FindOne(ctx, bson.D{{Key: "ID", Value: checkID}})
-			if cDeck == nil {
+		// didn't find an duplicate ID. return genID
+		fmt.Print("generated ID: ")
+		fmt.Println(genID)
+		return genID
+	} else {
+		
+		// Duplicate value found. Iterate through values until value isn't a duplicate
+		for true {
+			genID += 1
+			filter = bson.D{{Key: "id", Value: genID}}
+			err = collection.FindOne(ctx, filter)
+			if err != nil {
 				break
 			}
 		}
 	}
-
-	// Insert to the collection
-	fmt.Println("Inserting deck...")
-	collection.InsertOne(ctx, d)
+	fmt.Print("generated ID: ")
+	fmt.Println(genID)
+	return genID
 }
 
+// Saves deck to Database, overwriting existing deck with same id if present.
 func overwriteDeck(deck Deck){
-	fmt.Println("UPDATED: Attempting to overwrite deck...")
-	fmt.Println("Deck ID for testing is 10")
 
+	// set up collection
 	collection := mongoClient.Database("flashfolio").Collection("decks")
+
+	// set up context
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	opt := options.Replace().SetUpsert(true)
-	filter := bson.D{{Key: "_id", Value: deck.Mid}}
 
+	// set up options to create new document if document doesn't exist
+	opt := options.Replace().SetUpsert(true)
+
+	// set up filter to locate document with identical user generated ID
+	filter := bson.D{{Key: "id", Value: deck.ID}}
+
+	// Replace document within mongo if found.
 	collection.ReplaceOne(ctx, filter, deck, opt)
 }
