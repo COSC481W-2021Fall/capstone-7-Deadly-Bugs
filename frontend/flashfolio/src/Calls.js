@@ -19,3 +19,18 @@ export async function getDeck(deckID) {
 	let resp = await fetch(API_URL + "/getDeck", reqOpt);
 	return resp.json();
 }
+
+export async function saveDeck(deck) {
+	let reqOpt = {
+		method: "POST",
+		headers: {"Content-Type": "application/json"},
+		body: JSON.stringify({"Deck": deck}),
+	}
+
+	console.log(reqOpt)
+
+	/* Send the Request */
+	let resp = await fetch(API_URL + "/saveDeck", reqOpt);
+	return resp;
+}
+

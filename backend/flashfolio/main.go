@@ -9,7 +9,8 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
-	"strconv"
+
+//	"strconv"
 
 	"context"
 	"time"
@@ -59,12 +60,15 @@ func main() {
 	//*******************************************************************
 	//*** THIS METHOD IS FOR TESTING OVERWRITING DECK WITHIN DATABASE ***
 
-	deck := Deck{10,
+	/*
+	deck := Deck{1,
 		[]Card{{
 			"Can This change?",
 			"can this change?"}},
 		true}
 	overwriteDeck(deck)
+	*/
+
 	//*******************************************************************
 
 	handleRequests()
@@ -79,6 +83,7 @@ func handleRequests() {
 	router := mux.NewRouter().StrictSlash(true)
 
 	router.HandleFunc("/getDeck", getDeckReq)
+	router.HandleFunc("/saveDeck", saveDeckReq)
 
 	log.Fatal(http.ListenAndServe(":1337",
 		handlers.CORS(
@@ -86,6 +91,7 @@ func handleRequests() {
 			handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
 			handlers.AllowedOrigins([]string{"*"}))(router)))
 }
+
 
 /*
 getDeck/
@@ -113,7 +119,7 @@ func getDeckReq(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	err = collection.FindOne(ctx, bson.D{{Key: "ID", Value: req.ID}}).Decode(&deck)
+	err = collection.FindOne(ctx, bson.D{{Key: "id", Value: req.ID}}).Decode(&deck)
 	if err != nil {
 		//json.NewEncoder(w).Encode(Deck{-1, []Card{{"Card Not found", ":("}}, true})
 		return
@@ -123,6 +129,29 @@ func getDeckReq(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(deck)
 }
+
+func saveDeckReq(w http.ResponseWriter, r *http.Request) {
+
+	reqBody, err := ioutil.ReadAll(r.Body)
+
+	if err != nil {
+		panic(err)
+	}
+
+	var req struct {
+		Deck Deck `json:"Deck"`
+	}
+
+	json.Unmarshal(reqBody, &req)
+
+	fmt.Println(string(reqBody))
+	fmt.Println("Got save req for", req)
+
+	overwriteDeck(req.Deck)
+
+	w.WriteHeader(http.StatusOK)
+}
+
 
 // Generates a random integer for use as deck ID
 func generateID() int {
@@ -143,7 +172,7 @@ func generateID() int {
 		fmt.Println(genID)
 		return genID
 	} else {
-		
+
 		// Duplicate value found. Iterate through values until value isn't a duplicate
 		for true {
 			genID += 1
@@ -170,11 +199,11 @@ func overwriteDeck(deck Deck){
 	defer cancel()
 
 	// set up options to create new document if document doesn't exist
-	opt := options.Replace().SetUpsert(true)
+	//opt := options.Replace().SetUpsert(true)
 
 	// set up filter to locate document with identical user generated ID
 	filter := bson.D{{Key: "id", Value: deck.ID}}
 
 	// Replace document within mongo if found.
-	collection.ReplaceOne(ctx, filter, deck, opt)
+	collection.ReplaceOne(ctx, filter, deck)
 }
