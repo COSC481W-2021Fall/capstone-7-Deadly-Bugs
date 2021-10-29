@@ -3,6 +3,8 @@ import {useParams} from "react-router-dom";
 import Flashcard from "./Flashcard";
 import {getDeck} from "./Calls.js";
 
+import UserInfoPreview from "./UserInfoPreview.js";
+
 /*
 Viewer
 
@@ -69,6 +71,7 @@ export default function Viewer({viewMode="view"}) {
 
 	return (
 		<div>
+		<UserInfoPreview />
 		Title: {flashdeck.current.Title}
 		DeckId: {deckId}
 		<Flashcard flashcard={flashcard} editMode={viewMode == "edit"} />
@@ -81,13 +84,13 @@ export default function Viewer({viewMode="view"}) {
 		<button id="unshuf" onClick = {() => shufOn ? unshufFunction() : null}>Unshuffle</button>
 		:
 		null
-	}
+		}
 		<a
-            href={`data:text/json;charset=utf-8,${encodeURIComponent(
-              JSON.stringify(flashdeck.current, null, '\t')
-            )}`}
-            download="myDeck.json"
-          >{`Download`}</a>
+			href={`data:text/json;charset=utf-8,${encodeURIComponent(
+				JSON.stringify(flashdeck.current, null, '\t')
+				)}`}
+			download="myDeck.json"
+		>Download</a>
 		</div>
 	);
 }
