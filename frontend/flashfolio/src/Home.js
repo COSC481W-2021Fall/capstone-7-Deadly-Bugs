@@ -1,24 +1,11 @@
 import React, { createContext, useState, useContext } from "react";
-import {BrowserRouter as Router, Route, Switch, useHistory } from "react-router-dom";
-import Viewer from "./Viewer.js";
-import Load from "./Load.js";
 import LoginButton from "./LoginButton.js"
 import LogoutButton from "./LogoutButton.js"
-import UserInfoPreview from "./UserInfoPreview.js"
-import './App.css'
-
-import { useGoogleLogin } from "react-google-login";
-
-/*
-App
-
-Main entry point for the frontend
-*/
 
 export const loginContext = createContext(null)
 
-function App() {
 
+export default function Home() {
 	const [loginState, setLoginState] = useState(null);
 
 	const { signIn, loaded } = useGoogleLogin({
@@ -33,46 +20,7 @@ function App() {
 
 	console.log("Hello!", process.env.REACT_APP_GOOGLE_CLIENT_ID)
 
-	return (
-		<loginContext.Provider value={{loginState, setLoginState}}>
-		<Router>
-			{/* Router to create a multi-page application */}
-			<Switch>
-			<Route path="/view/:deckId">
-				<Viewer />
-			</Route>
-			<Route path="/edit/:deckId">
-				<Viewer viewMode="edit"/>
-			</Route>
-			<Route exact path="/">
-				<Home />
-			</Route>
-			<Route path="/load">
-				<Load />
-			</Route>
-			</Switch>
-		</Router>
-		</loginContext.Provider>
-	);
-}
-
-/*
-Temporary Homepage
-
-Shown when the user loads the root directory
-
-TODO: When Hompage PBI is created, move this to it's own component.
-*/
-function Home() {
-
 	const { loginState } = useContext(loginContext);
-
-	const history = useHistory();
-	
-	const loadButton = () => {
-		history.push("/load");
-	  };
-	
 
 	return (
 		<div class="container">
@@ -92,7 +40,7 @@ function Home() {
 					our large variety of public decks, hit "Discover."
 				</div>
 				<div class ="buttons">
-					<button onClick={loadButton}>Discover</button>
+					<button>Discover</button>
 					{/*<button>Sign Up</button>*/}
 					{ loginState === null ?
 						<LoginButton /> :
@@ -103,5 +51,3 @@ function Home() {
 		</div>
 	);
 }
-
-export default App;
