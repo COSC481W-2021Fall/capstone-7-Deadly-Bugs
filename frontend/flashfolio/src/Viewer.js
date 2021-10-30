@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import Flashcard from "./Flashcard";
-import { getDeck } from "./Calls.js";
+import {getDeck} from "./Calls.js";
+import UserInfoPreview from "./UserInfoPreview.js";
+import "./Viewer.css";
 
 /*
 Viewer
@@ -20,7 +22,9 @@ export default function Viewer({ viewMode = "view" }) {
 	const [cardIterator, setCardIterator] = useState(0);
 	const [shufOn, setShufOn] = useState(false);
 
-	function shufFunction() {
+	const [tileCards, setTileCards] = useState(false);
+
+	function shufFunction(){
 		hidden = false;
 		setCardIterator(0);
 		setShufOn(true);
@@ -42,6 +46,27 @@ export default function Viewer({ viewMode = "view" }) {
 	}
 
 	let { deckId } = useParams();
+
+	function changeLayout() {
+		setTileCards(!tileCards)
+	}
+
+
+	function tileLayout() {
+		if (tileCards) {
+			return (
+				<div class="flash-grid">
+					{flashdeck.current.Cards.map(fc =>{
+						return <div><Flashcard flashcard={fc} editMode={viewMode=="edit"}/></div>
+					})}
+				</div>
+			)
+		}
+		return (
+			<Flashcard flashcard={flashcard} editMode={viewMode == "edit"} />
+		)
+
+	}
 
 	useEffect(() => {
 		getDeck(Number(deckId))
@@ -93,28 +118,27 @@ export default function Viewer({ viewMode = "view" }) {
 
 	return (
 		<div>
-			Title: {flashdeck.current.Title}
-			DeckId: {deckId}
-			<Flashcard flashcard={flashcard} editMode={viewMode == "edit"} />
-			<button onClick={() => setCardIterator(cardIterator + 1)}
-			>Next Card</button>
-
-			{!flashcard.showEditor ?
-				hidden ?
-					<button id="shuf" onClick={() => shufFunction()}>Shuffle</button> :
-					<button id="unshuf" onClick={() => shufOn ? unshufFunction() : null}>Unshuffle</button>
-				:
-				null}
-
-			<button onClick={deleteCard}>
-				Delete</button>
-
-			<a
-				href={`data:text/json;charset=utf-8,${encodeURIComponent(
-					JSON.stringify(flashdeck.current, null, '\t')
+		<UserInfoPreview />
+		Title: {flashdeck.current.Title}
+		DeckId: {deckId}
+		<br/>
+		{viewMode == "edit" && <button onClick={changeLayout}>Change Layout</button>}
+		{tileLayout()}
+		{!tileCards && <button
+			onClick={() => setCardIterator(cardIterator + 1)}
+			>Next Card</button>}
+		{viewMode=="view" && (hidden ?
+			<button id= "shuf" onClick = {() => shufFunction()}>Shuffle</button> :
+			<button id="unshuf" onClick = {() => shufOn ? unshufFunction() : null}>Unshuffle</button>)
+		}
+		<button onClick={deleteCard}>
+			Delete</button>
+		<a
+			href={`data:text/json;charset=utf-8,${encodeURIComponent(
+				JSON.stringify(flashdeck.current, null, '\t')
 				)}`}
-				download="myDeck.json"
-			>{`Download`}</a>
+			download="myDeck.json"
+		>Download</a>
 		</div>
 	);
 }
