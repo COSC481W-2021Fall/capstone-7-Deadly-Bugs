@@ -2,7 +2,7 @@ import React, {useState, useEffect, useRef} from "react";
 import {useParams} from "react-router-dom";
 import Flashcard from "./Flashcard";
 import {getDeck} from "./Calls.js";
-
+import UserInfoPreview from "./UserInfoPreview.js";
 import "./Viewer.css";
 
 /*
@@ -94,6 +94,7 @@ export default function Viewer({viewMode="view"}) {
 
 	return (
 		<div>
+		<UserInfoPreview />
 		Title: {flashdeck.current.Title}
 		DeckId: {deckId}
 		<br/>
@@ -102,17 +103,16 @@ export default function Viewer({viewMode="view"}) {
 		{!tileCards && <button
 			onClick={() => setCardIterator(cardIterator + 1)}
 			>Next Card</button>}
-		{viewMode=="view" && 
-		(hidden ?
-		<button id= "shuf" onClick = {() => shufFunction()}>Shuffle</button> :
-		<button id="unshuf" onClick = {() => shufOn ? unshufFunction() : null}>Unshuffle</button>)
+		{viewMode=="view" && (hidden ?
+			<button id= "shuf" onClick = {() => shufFunction()}>Shuffle</button> :
+			<button id="unshuf" onClick = {() => shufOn ? unshufFunction() : null}>Unshuffle</button>)
 		}
 		<a
-            href={`data:text/json;charset=utf-8,${encodeURIComponent(
-              JSON.stringify(flashdeck.current, null, '\t')
-            )}`}
-            download="myDeck.json"
-          >{`Download`}</a>
+			href={`data:text/json;charset=utf-8,${encodeURIComponent(
+				JSON.stringify(flashdeck.current, null, '\t')
+				)}`}
+			download="myDeck.json"
+		>Download</a>
 		</div>
 	);
 }
