@@ -68,7 +68,18 @@ export default function Viewer({viewMode="view"}) {
 	}, [cardIterator])
 
 	function deleteCard() {
+		/* delete the card */
 		delete flashdeck.current.Cards[cardIterator];
+
+		/* remove the null pointer */
+		flashdeck.current.Cards = flashdeck.current.Cards.filter(function() {return true;});
+
+		/* update view to next card or cycle to beginning if deleting the last card */
+		if(cardIterator < flashdeck.current.Cards.length) {
+			setFlashcard(flashdeck.current.Cards[cardIterator])
+		} else {
+			setCardIterator(0);
+			setFlashcard(flashdeck.current.Cards[0]);}
 	}
 
 	return (
