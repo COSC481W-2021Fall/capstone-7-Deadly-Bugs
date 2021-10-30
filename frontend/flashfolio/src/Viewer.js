@@ -96,6 +96,8 @@ export default function Viewer({ viewMode = "view" }) {
 		/* if there's 1 card, then make an empty card*/
 		if (flashdeck.current.Cards.length === 1) {
 			flashdeck.current.Cards[0] = {};
+			flashdeck.current.Cards[0].FrontSide = "";
+			flashdeck.current.Cards[0].BackSide = "";
 			/* view the blank card */
 			setFlashcard(flashdeck.current.Cards[cardIterator]);
 			return;
