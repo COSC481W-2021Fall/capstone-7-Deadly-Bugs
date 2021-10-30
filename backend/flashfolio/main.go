@@ -61,12 +61,12 @@ func main() {
 	//*** THIS METHOD IS FOR TESTING OVERWRITING DECK WITHIN DATABASE ***
 
 	/*
-	deck := Deck{1,
-		[]Card{{
-			"Can This change?",
-			"can this change?"}},
-		true}
-	overwriteDeck(deck)
+		deck := Deck{1,
+			[]Card{{
+				"Can This change?",
+				"can this change?"}},
+			true}
+		overwriteDeck(deck)
 	*/
 
 	//*******************************************************************
@@ -88,14 +88,12 @@ func handleRequests() {
 
 	router.HandleFunc("/saveDeck", saveDeckReq)
 
-
 	log.Fatal(http.ListenAndServe(":1337",
 		handlers.CORS(
 			handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
 			handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
 			handlers.AllowedOrigins([]string{"*"}))(router)))
 }
-
 
 /*
 getDeck/
@@ -160,7 +158,6 @@ func saveDeckReq(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-
 // Generates a random integer for use as deck ID
 func generateID() int {
 	// Create new seed for number generation
@@ -207,7 +204,7 @@ func overwriteDeck(deck Deck) {
 	defer cancel()
 
 	// set up options to create new document if document doesn't exist
-	//opt := options.Replace().SetUpsert(true)
+	opt := options.Replace().SetUpsert(true)
 
 	// set up filter to locate document with identical user generated ID
 	filter := bson.D{{Key: "id", Value: deck.ID}}
