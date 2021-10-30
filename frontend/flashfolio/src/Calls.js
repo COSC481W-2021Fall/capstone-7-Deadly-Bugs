@@ -40,3 +40,22 @@ export async function getSecret(token) {
 	return resp.json();
 }
 
+/*
+createNewDeck
+
+Creates a new blank deck in the user's name
+*/
+
+export async function createNewDeck(token, deckName) {
+	let reqOpt = {
+		method: "POST",
+		headers: {"Content-Type": "application/json"},
+		body: JSON.stringify({"Token": token, "DeckName": deckName}),
+	}
+
+	console.log(token)
+
+	return 100;
+}
+
+

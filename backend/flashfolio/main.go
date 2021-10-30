@@ -69,6 +69,7 @@ func handleRequests() {
 
 	router.HandleFunc("/getDeck", getDeckReq)
 	router.HandleFunc("/getSecret", getSecretReq)
+	router.HandleFunc("/createNewDeck", createNewDeckReq)
 
 	log.Fatal(http.ListenAndServe(":1337",
 		handlers.CORS(
@@ -170,4 +171,19 @@ func getSecretReq(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(ret)
 }
+
+func createNewDeckReq(w http.ResponseWriter, r *http.Request) {
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	var req struct {
+		Token string `json:"Token"`
+	}
+
+	json.Unmarshal(reqBody, &req)
+
+}
+
 
