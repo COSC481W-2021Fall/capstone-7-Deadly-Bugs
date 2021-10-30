@@ -1,16 +1,39 @@
-import React from "react";
+import React, { createContext, useState, useContext } from "react";
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 import Viewer from "./Viewer.js";
+import LoginButton from "./LoginButton.js"
+import LogoutButton from "./LogoutButton.js"
+import UserInfoPreview from "./UserInfoPreview.js"
+import './App.css'
 
+import { useGoogleLogin } from "react-google-login";
 
 /*
 App
 
 Main entry point for the frontend
 */
+
+export const loginContext = createContext(null)
+
 function App() {
 
+	const [loginState, setLoginState] = useState(null);
+
+	const { signIn, loaded } = useGoogleLogin({
+		onSuccess: (res) => {
+				setLoginState(res);
+				console.log("signed in!");
+			},
+		clientId: process.env.REACT_APP_GOOGLE_CLIENT_ID,
+		isSignedIn: true,
+		accessType: "offline",
+	});
+
+	console.log("Hello!", process.env.REACT_APP_GOOGLE_CLIENT_ID)
+
 	return (
+		<loginContext.Provider value={{loginState, setLoginState}}>
 		<Router>
 			{/* Router to create a multi-page application */}
 			<Switch>
@@ -25,6 +48,7 @@ function App() {
 			</Route>
 			</Switch>
 		</Router>
+		</loginContext.Provider>
 	);
 }
 
@@ -36,9 +60,35 @@ Shown when the user loads the root directory
 TODO: When Hompage PBI is created, move this to it's own component.
 */
 function Home() {
+
+	const { loginState } = useContext(loginContext);
+
 	return (
-		<div>
-			Homepage placeholder
+		<div class="container">
+			<div class="left">
+				<div class="logoCard">
+    				<h1 class="logo">FLASH</h1>
+  				</div>
+  				<div class="slide">
+    				<h1 class="logo">FOLIO</h1>
+  				</div>
+			</div>
+			
+			<div class="right">
+				<div class="intro">
+					Hi! We're Flashfolio! A flashcard website you can use to study to your heart's desire.
+					If you would like to create a deck, please click "Sign Up." Otherwise, to peruse
+					our large variety of public decks, hit "Discover."
+				</div>
+				<div class ="buttons">
+					<button>Discover</button>
+					{/*<button>Sign Up</button>*/}
+					{ loginState === null ?
+						<LoginButton /> :
+						<LogoutButton />}
+					{/*<UserInfoPreview />*/}
+				</div>
+			</div>
 		</div>
 	);
 }

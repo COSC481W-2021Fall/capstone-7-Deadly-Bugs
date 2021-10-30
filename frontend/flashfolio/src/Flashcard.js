@@ -74,7 +74,7 @@ export default function Flashcard({flashcard, editMode=false}) {
 		<button onClick={flipCard}>
 			Flip
 		</button>
-		<div onClick={cardClick} class="card">
+		<div data-testid = "card" onClick={cardClick} class="card">
 			{cardContents()}
 		</div>
 		</div>
