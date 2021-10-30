@@ -67,21 +67,28 @@ export default function Viewer({viewMode="view"}) {
 		}
 	}, [cardIterator])
 
+	function deleteCard() {
+		delete flashdeck.current.Cards[cardIterator];
+	}
+
 	return (
 		<div>
 		Title: {flashdeck.current.Title}
 		DeckId: {deckId}
 		<Flashcard flashcard={flashcard} editMode={viewMode == "edit"} />
-		<button
-			onClick={() => setCardIterator(cardIterator + 1)}
+		<button onClick={() => setCardIterator(cardIterator + 1)}
 			>Next Card</button>
+
 		{!flashcard.showEditor ? 
 		hidden ?
-		<button id= "shuf" onClick = {() => shufFunction()}>Shuffle</button> :
+		<button id="shuf" onClick = {() => shufFunction()}>Shuffle</button> :
 		<button id="unshuf" onClick = {() => shufOn ? unshufFunction() : null}>Unshuffle</button>
 		:
-		null
-	}
+		null}
+
+		<button onClick={deleteCard}>
+			Delete</button>
+
 		<a
             href={`data:text/json;charset=utf-8,${encodeURIComponent(
               JSON.stringify(flashdeck.current, null, '\t')
