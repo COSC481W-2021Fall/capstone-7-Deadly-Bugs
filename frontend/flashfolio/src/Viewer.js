@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef} from "react";
-import {useParams} from "react-router-dom";
+import {useParams, useHistory} from "react-router-dom";
 import Flashcard from "./Flashcard";
 import {getDeck} from "./Calls.js";
 import UserInfoPreview from "./UserInfoPreview.js";
@@ -14,6 +14,7 @@ Displays a single card at a time to the screen.
 var shufOrder = [];
 var hidden = true;
 export default function Viewer({viewMode="view"}) {
+	const history = useHistory();
 
 	const flashdeck = useRef("");
 	const isInitialMount = useRef(true);
@@ -92,6 +93,13 @@ export default function Viewer({viewMode="view"}) {
 		}
 	}, [cardIterator])
 
+	const loadButton = () => {
+		history.push("/load");
+	  };
+	  const homeButton = () => {
+		history.push("/");
+	  };
+
 	return (
 		<div>
 		<UserInfoPreview />
@@ -113,6 +121,8 @@ export default function Viewer({viewMode="view"}) {
 				)}`}
 			download="myDeck.json"
 		>Download</a>
+		<button onClick={homeButton}>Home</button>
+		<button onClick={loadButton}>Load Deck</button>
 		</div>
 	);
 }
