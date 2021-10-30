@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useRef} from "react";
 import {useParams} from "react-router-dom";
 import Flashcard from "./Flashcard";
-import {getDeck} from "./Calls.js";
+import {getDeck, saveDeck} from "./Calls.js";
 
 import UserInfoPreview from "./UserInfoPreview.js";
 
@@ -44,6 +44,11 @@ export default function Viewer({viewMode="view"}) {
 	}
 
 	let { deckId } = useParams();
+
+	function saveChanges() {
+		console.log(flashdeck.current)
+		saveDeck(flashdeck.current)
+	}
 
 	useEffect(() => {
 		getDeck(Number(deckId))
@@ -91,6 +96,9 @@ export default function Viewer({viewMode="view"}) {
 				)}`}
 			download="myDeck.json"
 		>Download</a>
+
+		{viewMode == "edit" && <button onClick={saveChanges}>Save Changes</button>}
+
 		</div>
 	);
 }

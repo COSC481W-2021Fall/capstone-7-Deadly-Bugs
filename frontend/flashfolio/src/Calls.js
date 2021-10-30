@@ -24,6 +24,7 @@ export async function getDeck(deckID) {
 	return resp.json();
 }
 
+
 /*
 getSecret
 
@@ -38,5 +39,19 @@ export async function getSecret(token) {
 
 	let resp = await fetch(apiURL() + "/getSecret", reqOpt);
 	return resp.json();
+
+export async function saveDeck(deck) {
+	let reqOpt = {
+		method: "POST",
+		headers: {"Content-Type": "application/json"},
+		body: JSON.stringify({"Deck": deck}),
+	}
+
+	console.log(reqOpt)
+
+	/* Send the Request */
+	let resp = await fetch(API_URL + "/saveDeck", reqOpt);
+	return resp;
+
 }
 
