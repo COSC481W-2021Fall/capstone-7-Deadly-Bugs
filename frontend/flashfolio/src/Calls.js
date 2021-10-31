@@ -1,5 +1,9 @@
 
-export const API_URL = "http://localhost:1337"
+function apiURL() {
+	return process.env.NODE_ENV === "development" ?
+			process.env.REACT_APP_FLASH_API_DEV :
+			process.env.REACT_APP_FLASH_API_PRO
+}
 
 /*
 getDeck(id: int)
@@ -16,6 +20,39 @@ export async function getDeck(deckID) {
 	}
 
 	/* Send the Request */
-	let resp = await fetch(API_URL + "/getDeck", reqOpt);
+	let resp = await fetch(apiURL() + "/getDeck", reqOpt);
 	return resp.json();
 }
+
+
+/*
+getSecret
+
+just a temp method used to test user auth
+*/
+export async function getSecret(token) {
+	let reqOpt = {
+		method: "POST",
+		headers: {"Content-Type": "application/json"},
+		body: JSON.stringify({'Token': token}),
+	}
+
+	let resp = await fetch(apiURL() + "/getSecret", reqOpt);
+	return resp.json();
+}
+
+export async function saveDeck(deck) {
+	let reqOpt = {
+		method: "POST",
+		headers: {"Content-Type": "application/json"},
+		body: JSON.stringify({"Deck": deck}),
+	}
+
+	console.log(reqOpt)
+
+	/* Send the Request */
+	let resp = await fetch(apiURL() + "/saveDeck", reqOpt);
+	return resp;
+
+}
+

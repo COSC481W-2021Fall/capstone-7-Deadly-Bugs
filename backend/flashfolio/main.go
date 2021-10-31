@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"net/http"
 
 	"github.com/gorilla/handlers"
@@ -17,11 +18,13 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
+
+	"google.golang.org/api/oauth2/v2"
 )
 
 const MongoURI string = "mongodb://localhost:27017/"
 
-var mongoClient *mongo.Client
+var MongoClient *mongo.Client
 
 func main() {
 
@@ -35,24 +38,38 @@ func main() {
 
 	/* Connect to mongo */
 	var err error
-	mongoClient, err = mongo.Connect(ctx, options.Client().ApplyURI(MongoURI))
+	MongoClient, err = mongo.Connect(ctx, options.Client().ApplyURI(MongoURI))
 	if err != nil {
 		panic(err)
 	}
 
 	/* Safely disconnect from Mongo once server is shut down */
 	defer func() {
-		if err = mongoClient.Disconnect(ctx); err != nil {
+		if err = MongoClient.Disconnect(ctx); err != nil {
 			panic(err)
 		}
 	}()
 
 	/* Ping Mongo to test connection */
-	if err := mongoClient.Ping(ctx, readpref.Primary()); err != nil {
+	if err := MongoClient.Ping(ctx, readpref.Primary()); err != nil {
 		panic(err)
 	}
 
 	fmt.Println("Successfully connected to MongoDB")
+
+	/********************************************************************
+	//*** THIS METHOD IS FOR TESTING OVERWRITING DECK WITHIN DATABASE ***
+
+	deck := Deck{10,
+		"TestDeck",
+		[]Card{{
+			"ch-ch-changes.",
+			"Is this strange?"}},
+		true,
+		"Alex"}
+	overwriteDeck(deck)
+
+	//*******************************************************************/
 
 	handleRequests()
 }
@@ -66,6 +83,10 @@ func handleRequests() {
 	router := mux.NewRouter().StrictSlash(true)
 
 	router.HandleFunc("/getDeck", getDeckReq)
+
+	router.HandleFunc("/getSecret", getSecretReq)
+
+	router.HandleFunc("/saveDeck", saveDeckReq)
 
 	log.Fatal(http.ListenAndServe(":1337",
 		handlers.CORS(
@@ -94,19 +115,154 @@ func getDeckReq(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal(reqBody, &req)
 
 	/* get collection */
-	collection := mongoClient.Database("flashfolio").Collection("decks")
+	collection := MongoClient.Database("flashfolio").Collection("decks")
 
 	/* set up context for call */
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	err = collection.FindOne(ctx, bson.D{{Key: "ID", Value: req.ID}}).Decode(&deck)
+	err = collection.FindOne(ctx, bson.D{{Key: "id", Value: req.ID}}).Decode(&deck)
 	if err != nil {
-		json.NewEncoder(w).Encode(Deck{-1, "Deck does not exist.", []Card{{"Card Not found", ":("}}, true})
+
+		// TODO: There has gotta be a better way to do this haha
+		// Maybe send a 404 response?
+		json.NewEncoder(w).Encode(Deck{-1, "Deck does not exist.", []Card{{"Card Not found", ":("}}, true, ""})
+
 		return
 	}
 
 	fmt.Println("Got a request for card: ", req.ID)
 
 	json.NewEncoder(w).Encode(deck)
+}
+
+func saveDeckReq(w http.ResponseWriter, r *http.Request) {
+
+	reqBody, err := ioutil.ReadAll(r.Body)
+
+	if err != nil {
+		panic(err)
+	}
+
+	var req struct {
+		Deck Deck `json:"Deck"`
+	}
+
+	json.Unmarshal(reqBody, &req)
+
+	fmt.Println(string(reqBody))
+	fmt.Println("Got save req for", req)
+
+	overwriteDeck(req.Deck)
+
+	w.WriteHeader(http.StatusOK)
+}
+
+// Saves deck to Database, overwriting existing deck with same id if present.
+func overwriteDeck(deck Deck) {
+
+	// set up collection
+	collection := MongoClient.Database("flashfolio").Collection("decks")
+
+	// set up context
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// set up options to create new document if document doesn't exist
+	opt := options.Replace().SetUpsert(true)
+
+	// set up filter to locate document with identical user generated ID
+	filter := bson.D{{Key: "id", Value: deck.ID}}
+
+	// Replace document within mongo if found.
+	collection.ReplaceOne(ctx, filter, deck, opt)
+}
+
+// Generates a random integer for use as deck ID
+func generateID() int {
+	// Create new seed for number generation
+	rand.Seed(time.Now().UnixNano())
+	genID := rand.Intn(99999999)
+
+	// Check collection to guarantee generated ID isn't a duplicate value
+	var deck Deck
+	collection := MongoClient.Database("flashfolio").Collection("decks")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	filter := bson.D{{Key: "id", Value: genID}}
+	err := collection.FindOne(ctx, filter).Decode(&deck)
+	if err != nil {
+
+		// didn't find an duplicate ID. return genID
+		fmt.Println("No dupelicate value found.")
+		fmt.Print("generated ID: ")
+		fmt.Println(genID)
+		return genID
+	}
+
+	// Duplicate value found. Iterate through values until value isn't a duplicate
+	fmt.Println("Dupelicate value found. finding empty value")
+	for {
+		genID += 1 // <-- Algorithm for security goes here. Yes it's weak right now
+		filter = bson.D{{Key: "id", Value: genID}}
+		err = collection.FindOne(ctx, filter).Decode(&deck)
+		if err != nil {
+			break
+		}
+	}
+	return genID
+}
+
+/*
+verifyIdToken
+
+Verifies that a google ID token is genuine & returns token/User info
+
+Tokeninfo Struct found here: https://github.com/googleapis/google-api-go-client/blob/2447556ecdd4aae37b4cff8c46fc88a25036e7a1/oauth2/v2/oauth2-gen.go#L182
+
+*/
+func verifyIdToken(idToken string) (*oauth2.Tokeninfo, error) {
+	httpClient := http.Client{}
+	oauth2Service, err := oauth2.New(&httpClient)
+	tokenInfoCall := oauth2Service.Tokeninfo()
+	tokenInfoCall.IdToken(idToken)
+	tokenInfo, err := tokenInfoCall.Do()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return tokenInfo, nil
+}
+
+func getSecretReq(w http.ResponseWriter, r *http.Request) {
+
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	var req struct {
+		Token string `json:"Token"`
+	}
+
+	json.Unmarshal(reqBody, &req)
+
+	tokenInfo, err := verifyIdToken(req.Token)
+
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(tokenInfo)
+
+	var ret struct {
+		Secret string `json:"Secret"`
+	}
+
+	ret.Secret = "It's a secret to everybody. Actually this seceret is for " + tokenInfo.Email
+
+	fmt.Println("Got a req for the secret!")
+
+	json.NewEncoder(w).Encode(ret)
 }
