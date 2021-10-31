@@ -1,7 +1,7 @@
-import React, {useState, useEffect, useRef} from "react";
-import {useParams} from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { useParams, useHistory } from "react-router-dom";
 import Flashcard from "./Flashcard";
-import {getDeck} from "./Calls.js";
+import { getDeck } from "./Calls.js";
 import UserInfoPreview from "./UserInfoPreview.js";
 import "./Viewer.css";
 
@@ -13,7 +13,8 @@ Displays a single card at a time to the screen.
 */
 var shufOrder = [];
 var hidden = true;
-export default function Viewer({viewMode="view"}) {
+export default function Viewer({ viewMode = "view" }) {
+	const history = useHistory();
 
 	const flashdeck = useRef("");
 	const isInitialMount = useRef(true);
@@ -24,21 +25,21 @@ export default function Viewer({viewMode="view"}) {
 
 	const [tileCards, setTileCards] = useState(false);
 
-	function shufFunction(){
+	function shufFunction() {
 		hidden = false;
 		setCardIterator(0);
 		setShufOn(true);
 		shufOrder = [];
-		while(shufOrder.length < flashdeck.current.Cards.length){
-			var num = Math.floor(Math.random()*flashdeck.current.Cards.length);
-			if(shufOrder.indexOf(num)===-1)
+		while (shufOrder.length < flashdeck.current.Cards.length) {
+			var num = Math.floor(Math.random() * flashdeck.current.Cards.length);
+			if (shufOrder.indexOf(num) === -1)
 				shufOrder.push(num);
 		}
-		document.getElementById('shuf').style.visibility="visible";
+		document.getElementById('shuf').style.visibility = "visible";
 		setFlashcard(flashdeck.current.Cards[shufOrder[cardIterator]]);
 	}
 
-	function unshufFunction(){
+	function unshufFunction() {
 		hidden = true;
 		setCardIterator(0);
 		setShufOn(false);
@@ -56,8 +57,8 @@ export default function Viewer({viewMode="view"}) {
 		if (tileCards) {
 			return (
 				<div class="flash-grid">
-					{flashdeck.current.Cards.map(fc =>{
-						return <div><Flashcard flashcard={fc} editMode={viewMode=="edit"}/></div>
+					{flashdeck.current.Cards.map(fc => {
+						return <div><Flashcard flashcard={fc} editMode={viewMode == "edit"} /></div>
 					})}
 				</div>
 			)
@@ -79,40 +80,77 @@ export default function Viewer({viewMode="view"}) {
 	useEffect(() => {
 		if (isInitialMount.current) {
 			isInitialMount.current = false;
-		} 
+		}
 		else {
 			/* useEffect code here to be run on count update only */
-			if(cardIterator < flashdeck.current.Cards.length) {
-				if((!shufOn))
+			if (cardIterator < flashdeck.current.Cards.length) {
+				if ((!shufOn))
 					setFlashcard(flashdeck.current.Cards[cardIterator]);
 				else
-					setFlashcard(flashdeck.current.Cards[shufOrder[cardIterator]]);		
+					setFlashcard(flashdeck.current.Cards[shufOrder[cardIterator]]);
 			}
 			else { setCardIterator(0); }
 		}
 	}, [cardIterator])
 
+	function deleteCard() {
+		/* if there's 1 card, then make an empty card*/
+		if (flashdeck.current.Cards.length === 1) {
+			flashdeck.current.Cards[0] = {};
+			flashdeck.current.Cards[0].FrontSide = "";
+			flashdeck.current.Cards[0].BackSide = "";
+			/* view the blank card */
+			setFlashcard(flashdeck.current.Cards[cardIterator]);
+			return;
+		}
+
+		/* delete the card */
+		delete flashdeck.current.Cards[cardIterator];
+
+		/* update Cards removing the null pointer */
+		flashdeck.current.Cards = flashdeck.current.Cards.filter(function () { return true; });
+
+		/* update view to the next card or cycle to beginning if deleting the last card */
+		if (cardIterator < flashdeck.current.Cards.length) {
+			setFlashcard(flashdeck.current.Cards[cardIterator])
+		} else {
+			setCardIterator(0);
+			setFlashcard(flashdeck.current.Cards[0]);
+		}
+	}
+
+	const loadButton = () => {
+		history.push("/load");
+	};
+	const homeButton = () => {
+		history.push("/");
+	};
+
 	return (
 		<div>
-		<UserInfoPreview />
-		Title: {flashdeck.current.Title}
-		DeckId: {deckId}
-		<br/>
-		{viewMode == "edit" && <button onClick={changeLayout}>Change Layout</button>}
-		{tileLayout()}
-		{!tileCards && <button
-			onClick={() => setCardIterator(cardIterator + 1)}
+			<UserInfoPreview />
+			Title: {flashdeck.current.Title}
+			DeckId: {deckId}
+			<br />
+			{viewMode == "edit" && <button onClick={changeLayout}>Change Layout</button>}
+			{tileLayout()}
+			{!tileCards && <button
+				onClick={() => setCardIterator(cardIterator + 1)}
 			>Next Card</button>}
-		{viewMode=="view" && (hidden ?
-			<button id= "shuf" onClick = {() => shufFunction()}>Shuffle</button> :
-			<button id="unshuf" onClick = {() => shufOn ? unshufFunction() : null}>Unshuffle</button>)
-		}
-		<a
-			href={`data:text/json;charset=utf-8,${encodeURIComponent(
-				JSON.stringify(flashdeck.current, null, '\t')
+			{viewMode == "view" && (hidden ?
+				<button id="shuf" onClick={() => shufFunction()}>Shuffle</button> :
+				<button id="unshuf" onClick={() => shufOn ? unshufFunction() : null}>Unshuffle</button>)
+			}
+			{viewMode === "edit" && <button onClick={deleteCard}>
+				Delete</button>}
+			<a
+				href={`data:text/json;charset=utf-8,${encodeURIComponent(
+					JSON.stringify(flashdeck.current, null, '\t')
 				)}`}
-			download="myDeck.json"
-		>Download</a>
+				download="myDeck.json"
+			>Download</a>
+			<button onClick={homeButton}>Home</button>
+			<button onClick={loadButton}>Load Deck</button>
 		</div>
 	);
 }

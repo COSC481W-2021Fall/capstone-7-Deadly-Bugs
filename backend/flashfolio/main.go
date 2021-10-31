@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"net/http"
 
 	"github.com/gorilla/handlers"
@@ -117,6 +118,41 @@ func getDeckReq(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(deck)
 }
 
+// Generates a random integer for use as deck ID
+func generateID() int {
+	// Create new seed for number generation
+	rand.Seed(time.Now().UnixNano())
+	genID := rand.Intn(99999999)
+
+	// Check collection to guarantee generated ID isn't a duplicate value
+	var deck Deck
+	collection := MongoClient.Database("flashfolio").Collection("decks")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	filter := bson.D{{Key: "id", Value: genID}}
+	err := collection.FindOne(ctx, filter).Decode(&deck)
+	if err != nil {
+
+		// didn't find an duplicate ID. return genID
+		fmt.Println("No dupelicate value found.")
+		fmt.Print("generated ID: ")
+		fmt.Println(genID)
+		return genID
+	}
+
+	// Duplicate value found. Iterate through values until value isn't a duplicate
+	fmt.Println("Dupelicate value found. finding empty value")
+	for {
+		genID += 1 // <-- Algorithm for security goes here. Yes it's weak right now
+		filter = bson.D{{Key: "id", Value: genID}}
+		err = collection.FindOne(ctx, filter).Decode(&deck)
+		if err != nil {
+			break
+		}
+	}
+	return genID
+}
+
 /*
 verifyIdToken
 
@@ -138,7 +174,6 @@ func verifyIdToken(idToken string) (*oauth2.Tokeninfo, error) {
 
 	return tokenInfo, nil
 }
-
 
 func getSecretReq(w http.ResponseWriter, r *http.Request) {
 
@@ -185,5 +220,3 @@ func createNewDeckReq(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal(reqBody, &req)
 
 }
-
-

@@ -22,7 +22,7 @@ for (let i = 0; i < $numCards; i++) {
 	cardArr.push({'FrontSide' : 'This is card '+i+'!', 'BackSide': 'This is the back of card '+i+'!!'});
 }
 
-db.decks.insertOne({'ID' : $deckID, 'Cards': cardArr, 'IsPublic':true})
+db.decks.insertOne({'ID' : $deckID, 'Title': 'This is the deck title', 'Cards': cardArr, 'IsPublic':true})
 
 printjson(db.decks.find({'ID' : $deckID}));
 " >> dummyTemp.js
