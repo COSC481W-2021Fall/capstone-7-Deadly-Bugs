@@ -45,7 +45,7 @@ export default function Viewer({viewMode="view"}) {
 
 	let { deckId } = useParams();
 
-	function saveChanges() {
+	function saveChanges(){
 		console.log(flashdeck.current)
 		saveDeck(flashdeck.current)
 	}

@@ -57,19 +57,19 @@ func main() {
 
 	fmt.Println("Successfully connected to MongoDB")
 
-	//*******************************************************************
+	/********************************************************************
 	//*** THIS METHOD IS FOR TESTING OVERWRITING DECK WITHIN DATABASE ***
 
-	/*
-		deck := Deck{1,
-			[]Card{{
-				"Can This change?",
-				"can this change?"}},
-			true}
-		overwriteDeck(deck)
-	*/
+	deck := Deck{10,
+		"TestDeck",
+		[]Card{{
+			"ch-ch-changes.",
+			"Is this strange?"}},
+		true,
+		"Alex"}
+	overwriteDeck(deck)
 
-	//*******************************************************************
+	//*******************************************************************/
 
 	handleRequests()
 }
@@ -121,7 +121,7 @@ func getDeckReq(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	err = collection.FindOne(ctx, bson.D{{Key: "id", Value: req.ID}}).Decode(&deck)
+	err = collection.FindOne(ctx, bson.D{{Key: "ID", Value: req.ID}}).Decode(&deck)
 	if err != nil {
 
 		// TODO: There has gotta be a better way to do this haha
