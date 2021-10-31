@@ -51,7 +51,7 @@ export async function saveDeck(deck) {
 	console.log(reqOpt)
 
 	/* Send the Request */
-	let resp = await fetch(API_URL + "/saveDeck", reqOpt);
+	let resp = await fetch(apiURL() + "/saveDeck", reqOpt);
 	return resp;
 
 }
