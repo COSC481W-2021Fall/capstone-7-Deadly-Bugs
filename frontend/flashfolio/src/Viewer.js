@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import Flashcard from "./Flashcard";
-import { getDeck } from "./Calls.js";
+import {getDeck, saveDeck} from "./Calls.js";
+
 import UserInfoPreview from "./UserInfoPreview.js";
 import "./Viewer.css";
 
@@ -48,6 +49,12 @@ export default function Viewer({ viewMode = "view" }) {
 
 	let { deckId } = useParams();
 
+
+	function saveChanges(){
+		console.log(flashdeck.current)
+		saveDeck(flashdeck.current)
+	}
+
 	function changeLayout() {
 		setTileCards(!tileCards)
 	}
@@ -66,7 +73,6 @@ export default function Viewer({ viewMode = "view" }) {
 		return (
 			<Flashcard flashcard={flashcard} editMode={viewMode == "edit"} />
 		)
-
 	}
 
 	useEffect(() => {
@@ -149,6 +155,7 @@ export default function Viewer({ viewMode = "view" }) {
 				)}`}
 				download="myDeck.json"
 			>Download</a>
+			{viewMode == "edit" && <button onClick={saveChanges}>Save Changes</button>}
 			<button onClick={homeButton}>Home</button>
 			<button onClick={loadButton}>Load Deck</button>
 		</div>
