@@ -2,7 +2,7 @@ import React, {useState, useEffect, useRef} from "react";
 import {useParams} from "react-router-dom";
 import Flashcard from "./Flashcard";
 import {getDeck} from "./Calls.js";
-
+import './styles.css'
 /*
 Viewer
 
