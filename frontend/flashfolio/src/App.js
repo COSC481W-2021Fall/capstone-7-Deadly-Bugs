@@ -99,7 +99,8 @@ function Home() {
 					{ loginState === null ?
 						<LoginButton /> :
 						<><LogoutButton />
-						<NewDeckButton /></>}
+						<NewDeckButton />
+						</>}
 					{/*<UserInfoPreview />*/}
 				</div>
 			</div>
