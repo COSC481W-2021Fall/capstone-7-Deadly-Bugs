@@ -99,6 +99,12 @@ export default function Viewer({ viewMode = "view" }) {
 		}
 	}, [cardIterator])
 
+	function addCard() {
+		flashdeck.current.Cards[flashdeck.current.Cards.length] = {frontSide: "new", backSide: "null"};
+		setCardIterator(flashdeck.current.Cards.length-1);
+		setFlashcard(flashdeck.current.Cards[cardIterator]);
+	}
+
 	function deleteCard() {
 		/* if there's 1 card, then make an empty card*/
 		if (flashdeck.current.Cards.length === 1) {
@@ -147,6 +153,7 @@ export default function Viewer({ viewMode = "view" }) {
 				<button id="shuf" onClick={() => shufFunction()}>Shuffle</button> :
 				<button id="unshuf" onClick={() => shufOn ? unshufFunction() : null}>Unshuffle</button>)
 			}
+			{viewMode === "edit" && <button onClick = {addCard}>Add a card</button>}
 			{viewMode === "edit" && <button onClick={deleteCard}>
 				Delete</button>}
 			<a
