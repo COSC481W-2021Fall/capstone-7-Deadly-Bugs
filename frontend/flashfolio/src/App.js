@@ -7,6 +7,8 @@ import LogoutButton from "./LogoutButton.js"
 import UserInfoPreview from "./UserInfoPreview.js"
 import './App.css'
 
+import NewDeckButton from "./NewDeckButton.js"
+
 import { useGoogleLogin } from "react-google-login";
 
 /*
@@ -96,7 +98,9 @@ function Home() {
 					{/*<button>Sign Up</button>*/}
 					{ loginState === null ?
 						<LoginButton /> :
-						<LogoutButton />}
+						<><LogoutButton />
+						<NewDeckButton />
+						</>}
 					{/*<UserInfoPreview />*/}
 				</div>
 			</div>
