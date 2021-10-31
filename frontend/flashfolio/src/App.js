@@ -88,7 +88,7 @@ function Home() {
 			<div class="right">
 				<div class="intro">
 					Hi! We're Flashfolio! A flashcard website you can use to study to your heart's desire.
-					If you would like to create a deck, please click "Sign Up." Otherwise, to peruse
+					If you would like to create a deck, please click "Log In." Otherwise, to peruse
 					our large variety of public decks, hit "Discover."
 				</div>
 				<div class ="buttons">
