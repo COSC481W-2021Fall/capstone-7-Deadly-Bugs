@@ -57,6 +57,20 @@ func main() {
 
 	fmt.Println("Successfully connected to MongoDB")
 
+	/********************************************************************
+	//*** THIS METHOD IS FOR TESTING OVERWRITING DECK WITHIN DATABASE ***
+
+	deck := Deck{10,
+		"TestDeck",
+		[]Card{{
+			"ch-ch-changes.",
+			"Is this strange?"}},
+		true,
+		"Alex"}
+	overwriteDeck(deck)
+
+	//*******************************************************************/
+
 	handleRequests()
 }
 
@@ -69,8 +83,11 @@ func handleRequests() {
 	router := mux.NewRouter().StrictSlash(true)
 
 	router.HandleFunc("/getDeck", getDeckReq)
+
 	router.HandleFunc("/getSecret", getSecretReq)
 	router.HandleFunc("/createNewDeck", createNewDeckReq)
+
+	router.HandleFunc("/saveDeck", saveDeckReq)
 
 	log.Fatal(http.ListenAndServe(":1337",
 		handlers.CORS(
@@ -105,17 +122,61 @@ func getDeckReq(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	err = collection.FindOne(ctx, bson.D{{Key: "ID", Value: req.ID}}).Decode(&deck)
+	err = collection.FindOne(ctx, bson.D{{Key: "id", Value: req.ID}}).Decode(&deck)
 	if err != nil {
+
 		// TODO: There has gotta be a better way to do this haha
 		// Maybe send a 404 response?
 		json.NewEncoder(w).Encode(Deck{-1, "Deck does not exist.", []Card{{"Card Not found", ":("}}, true, ""})
+
 		return
 	}
 
 	fmt.Println("Got a request for card: ", req.ID)
 
 	json.NewEncoder(w).Encode(deck)
+}
+
+func saveDeckReq(w http.ResponseWriter, r *http.Request) {
+
+	reqBody, err := ioutil.ReadAll(r.Body)
+
+	if err != nil {
+		panic(err)
+	}
+
+	var req struct {
+		Deck Deck `json:"Deck"`
+	}
+
+	json.Unmarshal(reqBody, &req)
+
+	fmt.Println(string(reqBody))
+	fmt.Println("Got save req for", req)
+
+	overwriteDeck(req.Deck)
+
+	w.WriteHeader(http.StatusOK)
+}
+
+// Saves deck to Database, overwriting existing deck with same id if present.
+func overwriteDeck(deck Deck) {
+
+	// set up collection
+	collection := MongoClient.Database("flashfolio").Collection("decks")
+
+	// set up context
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// set up options to create new document if document doesn't exist
+	opt := options.Replace().SetUpsert(true)
+
+	// set up filter to locate document with identical user generated ID
+	filter := bson.D{{Key: "id", Value: deck.ID}}
+
+	// Replace document within mongo if found.
+	collection.ReplaceOne(ctx, filter, deck, opt)
 }
 
 // Generates a random integer for use as deck ID
