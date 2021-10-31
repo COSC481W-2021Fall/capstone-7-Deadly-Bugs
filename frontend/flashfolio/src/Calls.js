@@ -52,10 +52,9 @@ export async function createNewDeck(token, deckName) {
 		headers: {"Content-Type": "application/json"},
 		body: JSON.stringify({"Token": token, "DeckName": deckName}),
 	}
-
-	console.log(token)
-
-	return 100;
+	console.log(reqOpt)
+	let resp = await fetch(apiURL() + "/createNewDeck", reqOpt);
+	console.log(resp)
+	return resp.json();
 }
-
 

@@ -208,6 +208,7 @@ func getSecretReq(w http.ResponseWriter, r *http.Request) {
 }
 
 func createNewDeckReq(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(":(((((((")
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		panic(err)
@@ -215,8 +216,40 @@ func createNewDeckReq(w http.ResponseWriter, r *http.Request) {
 
 	var req struct {
 		Token string `json:"Token"`
+		DeckName string `json:"DeckName"`
 	}
 
 	json.Unmarshal(reqBody, &req)
+
+	var ret struct {
+		ID int `json:"ID"`
+	}
+
+	tokenInfo, err := verifyIdToken(req.Token)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	newID := generateID()
+
+	fmt.Println("Creating new deck @", newID)
+
+	var newDeck Deck
+	newDeck.Cards = []Card{{"", ""}}
+	newDeck.ID = newID
+	newDeck.Title = req.DeckName
+	newDeck.Owner = tokenInfo.Email
+	newDeck.IsPublic = true
+
+	collection := MongoClient.Database("flashfolio").Collection("decks")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	collection.InsertOne(ctx, newDeck)
+
+	ret.ID = newID
+	json.NewEncoder(w).Encode(ret)
 
 }
