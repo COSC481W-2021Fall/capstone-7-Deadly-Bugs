@@ -5,6 +5,7 @@ import {getDeck, saveDeck} from "./Calls.js";
 
 import UserInfoPreview from "./UserInfoPreview.js";
 import "./Viewer.css";
+import "./styles.css";
 
 /*
 Viewer

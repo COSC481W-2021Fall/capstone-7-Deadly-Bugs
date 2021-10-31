@@ -37,7 +37,6 @@ h1 {
 }
 
 .right {
-	background-color:white;
 	padding: 50px 80px;
 	text-align: center;
 	width:40%;
@@ -48,7 +47,6 @@ h1 {
 	display: inline-block;
 	position: relative;
 	top:35%;
-	left:13%;
 	vertical-align:middle;
 }
 
@@ -80,13 +78,26 @@ h1 {
 }
 
 .buttons button {
-	background-color: #F76C6C;
-	border-style: none;
-	border-radius: 8px;
-	box-shadow: 2.5px 5px 5px rgba(0, 0, 0, 0.4);
-	font-size:1em;
-	margin:50px 20px 20px 20px;
+	background-color: #F76C6C !important;
+	color:black !important;
+	border-style: none !important;
+	border-radius: 8px !important;
+	box-shadow: 2.5px 5px 5px rgba(0, 0, 0, 0.4) !important;
+	font-size:1em !important;
+	margin:50px 20px 20px 20px !important;
+	opacity: 1 !important;
 	padding:10px;	
+}
+
+.buttons div {
+	display: inline-block;
+}
+
+.buttons button:active {
+	background: #dd5f5f !important;
+	-webkit-box-shadow: inset 0px 0px 5px #c1c1c1 !important;
+	-moz-box-shadow: inset 0px 0px 5px #c1c1c1 !important;
+	box-shadow: inset 0px 0px 5px #c1c1c1 !important;
 }
 
 /* Animations for the logo.*/
