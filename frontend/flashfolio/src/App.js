@@ -1,10 +1,13 @@
 import React, { createContext, useState, useContext } from "react";
-import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
+import {BrowserRouter as Router, Route, Switch, useHistory } from "react-router-dom";
 import Viewer from "./Viewer.js";
+import Load from "./Load.js";
 import LoginButton from "./LoginButton.js"
 import LogoutButton from "./LogoutButton.js"
 import UserInfoPreview from "./UserInfoPreview.js"
 import './App.css'
+
+import NewDeckButton from "./NewDeckButton.js"
 
 import { useGoogleLogin } from "react-google-login";
 
@@ -43,8 +46,11 @@ function App() {
 			<Route path="/edit/:deckId">
 				<Viewer viewMode="edit"/>
 			</Route>
-			<Route path="/">
+			<Route exact path="/">
 				<Home />
+			</Route>
+			<Route path="/load">
+				<Load />
 			</Route>
 			</Switch>
 		</Router>
@@ -63,6 +69,13 @@ function Home() {
 
 	const { loginState } = useContext(loginContext);
 
+	const history = useHistory();
+	
+	const loadButton = () => {
+		history.push("/load");
+	  };
+	
+
 	return (
 		<div class="container">
 			<div class="left">
@@ -77,15 +90,17 @@ function Home() {
 			<div class="right">
 				<div class="intro">
 					Hi! We're Flashfolio! A flashcard website you can use to study to your heart's desire.
-					If you would like to create a deck, please click "Sign Up." Otherwise, to peruse
+					If you would like to create a deck, please click "Log In." Otherwise, to peruse
 					our large variety of public decks, hit "Discover."
 				</div>
 				<div class ="buttons">
-					<button>Discover</button>
+					<button onClick={loadButton}>Discover</button>
 					{/*<button>Sign Up</button>*/}
 					{ loginState === null ?
 						<LoginButton /> :
-						<LogoutButton />}
+						<><LogoutButton />
+						<NewDeckButton />
+						</>}
 					{/*<UserInfoPreview />*/}
 				</div>
 			</div>

@@ -1,0 +1,14 @@
+
+.modal {
+	background-color: white;
+	width:minmax(500px, 25%);
+}
+
+.modal > .header {
+	width: 100%;
+	border-bottom: 1px solid black;
+	font-size: 18px;
+	text-align: center;
+	padding: 5px;
+}
+

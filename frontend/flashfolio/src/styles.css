@@ -1,0 +1,41 @@
+* {
+	box-sizing: border-box;
+	margin:0;
+	padding:0;
+}
+
+body {
+	background-color: #cae1fa;
+	font-family: 'Archivo', sans-serif;
+	font-size: 16px;
+	text-align: center;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: 'Archivo', sans-serif;
+   	font-weight: 500;
+}
+
+h1 {
+	font-size:3.25em;
+}
+
+button, a {
+	background-color: #24305E;
+	color:white;
+	text-decoration: none;
+	border-style: none;
+	border-radius: 8px;
+	box-shadow: 2.5px 5px 5px rgba(0, 0, 0, 0.4);
+	font-size: 20px;
+	margin:10px;
+	padding:10px;
+	cursor: context-menu;
+}
+
+button:active {
+	background: #24305E;
+	-webkit-box-shadow: inset 0px 0px 5px #c1c1c1;
+	-moz-box-shadow: inset 0px 0px 5px #c1c1c1;
+	box-shadow: inset 0px 0px 5px #c1c1c1;
+}

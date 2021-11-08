@@ -24,6 +24,7 @@ export async function getDeck(deckID) {
 	return resp.json();
 }
 
+
 /*
 getSecret
 
@@ -38,5 +39,37 @@ export async function getSecret(token) {
 
 	let resp = await fetch(apiURL() + "/getSecret", reqOpt);
 	return resp.json();
+}
+
+/*
+createNewDeck
+
+Creates a new blank deck in the user's name
+*/
+
+export async function createNewDeck(token, deckName) {
+	let reqOpt = {
+		method: "POST",
+		headers: {"Content-Type": "application/json"},
+		body: JSON.stringify({"Token": token, "DeckName": deckName}),
+	}
+	console.log(reqOpt)
+	let resp = await fetch(apiURL() + "/createNewDeck", reqOpt);
+	console.log(resp)
+	return resp.json();
+}
+
+export async function saveDeck(deck) {
+	let reqOpt = {
+		method: "POST",
+		headers: {"Content-Type": "application/json"},
+		body: JSON.stringify({"Deck": deck}),
+	}
+
+	console.log(reqOpt)
+
+	/* Send the Request */
+	let resp = await fetch(apiURL() + "/saveDeck", reqOpt);
+	return resp;
 }
 
