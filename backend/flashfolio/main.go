@@ -57,7 +57,7 @@ func main() {
 
 	fmt.Println("Successfully connected to MongoDB")
 
-	/********************************************************************
+	//********************************************************************
 	//*** THIS METHOD IS FOR TESTING OVERWRITING DECK WITHIN DATABASE ***
 
 	deck := Deck{10,
@@ -67,9 +67,9 @@ func main() {
 			"Is this strange?"}},
 		true,
 		"Alex"}
-	overwriteDeck(deck)
+	cloneDeck(deck)
 
-	//*******************************************************************/
+	//*******************************************************************
 
 	handleRequests()
 }
@@ -214,6 +214,43 @@ func generateID() int {
 	return genID
 }
 
+// Clones the deck.
+func cloneDeck(deck Deck) {
+
+	// set up collection
+	collection := MongoClient.Database("flashfolio").Collection("decks")
+	newDeck := deck
+	var sameID Deck
+
+	// set up context
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// set up filter to locate document with identical user generated ID
+	filter := bson.D{{Key: "id", Value: deck.ID}}
+	err := collection.FindOne(ctx, filter).Decode(&sameID)
+	if err != nil {
+
+		// Error handling. This should never be nil when it first runs.
+		fmt.Println("No duplicate deck found.")
+		collection.InsertOne(ctx, deck)
+	} else {
+
+		// Duplicate value found. Iterate through values until value isn't a duplicate
+		fmt.Println("Duplicate value found. finding empty value")
+		for {
+			newDeck.ID += 1
+			filter = bson.D{{Key: "id", Value: newDeck.ID}}
+			err = collection.FindOne(ctx, filter).Decode(&sameID)
+			if err != nil {
+				break
+			}
+		}
+		// insert document when deckID that isn't currently used is found.
+		collection.InsertOne(ctx, newDeck)
+	}
+}
+
 /*
 verifyIdToken
 
@@ -276,7 +313,7 @@ func createNewDeckReq(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req struct {
-		Token string `json:"Token"`
+		Token    string `json:"Token"`
 		DeckName string `json:"DeckName"`
 	}
 
