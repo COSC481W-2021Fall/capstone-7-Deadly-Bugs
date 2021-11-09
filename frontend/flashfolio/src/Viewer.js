@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import Flashcard from "./Flashcard";
-import {getDeck, saveDeck} from "./Calls.js";
+import {getDeck, saveDeck, cloneDeck} from "./Calls.js";
 
 import UserInfoPreview from "./UserInfoPreview.js";
 import "./Viewer.css";
@@ -54,6 +54,11 @@ export default function Viewer({ viewMode = "view" }) {
 	function saveChanges(){
 		console.log(flashdeck.current)
 		saveDeck(flashdeck.current)
+	}
+
+	function cloneD(){
+		console.log(flashdeck.current)
+		cloneDeck(flashdeck.current)
 	}
 
 	function changeLayout() {
@@ -164,6 +169,7 @@ export default function Viewer({ viewMode = "view" }) {
 				download="myDeck.json"
 			>Download</a>
 			{viewMode == "edit" && <button onClick={saveChanges}>Save Changes</button>}
+			{viewMode == "edit" && <button onClick={cloneD}>Clone Deck</button>}
 			<button onClick={homeButton}>Home</button>
 			<button onClick={loadButton}>Load Deck</button>
 		</div>

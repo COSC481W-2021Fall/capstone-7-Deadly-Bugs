@@ -57,7 +57,7 @@ func main() {
 
 	fmt.Println("Successfully connected to MongoDB")
 
-	//********************************************************************
+	/********************************************************************
 	//*** THIS METHOD IS FOR TESTING OVERWRITING DECK WITHIN DATABASE ***
 
 	deck := Deck{10,
@@ -69,7 +69,7 @@ func main() {
 		"Alex"}
 	cloneDeck(deck)
 
-	//*******************************************************************
+	//*******************************************************************/
 
 	handleRequests()
 }
@@ -88,6 +88,7 @@ func handleRequests() {
 	router.HandleFunc("/createNewDeck", createNewDeckReq)
 
 	router.HandleFunc("/saveDeck", saveDeckReq)
+	router.HandleFunc("/cloneDeck", cloneDeckReq)
 
 	log.Fatal(http.ListenAndServe(":1337",
 		handlers.CORS(
@@ -155,6 +156,28 @@ func saveDeckReq(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Got save req for", req)
 
 	overwriteDeck(req.Deck)
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func cloneDeckReq(w http.ResponseWriter, r *http.Request) {
+
+	reqBody, err := ioutil.ReadAll(r.Body)
+
+	if err != nil {
+		panic(err)
+	}
+
+	var req struct {
+		Deck Deck `json:"Deck"`
+	}
+
+	json.Unmarshal(reqBody, &req)
+
+	fmt.Println(string(reqBody))
+	fmt.Println("Got save req for", req)
+
+	cloneDeck(req.Deck)
 
 	w.WriteHeader(http.StatusOK)
 }

@@ -73,3 +73,16 @@ export async function saveDeck(deck) {
 	return resp;
 }
 
+export async function cloneDeck(deck) {
+	let reqOpt = {
+		method: "POST",
+		headers: {"Content-Type": "application/json"},
+		body: JSON.stringify({"Deck": deck}),
+	}
+
+	console.log(reqOpt)
+
+	/* Send the Request */
+	let resp = await fetch(apiURL() + "/cloneDeck", reqOpt);
+	return resp;
+}
