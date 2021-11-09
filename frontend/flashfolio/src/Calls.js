@@ -82,7 +82,6 @@ export async function cloneDeck(deck) {
 
 	console.log(reqOpt)
 
-	/* Send the Request */
 	let resp = await fetch(apiURL() + "/cloneDeck", reqOpt);
 	return resp;
 }

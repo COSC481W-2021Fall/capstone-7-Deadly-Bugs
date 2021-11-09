@@ -57,20 +57,6 @@ func main() {
 
 	fmt.Println("Successfully connected to MongoDB")
 
-	/********************************************************************
-	//*** THIS METHOD IS FOR TESTING OVERWRITING DECK WITHIN DATABASE ***
-
-	deck := Deck{10,
-		"TestDeck",
-		[]Card{{
-			"ch-ch-changes.",
-			"Is this strange?"}},
-		true,
-		"Alex"}
-	cloneDeck(deck)
-
-	//*******************************************************************/
-
 	handleRequests()
 }
 
