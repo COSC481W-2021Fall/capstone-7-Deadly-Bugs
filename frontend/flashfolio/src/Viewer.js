@@ -101,7 +101,7 @@ export default function Viewer({ viewMode = "view" }) {
 	}, [cardIterator])
 
 	function addCard() {
-		flashdeck.current.Cards[flashdeck.current.Cards.length] = {frontSide: "new", backSide: "null"};
+		flashdeck.current.Cards[flashdeck.current.Cards.length] = {FrontSide: "", BackSide: ""};
 		setCardIterator(flashdeck.current.Cards.length-1);
 		setFlashcard(flashdeck.current.Cards[cardIterator]);
 	}
