@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 //	"log"
-//	"math/rand"
+	"math/rand"
 	"net/http"
 
 	"time"
@@ -56,7 +56,24 @@ generateNewUserID()
 For generating new user IDs.
 */
 func generateNewUserID() int {
-	return 10000;
+	// Create new seed for number generation
+	rand.Seed(time.Now().UnixNano())
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// Check collection to guarantee generated ID isn't a duplicate value
+	for {
+		genID := rand.Intn(99999999)
+		_, err := GetUserByID(genID, ctx)
+		if err != nil {
+			// didn't find an duplicate ID. return genID
+			fmt.Println("No dupelicate value found.")
+			fmt.Print("generated ID: ")
+			fmt.Println(genID)
+			return genID
+		}
+	}
 }
 
 /*
@@ -92,8 +109,9 @@ func UserLoginReq(w http.ResponseWriter, r *http.Request) {
 	_, err = GetUserByEmail(tokenInfo.Email, ctx)
 	if err != nil {
 		var newUser User
-		newUser.ID = generateNewUserID();
+		newUser.ID = generateNewUserID()
 		newUser.Email = tokenInfo.Email
+		newUser.OwnedDecks = []int{}
 		collection.InsertOne(ctx, newUser)
 	}
 
