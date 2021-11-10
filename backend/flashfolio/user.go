@@ -69,7 +69,7 @@ func UserLoginReq(w http.ResponseWriter, r *http.Request) {
 
 	json.Unmarshal(reqBody, &req)
 
-	tokenInfo, err := verifyIdToken(req.Token)
+	tokenInfo, err := VerifyIdToken(req.Token)
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusUnauthorized)

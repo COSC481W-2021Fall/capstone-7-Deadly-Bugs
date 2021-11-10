@@ -215,14 +215,14 @@ func generateID() int {
 }
 
 /*
-verifyIdToken
+VerifyIdToken
 
 Verifies that a google ID token is genuine & returns token/User info
 
 Tokeninfo Struct found here: https://github.com/googleapis/google-api-go-client/blob/2447556ecdd4aae37b4cff8c46fc88a25036e7a1/oauth2/v2/oauth2-gen.go#L182
 
 */
-func verifyIdToken(idToken string) (*oauth2.Tokeninfo, error) {
+func VerifyIdToken(idToken string) (*oauth2.Tokeninfo, error) {
 	httpClient := http.Client{}
 	oauth2Service, err := oauth2.New(&httpClient)
 	tokenInfoCall := oauth2Service.Tokeninfo()
@@ -249,7 +249,7 @@ func getSecretReq(w http.ResponseWriter, r *http.Request) {
 
 	json.Unmarshal(reqBody, &req)
 
-	tokenInfo, err := verifyIdToken(req.Token)
+	tokenInfo, err := VerifyIdToken(req.Token)
 
 	if err != nil {
 		panic(err)
@@ -286,7 +286,7 @@ func createNewDeckReq(w http.ResponseWriter, r *http.Request) {
 		ID int `json:"ID"`
 	}
 
-	tokenInfo, err := verifyIdToken(req.Token)
+	tokenInfo, err := VerifyIdToken(req.Token)
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusUnauthorized)
