@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { GoogleLogin } from 'react-google-login';
-import { getSecret } from "./Calls.js";
+import { notifyUserLogin } from "./Calls.js";
 
 import { loginContext } from "./App.js";
 
@@ -13,6 +13,7 @@ function LoginButton() {
 	const success = async (res) => {
 		console.log('Logged in');
 		setLoginState(res);
+		notifyUserLogin(res.tokenId);
 	}
 
 	return (

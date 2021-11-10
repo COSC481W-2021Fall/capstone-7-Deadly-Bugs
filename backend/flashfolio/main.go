@@ -89,6 +89,8 @@ func handleRequests() {
 
 	router.HandleFunc("/saveDeck", saveDeckReq)
 
+	router.HandleFunc("/userLogin", UserLoginReq)
+
 	log.Fatal(http.ListenAndServe(":1337",
 		handlers.CORS(
 			handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),

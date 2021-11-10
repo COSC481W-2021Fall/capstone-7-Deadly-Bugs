@@ -73,3 +73,14 @@ export async function saveDeck(deck) {
 	return resp;
 }
 
+export async function notifyUserLogin(token) {
+	let reqOpt = {
+		method: "POST",
+		headers: {"Content-Type": "application/json"},
+		body: JSON.stringify({'Token': token}),
+	}
+
+	let resp = await fetch(apiURL() + "/userLogin", reqOpt);
+}
+
+

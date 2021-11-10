@@ -3,6 +3,15 @@ package main
 import (
 	"context"
 
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+//	"log"
+//	"math/rand"
+	"net/http"
+
+	"time"
+
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -80,12 +89,13 @@ func UserLoginReq(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	user, err := GetUserByEmail(ctx, tokenInfo.Email)
+	_, err = GetUserByEmail(tokenInfo.Email, ctx)
 	if err != nil {
 		var newUser User
-		User.ID = generateNewUserID();
-		User.Email = tokenInfo.Email
-		collection.InsertOne(ctx, newDeck)
+		newUser.ID = generateNewUserID();
+		newUser.Email = tokenInfo.Email
+		collection.InsertOne(ctx, newUser)
 	}
+
 }
 
