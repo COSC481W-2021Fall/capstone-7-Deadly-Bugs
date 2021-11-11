@@ -117,6 +117,19 @@ func UserLoginReq(w http.ResponseWriter, r *http.Request) {
 }
 
 
+/*
+This method will clean a user object of values we don't want other people to see:
+
+e.g. Email
+*/
+func CleanUser(user User) *User {
+	user.Email = ""
+	return &user
+}
+
+/*
+Request to get a user's info from the back end.
+*/
 func GetUserReq(w http.ResponseWriter, r *http.Request) {
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -137,12 +150,28 @@ func GetUserReq(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 	user, err := GetUserByID(req.ID, ctx)
 	if err != nil {
-		// 404 if the user isn't present
+		/* 404 if the user isn't present */
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
-	json.NewEncoder(w).Encode(user)
+	if req.Private {
+		tokenInfo, err := VerifyIdToken(req.Token)
+		/* Bad Token == Unauthorized */
+		if err != nil {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		/* Wrong User == Forbidden */
+		if tokenInfo.Email != user.Email {
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
+		json.NewEncoder(w).Encode(user)
+		return
+	}
+
+	json.NewEncoder(w).Encode(CleanUser(*user))
 }
 
 
