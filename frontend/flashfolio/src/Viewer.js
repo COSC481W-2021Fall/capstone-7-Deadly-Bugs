@@ -27,6 +27,17 @@ export default function Viewer({ viewMode = "view" }) {
 
 	const [tileCards, setTileCards] = useState(false);
 
+	function flipView(){
+		if(viewMode==="view")
+			history.replace("/edit/"+deckId);
+		else
+		{
+			if(tileCards)
+				setTileCards(false);
+			history.replace("/view/"+deckId);
+		}
+	}
+
 	function shufFunction() {
 		hidden = false;
 		setCardIterator(0);
@@ -145,6 +156,7 @@ export default function Viewer({ viewMode = "view" }) {
 			Title: {flashdeck.current.Title}
 			DeckId: {deckId}
 			<br />
+			<button onClick = {flipView}> {viewMode == "edit" ? "View Deck" : "Edit Deck"} </button>
 			{viewMode == "edit" && <button onClick={changeLayout}>Change Layout</button>}
 			{tileLayout()}
 			{!tileCards && <button
