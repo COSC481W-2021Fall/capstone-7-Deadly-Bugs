@@ -114,6 +114,35 @@ func UserLoginReq(w http.ResponseWriter, r *http.Request) {
 		newUser.OwnedDecks = []int{}
 		collection.InsertOne(ctx, newUser)
 	}
-
 }
+
+
+func GetUserReq(w http.ResponseWriter, r *http.Request) {
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	var req struct {
+		/* Private -- True if the user wants private info */
+		Private bool   `json:"Private"`
+		Token   string `json:"Token"`
+
+		/* ID of the user trying to be requested */
+		ID      int    `json:"ID"`
+	}
+	json.Unmarshal(reqBody, &req)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	user, err := GetUserByID(req.ID, ctx)
+	if err != nil {
+		// 404 if the user isn't present
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	json.NewEncoder(w).Encode(user)
+}
+
 
