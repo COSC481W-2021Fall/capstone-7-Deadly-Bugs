@@ -156,7 +156,7 @@ export default function Viewer({ viewMode = "view" }) {
 			Title: {flashdeck.current.Title}
 			DeckId: {deckId}
 			<br />
-			<button onClick = {flipView}> {viewMode == "edit" ? <a>View Deck</a> : <a>Edit Deck</a>} </button>
+			<button onClick = {flipView}> {viewMode == "edit" ? "View Deck" : "Edit Deck"} </button>
 			{viewMode == "edit" && <button onClick={changeLayout}>Change Layout</button>}
 			{tileLayout()}
 			{!tileCards && <button
