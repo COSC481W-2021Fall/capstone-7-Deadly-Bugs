@@ -29,7 +29,7 @@ export default function Viewer({ viewMode = "view" }) {
 
 	const [tileCards, setTileCards] = useState(false);
 
-	const { loginState } = useContext(loginContext);
+	const { loginState, loadedAuthState } = useContext(loginContext);
 
 	function flipView(){
 		if(viewMode==="view")
@@ -116,6 +116,12 @@ export default function Viewer({ viewMode = "view" }) {
 			else { setCardIterator(0); }
 		}
 	}, [cardIterator])
+
+	useEffect(() => {
+		if (viewMode === "edit" && loadedAuthState && flashdeck.current != "" && (loginState === null || loginState.googleId != flashdeck.current.Owner)) {
+			history.replace("/view/"+deckId)
+		}
+	}, [loginState, loadedAuthState, flashdeck.current]);
 
 	function addCard() {
 		flashdeck.current.Cards[flashdeck.current.Cards.length] = {FrontSide: "", BackSide: ""};
