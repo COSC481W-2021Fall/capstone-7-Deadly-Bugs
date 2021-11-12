@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 //	"log"
-	"math/rand"
+//	"math/rand"
 	"net/http"
 
 	"time"
@@ -16,7 +16,7 @@ import (
 )
 
 type User struct {
-	ID         int    `json:"ID" bson:"id"`
+	ID         string `json:"ID" bson:"id"`
 	Email      string `json:"Email" bson:"email"`
 	// List of deckIDs owned by this user
 	OwnedDecks []int  `json:"OwnedDecks" bson:"owneddecks"`
@@ -37,7 +37,7 @@ func GetUserByEmail(email string, ctx context.Context) (*User, error) {
 	return &user, nil
 }
 
-func GetUserByID(id int, ctx context.Context) (*User, error) {
+func GetUserByID(id string, ctx context.Context) (*User, error) {
 	var user User
 
 	collection := MongoClient.Database("flashfolio").Collection("users")
@@ -48,32 +48,6 @@ func GetUserByID(id int, ctx context.Context) (*User, error) {
 	}
 
 	return &user, nil
-}
-
-/*
-generateNewUserID()
-
-For generating new user IDs.
-*/
-func generateNewUserID() int {
-	// Create new seed for number generation
-	rand.Seed(time.Now().UnixNano())
-
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	// Check collection to guarantee generated ID isn't a duplicate value
-	for {
-		genID := rand.Intn(99999999)
-		_, err := GetUserByID(genID, ctx)
-		if err != nil {
-			// didn't find an duplicate ID. return genID
-			fmt.Println("No dupelicate value found.")
-			fmt.Print("generated ID: ")
-			fmt.Println(genID)
-			return genID
-		}
-	}
 }
 
 /*
@@ -109,7 +83,7 @@ func UserLoginReq(w http.ResponseWriter, r *http.Request) {
 	_, err = GetUserByEmail(tokenInfo.Email, ctx)
 	if err != nil {
 		var newUser User
-		newUser.ID = generateNewUserID()
+		newUser.ID = tokenInfo.UserId
 		newUser.Email = tokenInfo.Email
 		newUser.OwnedDecks = []int{}
 		collection.InsertOne(ctx, newUser)
@@ -142,7 +116,7 @@ func GetUserReq(w http.ResponseWriter, r *http.Request) {
 		Token   string `json:"Token"`
 
 		/* ID of the user trying to be requested */
-		ID      int    `json:"ID"`
+		ID      string `json:"ID"`
 	}
 	json.Unmarshal(reqBody, &req)
 
