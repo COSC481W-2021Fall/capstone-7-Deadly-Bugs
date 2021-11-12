@@ -83,4 +83,15 @@ export async function notifyUserLogin(token) {
 	let resp = await fetch(apiURL() + "/userLogin", reqOpt);
 }
 
+export async function getUser(userID, includePrivate=false, token="") {
+	let reqOpt = {
+		method: "POST",
+		headers: {"Content-Type": "application/json"},
+		body: JSON.stringify({"ID":userID, "Private":includePrivate, "Token": token}),
+	}
+
+	let resp = await fetch(apiURL() + "/getUser", reqOpt);
+	return resp.json();
+}
+
 
