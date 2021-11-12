@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import Flashcard from "./Flashcard";
 import {getDeck, saveDeck} from "./Calls.js";
@@ -6,6 +6,8 @@ import {getDeck, saveDeck} from "./Calls.js";
 import UserInfoPreview from "./UserInfoPreview.js";
 import "./Viewer.css";
 import "./styles.css";
+
+import {loginContext} from "./App.js";
 
 /*
 Viewer
@@ -26,6 +28,8 @@ export default function Viewer({ viewMode = "view" }) {
 	const [shufOn, setShufOn] = useState(false);
 
 	const [tileCards, setTileCards] = useState(false);
+
+	const { loginState } = useContext(loginContext);
 
 	function flipView(){
 		if(viewMode==="view")
@@ -63,8 +67,10 @@ export default function Viewer({ viewMode = "view" }) {
 
 
 	function saveChanges(){
-		console.log(flashdeck.current)
-		saveDeck(flashdeck.current)
+		if (loginState !== null) {
+			console.log(flashdeck.current)
+			saveDeck(loginState.tokenId, flashdeck.current)
+		}
 	}
 
 	function changeLayout() {

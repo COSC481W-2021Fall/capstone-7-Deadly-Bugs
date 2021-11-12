@@ -59,11 +59,11 @@ export async function createNewDeck(token, deckName) {
 	return resp.json();
 }
 
-export async function saveDeck(deck) {
+export async function saveDeck(token, deck) {
 	let reqOpt = {
 		method: "POST",
 		headers: {"Content-Type": "application/json"},
-		body: JSON.stringify({"Deck": deck}),
+		body: JSON.stringify({"Token":token, "Deck": deck}),
 	}
 
 	console.log(reqOpt)
