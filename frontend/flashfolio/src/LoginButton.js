@@ -1,18 +1,19 @@
 import React, { useContext } from 'react';
 import { GoogleLogin } from 'react-google-login';
-import { getSecret } from "./Calls.js";
+import { getUser, notifyUserLogin } from "./Calls.js";
 
 import { loginContext } from "./App.js";
 
 
 function LoginButton() {
 
-	
+
 	const { setLoginState } = useContext(loginContext);
 
 	const success = async (res) => {
 		console.log('Logged in');
 		setLoginState(res);
+		await notifyUserLogin(res.tokenId);
 	}
 
 	return (
