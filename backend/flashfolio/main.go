@@ -317,6 +317,13 @@ func createNewDeckReq(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	user, err := GetUserByID(tokenInfo.UserId, ctx)
+	if err != nil {
+		panic(err)
+		return
+	}
 
 	newID := generateID()
 
@@ -326,14 +333,14 @@ func createNewDeckReq(w http.ResponseWriter, r *http.Request) {
 	newDeck.Cards = []Card{{"", ""}}
 	newDeck.ID = newID
 	newDeck.Title = req.DeckName
-	newDeck.Owner = tokenInfo.UserId
+	newDeck.Owner = user.ID
 	newDeck.IsPublic = true
 
 	collection := MongoClient.Database("flashfolio").Collection("decks")
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
 
 	collection.InsertOne(ctx, newDeck)
+	user.OwnedDecks = append(user.OwnedDecks, newDeck.ID)
+	OverwriteUser(*user, ctx)
 
 	ret.ID = newID
 	json.NewEncoder(w).Encode(ret)

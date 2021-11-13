@@ -50,6 +50,18 @@ func GetUserByID(id string, ctx context.Context) (*User, error) {
 	return &user, nil
 }
 
+func OverwriteUser(user User, ctx context.Context) {
+
+	// set up collection
+	collection := MongoClient.Database("flashfolio").Collection("users")
+
+	// set up filter to locate document with identical user generated ID
+	filter := bson.D{{Key: "id", Value: user.ID}}
+
+	// Replace document within mongo if found.
+	collection.ReplaceOne(ctx, filter, user)
+}
+
 /*
 UserLoginReq
 
