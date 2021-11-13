@@ -174,7 +174,9 @@ export default function Viewer({ viewMode = "view" }) {
 			Title: {flashdeck.current.Title}
 			DeckId: {deckId}
 			<br />
-			<button onClick = {flipView}> {viewMode == "edit" ? "View Deck" : "Edit Deck"} </button>
+			{ (loginState !== null && loginState.googleId === flashdeck.current.Owner) &&
+				<button onClick = {flipView}> {viewMode == "edit" ? "View Deck" : "Edit Deck"} </button>
+			}
 			{viewMode == "edit" && <button onClick={changeLayout}>Change Layout</button>}
 			{tileLayout()}
 			{!tileCards && <button
@@ -203,7 +205,7 @@ export default function Viewer({ viewMode = "view" }) {
 					<div className="header">
 						{flashdeck.current.Title}
 					</div>
-					{flashdeck.current.Cards.length} Cards
+					{flashdeck.current.Cards !== undefined && flashdeck.current.Cards.length} Cards
 					<br/>
 					Created by:
 					<br/>
