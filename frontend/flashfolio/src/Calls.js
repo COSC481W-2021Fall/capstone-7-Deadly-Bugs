@@ -73,11 +73,11 @@ export async function saveDeck(token, deck) {
 	return resp;
 }
 
-export async function notifyUserLogin(token) {
+export async function notifyUserLogin(token, profileObj) {
 	let reqOpt = {
 		method: "POST",
 		headers: {"Content-Type": "application/json"},
-		body: JSON.stringify({'Token': token}),
+		body: JSON.stringify({"Token": token, "NickName": profileObj.name, "ProfilePicture":profileObj.imageUrl}),
 	}
 
 	let resp = await fetch(apiURL() + "/userLogin", reqOpt);

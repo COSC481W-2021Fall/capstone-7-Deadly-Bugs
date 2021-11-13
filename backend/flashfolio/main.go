@@ -340,7 +340,7 @@ func createNewDeckReq(w http.ResponseWriter, r *http.Request) {
 
 	collection.InsertOne(ctx, newDeck)
 	user.OwnedDecks = append(user.OwnedDecks, newDeck.ID)
-	OverwriteUser(*user, ctx)
+	OverwriteUser(*user, false, ctx)
 
 	ret.ID = newID
 	json.NewEncoder(w).Encode(ret)

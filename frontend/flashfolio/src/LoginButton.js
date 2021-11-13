@@ -13,7 +13,7 @@ function LoginButton() {
 	const success = async (res) => {
 		console.log('Logged in');
 		setLoginState(res);
-		await notifyUserLogin(res.tokenId);
+		await notifyUserLogin(res.tokenId, res.profileObj);
 		localStorage.setItem("userCache", JSON.stringify(res));
 	}
 

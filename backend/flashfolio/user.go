@@ -13,13 +13,21 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type User struct {
-	ID         string `json:"ID" bson:"id"`
-	Email      string `json:"Email" bson:"email"`
+	ID             string `json:"ID" bson:"id"`
+	Email          string `json:"Email" bson:"email"`
+
+	// Google User name
+	NickName       string `json:"NickName" bson:"nickname"`
+
+	// Google Profile Picture
+	ProfilePicture string `json:"ProfilePicture" bson:"profilepicture"`
+
 	// List of deckIDs owned by this user
-	OwnedDecks []int  `json:"OwnedDecks" bson:"owneddecks"`
+	OwnedDecks     []int  `json:"OwnedDecks" bson:"owneddecks"`
 }
 
 func GetUserByEmail(email string, ctx context.Context) (*User, error) {
@@ -50,16 +58,19 @@ func GetUserByID(id string, ctx context.Context) (*User, error) {
 	return &user, nil
 }
 
-func OverwriteUser(user User, ctx context.Context) {
+func OverwriteUser(user User, create bool, ctx context.Context) {
 
 	// set up collection
 	collection := MongoClient.Database("flashfolio").Collection("users")
+
+	// Create new entry if one does not exist
+	opt := options.Replace().SetUpsert(create)
 
 	// set up filter to locate document with identical user generated ID
 	filter := bson.D{{Key: "id", Value: user.ID}}
 
 	// Replace document within mongo if found.
-	collection.ReplaceOne(ctx, filter, user)
+	collection.ReplaceOne(ctx, filter, user, opt)
 }
 
 /*
@@ -76,7 +87,9 @@ func UserLoginReq(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req struct {
-		Token string `json:"Token"`
+		Token          string `json:"Token"`
+		NickName       string `json:"NickName"`
+		ProfilePicture string `json:"ProfilePicture"`
 	}
 
 	json.Unmarshal(reqBody, &req)
@@ -88,17 +101,22 @@ func UserLoginReq(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	collection := MongoClient.Database("flashfolio").Collection("users")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	_, err = GetUserByEmail(tokenInfo.Email, ctx)
+	user, err := GetUserByEmail(tokenInfo.Email, ctx)
 	if err != nil {
+		// Not found -- make new user.
 		var newUser User
 		newUser.ID = tokenInfo.UserId
 		newUser.Email = tokenInfo.Email
 		newUser.OwnedDecks = []int{}
-		collection.InsertOne(ctx, newUser)
+		OverwriteUser(newUser, true, ctx)
+	} else {
+		// User found -- update stored user info.
+		user.ProfilePicture = req.ProfilePicture
+		user.NickName = req.NickName
+		OverwriteUser(*user, true, ctx)
 	}
 }
 
@@ -112,6 +130,7 @@ func CleanUser(user User) *User {
 	user.Email = ""
 	return &user
 }
+
 
 /*
 Request to get a user's info from the back end.
