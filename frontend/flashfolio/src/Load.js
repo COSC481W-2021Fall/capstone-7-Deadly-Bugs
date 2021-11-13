@@ -26,8 +26,7 @@ export default function Load() {
 	const {
 		decks,
 		hasMore,
-		loading,
-		error
+		loading
 	} = DeckSearch(query, pageNumber)
 
 	const observer = useRef()
@@ -75,13 +74,23 @@ export default function Load() {
 					<button onClick={editButton}>Edit deck 0</button>
 				</div>
 	
-				<div class="flash-grid">
+				{/* <div class="flash-grid">
 					{arrayOfCards.map(fc => {
 						return <div><Flashcard flashcard={fc} /></div>
 					})}
-				</div>
-			)
+				</div> */}
+				
+				{/*code to add search bar*/}
+				{/* <input type="text" value={query} onChange={handleSearch}></input> */}
+				{decks.map((deck, index) => {
+					if (decks.length === index + 1) {
+						return <div ref={lastDeckElementRef} key={deck}>{deck}</div>
+					} else {
+						return <div key={deck}>{deck}</div>
+        					}
+											}
+							)
+				}
 		</div>
-		
-	)
+		)
 }
