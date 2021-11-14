@@ -2,6 +2,7 @@ import React, { useEffect, createContext, useState, useContext } from "react";
 import {BrowserRouter as Router, Route, Switch, useHistory } from "react-router-dom";
 import Viewer from "./Viewer.js";
 import Load from "./Load.js";
+import Profile from "./Profile.js";
 import LoginButton from "./LoginButton.js"
 import LogoutButton from "./LogoutButton.js"
 import UserInfoPreview from "./UserInfoPreview.js"
@@ -67,6 +68,9 @@ function App() {
 			</Route>
 			<Route path="/load">
 				<Load />
+			</Route>
+			<Route path="/profile/:userId">
+				<Profile />
 			</Route>
 			</Switch>
 		</Router>
