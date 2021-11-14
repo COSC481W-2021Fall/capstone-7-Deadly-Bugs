@@ -106,7 +106,7 @@ sudo chown -R `id -un` /data/db
 git clone https://github.com/COSC481W-2021Fall/capstone-7-Deadly-Bugs.git
 ```
 
-2) cd to `frontent/flashfolio/` and run the following command to install npm dependencies:
+2) cd to `frontend/flashfolio/` and run the following command to install npm dependencies:
 
 ```
 npm install
