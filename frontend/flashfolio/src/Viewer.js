@@ -77,13 +77,13 @@ export default function Viewer({ viewMode = "view" }) {
 			return (
 				<div class="flash-grid">
 					{flashdeck.current.Cards.map(fc => {
-						return <div><Flashcard flashcard={fc} editMode={viewMode == "edit"} flashdeck={flashdeck} /></div>
+						return <div><Flashcard flashcard={fc} editMode={viewMode === "edit"} flashdeck={flashdeck} /></div>
 					})}
 				</div>
 			)
 		}
 		return (
-			<Flashcard flashcard={flashcard} editMode={viewMode == "edit"} flashdeck={flashdeck} />
+			<Flashcard flashcard={flashcard} editMode={viewMode === "edit"} flashdeck={flashdeck} />
 		)
 	}
 
@@ -117,32 +117,13 @@ export default function Viewer({ viewMode = "view" }) {
 		setFlashcard(flashdeck.current.Cards[cardIterator]);
 	}
 
-	function deleteCard() {
-		/* if there's 1 card, then make an empty card*/
-		if (flashdeck.current.Cards.length === 1) {
-			flashdeck.current.Cards[0] = {};
-			flashdeck.current.Cards[0].FrontSide = "";
-			flashdeck.current.Cards[0].BackSide = "";
-			/* view the blank card */
-			setFlashcard(flashdeck.current.Cards[cardIterator]);
-			return;
-		}
-
-		/* delete the card */
-		delete flashdeck.current.Cards[cardIterator];
-
-		/* update Cards removing the null pointer */
-		flashdeck.current.Cards = flashdeck.current.Cards.filter(function () { return true; });
-
-		/* update view to the next card or cycle to beginning if deleting the last card */
-		if (cardIterator < flashdeck.current.Cards.length) {
-			setFlashcard(flashdeck.current.Cards[cardIterator])
+	function previousCard() {
+		if (cardIterator===0) {
+			setCardIterator(flashdeck.current.Cards.length - 1);
 		} else {
-			setCardIterator(0);
-			setFlashcard(flashdeck.current.Cards[0]);
+			setCardIterator(cardIterator - 1);
 		}
 	}
-
 	const loadButton = () => {
 		history.push("/load");
 	};
@@ -156,26 +137,27 @@ export default function Viewer({ viewMode = "view" }) {
 			Title: {flashdeck.current.Title}
 			DeckId: {deckId}
 			<br />
-			<button onClick = {flipView}> {viewMode == "edit" ? "View Deck" : "Edit Deck"} </button>
-			{viewMode == "edit" && <button onClick={changeLayout}>Change Layout</button>}
+			<button onClick = {flipView}> {viewMode === "edit" ? "View Deck" : "Edit Deck"} </button>
+			{viewMode === "edit" && <button onClick={changeLayout}>Change Layout</button>}
 			{tileLayout()}
+			{!tileCards && <button
+				onClick={previousCard}
+			>Previous Card</button>}
 			{!tileCards && <button
 				onClick={() => setCardIterator(cardIterator + 1)}
 			>Next Card</button>}
-			{viewMode == "view" && (hidden ?
+			{viewMode === "view" && (hidden ?
 				<button id="shuf" onClick={() => shufFunction()}>Shuffle</button> :
 				<button id="unshuf" onClick={() => shufOn ? unshufFunction() : null}>Unshuffle</button>)
 			}
 			{viewMode === "edit" && <button onClick = {addCard}>Add a card</button>}
-			{viewMode === "edit" && <button onClick={deleteCard}>
-				Delete</button>}
 			<a
 				href={`data:text/json;charset=utf-8,${encodeURIComponent(
 					JSON.stringify(flashdeck.current, null, '\t')
 				)}`}
 				download="myDeck.json"
 			>Download</a>
-			{viewMode == "edit" && <button onClick={saveChanges}>Save Changes</button>}
+			{viewMode === "edit" && <button onClick={saveChanges}>Save Changes</button>}
 			<button onClick={homeButton}>Home</button>
 			<button onClick={loadButton}>Load Deck</button>
 		</div>
