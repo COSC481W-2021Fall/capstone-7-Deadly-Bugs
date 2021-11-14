@@ -77,13 +77,13 @@ export default function Viewer({ viewMode = "view" }) {
 			return (
 				<div class="flash-grid">
 					{flashdeck.current.Cards.map(fc => {
-						return <div><Flashcard flashcard={fc} editMode={viewMode == "edit"} /></div>
+						return <div><Flashcard flashcard={fc} editMode={viewMode == "edit"} flashdeck={flashdeck} /></div>
 					})}
 				</div>
 			)
 		}
 		return (
-			<Flashcard flashcard={flashcard} editMode={viewMode == "edit"} />
+			<Flashcard flashcard={flashcard} editMode={viewMode == "edit"} flashdeck={flashdeck} />
 		)
 	}
 

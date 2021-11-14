@@ -1,7 +1,7 @@
 import React, {useState, useRef, useEffect} from 'react'
 import './Flashcard.css'
 
-export default function Flashcard({flashcard, editMode=false}) {
+export default function Flashcard({flashcard, editMode=false, flashdeck}) {
 
 	const [flip, setFlip] = useState(false);
 	const [showEditor, setShowEditor] = useState(false);	
@@ -65,6 +65,34 @@ export default function Flashcard({flashcard, editMode=false}) {
 		setEditVal(currentSide());
 	}, [flashcard]);
 
+	function deleteCard() {
+		/* if there's 1 card, then make an empty card
+		if (flashdeck.current.Cards.length === 1) {
+			flashdeck.current.Cards[0] = {};
+			flashdeck.current.Cards[0].FrontSide = "";
+			flashdeck.current.Cards[0].BackSide = "";
+			/* view the blank card 
+			setFlashcard(flashdeck.current.Cards[cardIterator]);
+			
+			return;
+		}
+		*/
+
+		/* delete the card */
+		var index = flashdeck.current.Cards.indexOf(flashcard);
+		delete flashdeck.current.Cards[index];
+
+		/* update Cards removing the null pointer */
+		flashdeck.current.Cards = flashdeck.current.Cards.filter(function () { return true; });
+
+		/* update view */
+		flashdeck.current.Cards.map(fc => {
+			return <div><Flashcard flashcard={fc} editMode={editMode} flashdeck={flashdeck} /></div>
+		});
+		
+		//cardContents();
+		}
+
 	return (
 		<div>
 		{editMode ? 
@@ -73,6 +101,9 @@ export default function Flashcard({flashcard, editMode=false}) {
 			</button>:""}
 		<button onClick={flipCard}>
 			Flip
+		</button>
+		<button onClick={deleteCard}>
+			Delete
 		</button>
 		<div data-testid = "card" onClick={cardClick} class="card">
 			{cardContents()}
