@@ -247,14 +247,8 @@ func cloneDeck(deck Deck) {
 
 		// Duplicate value found. Iterate through values until value isn't a duplicate
 		fmt.Println("Duplicate value found. finding empty value")
-		for {
-			newDeck.ID += 1
-			filter = bson.D{{Key: "id", Value: newDeck.ID}}
-			err = collection.FindOne(ctx, filter).Decode(&sameID)
-			if err != nil {
-				break
-			}
-		}
+
+		newDeck.ID = generateID()
 		// insert document when deckID that isn't currently used is found.
 		collection.InsertOne(ctx, newDeck)
 	}
