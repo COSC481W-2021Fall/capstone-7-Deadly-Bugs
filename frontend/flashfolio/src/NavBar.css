@@ -1,0 +1,15 @@
+nav {
+	background: whitesmoke;
+	border-bottom: 1px solid black;
+}
+
+nav button:hover {
+	background: salmon;
+	cursor: pointer;
+}
+
+nav button {
+	background: whitesmoke;
+	color: black;
+	box-shadow: none;
+}
