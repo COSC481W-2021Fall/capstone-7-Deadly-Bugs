@@ -18,7 +18,7 @@ var hidden = true;
 export default function Viewer({ viewMode = "view" }) {
 	const history = useHistory();
 
-	const flashdeck = useRef("");
+	const [flashdeck, setFlashdeck] = useState("");
 	const isInitialMount = useRef(true);
 
 	const [flashcard, setFlashcard] = useState("");
@@ -43,40 +43,39 @@ export default function Viewer({ viewMode = "view" }) {
 		setCardIterator(0);
 		setShufOn(true);
 		shufOrder = [];
-		while (shufOrder.length < flashdeck.current.Cards.length) {
-			var num = Math.floor(Math.random() * flashdeck.current.Cards.length);
+		while (shufOrder.length < flashdeck.Cards.length) {
+			var num = Math.floor(Math.random() * flashdeck.Cards.length);
 			if (shufOrder.indexOf(num) === -1)
 				shufOrder.push(num);
 		}
 		document.getElementById('shuf').style.visibility = "visible";
-		setFlashcard(flashdeck.current.Cards[shufOrder[cardIterator]]);
+		setFlashcard(flashdeck.Cards[shufOrder[cardIterator]]);
 	}
 
 	function unshufFunction() {
 		hidden = true;
 		setCardIterator(0);
 		setShufOn(false);
-		setFlashcard(flashdeck.current.Cards[cardIterator]);
+		setFlashcard(flashdeck.Cards[cardIterator]);
 	}
 
 	let { deckId } = useParams();
 
 
 	function saveChanges(){
-		console.log(flashdeck.current)
-		saveDeck(flashdeck.current)
+		console.log(flashdeck)
+		saveDeck(flashdeck)
 	}
 
 	function changeLayout() {
 		setTileCards(!tileCards)
 	}
 
-
 	function tileLayout() {
 		if (tileCards) {
 			return (
 				<div class="flash-grid">
-					{flashdeck.current.Cards.map(fc => {
+					{flashdeck.Cards.map(fc => {
 						return <div><Flashcard flashcard={fc} editMode={viewMode === "edit"} flashdeck={flashdeck} /></div>
 					})}
 				</div>
@@ -90,10 +89,14 @@ export default function Viewer({ viewMode = "view" }) {
 	useEffect(() => {
 		getDeck(Number(deckId))
 			.then(deck => {
-				flashdeck.current = deck;
-				setFlashcard(flashdeck.current.Cards[0]);
-			});
+				setFlashdeck(deck);
+			})
 	}, [deckId]);
+
+	/* if flashdeck changes, update flashdeck */
+	useEffect(() => {
+		tileLayout();
+	}, [flashdeck]);
 
 	useEffect(() => {
 		if (isInitialMount.current) {
@@ -101,29 +104,30 @@ export default function Viewer({ viewMode = "view" }) {
 		}
 		else {
 			/* useEffect code here to be run on count update only */
-			if (cardIterator < flashdeck.current.Cards.length) {
+			if (cardIterator < flashdeck.Cards.length) {
 				if ((!shufOn))
-					setFlashcard(flashdeck.current.Cards[cardIterator]);
+					setFlashcard(flashdeck.Cards[cardIterator]);
 				else
-					setFlashcard(flashdeck.current.Cards[shufOrder[cardIterator]]);
+					setFlashcard(flashdeck.Cards[shufOrder[cardIterator]]);
 			}
 			else { setCardIterator(0); }
 		}
 	}, [cardIterator])
 
 	function addCard() {
-		flashdeck.current.Cards[flashdeck.current.Cards.length] = {FrontSide: "", BackSide: ""};
-		setCardIterator(flashdeck.current.Cards.length-1);
-		setFlashcard(flashdeck.current.Cards[cardIterator]);
+		flashdeck.Cards[flashdeck.Cards.length] = {FrontSide: "", BackSide: ""};
+		setCardIterator(flashdeck.Cards.length-1);
+		setFlashcard(flashdeck.Cards[cardIterator]);
 	}
 
 	function previousCard() {
 		if (cardIterator===0) {
-			setCardIterator(flashdeck.current.Cards.length - 1);
+			setCardIterator(flashdeck.Cards.length - 1);
 		} else {
 			setCardIterator(cardIterator - 1);
 		}
 	}
+
 	const loadButton = () => {
 		history.push("/load");
 	};
@@ -134,7 +138,7 @@ export default function Viewer({ viewMode = "view" }) {
 	return (
 		<div>
 			<UserInfoPreview />
-			Title: {flashdeck.current.Title}
+			Title: {flashdeck.Title}
 			DeckId: {deckId}
 			<br />
 			<button onClick = {flipView}> {viewMode === "edit" ? "View Deck" : "Edit Deck"} </button>
@@ -153,7 +157,7 @@ export default function Viewer({ viewMode = "view" }) {
 			{viewMode === "edit" && <button onClick = {addCard}>Add a card</button>}
 			<a
 				href={`data:text/json;charset=utf-8,${encodeURIComponent(
-					JSON.stringify(flashdeck.current, null, '\t')
+					JSON.stringify(flashdeck, null, '\t')
 				)}`}
 				download="myDeck.json"
 			>Download</a>
