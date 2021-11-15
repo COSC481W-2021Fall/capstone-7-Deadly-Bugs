@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import "./Viewer.css";
 import { getUser } from "./Calls.js";
 import { loginContext } from "./App.js";
-import Flashcard from "./Flashcard";
 
 export default function Profile() {
 
@@ -40,7 +39,9 @@ export default function Profile() {
 					<> No Existing User Specified. </> :
 					<>
 						{user.OwnedDecks.map(fc => {
-							return <div><Flashcard flashcard={fc}/></div>
+							if (fc != null)
+								return <div><a href= {"../view/" + fc}>{"DeckID:" + fc}</a></div>
+							return
 						})}
 					</>
 					}
@@ -60,7 +61,9 @@ export default function Profile() {
 					<> No Existing User Specified. </> :
 					<>
 						{user.OwnedDecks.map(fc => {
-							return <div><Flashcard flashcard={fc}/></div>
+							if (fc != null)
+								return <div><a href= {"../view/" + fc}>{"DeckID:" + fc}</a></div>
+							return
 						})}
 					</>
 					}
