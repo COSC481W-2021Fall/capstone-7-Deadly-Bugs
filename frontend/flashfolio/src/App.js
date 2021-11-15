@@ -94,6 +94,13 @@ function Home() {
 	const loadButton = () => {
 		history.push("/load");
 	  };
+
+	const profileButton = () => {
+		if (loginState === null)
+			history.push("/profile/");
+		else
+			history.push("/profile/" + loginState.googleId);
+	  };
 	
 
 	return (
@@ -122,6 +129,7 @@ function Home() {
 						<NewDeckButton />
 						</>}
 					{/*<UserInfoPreview />*/}
+					<button onClick={profileButton}>Profile</button>
 				</div>
 			</div>
 		</div>
