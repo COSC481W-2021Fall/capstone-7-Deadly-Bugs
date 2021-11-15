@@ -59,11 +59,11 @@ export async function createNewDeck(token, deckName) {
 	return resp.json();
 }
 
-export async function saveDeck(deck) {
+export async function saveDeck(token, deck) {
 	let reqOpt = {
 		method: "POST",
 		headers: {"Content-Type": "application/json"},
-		body: JSON.stringify({"Deck": deck}),
+		body: JSON.stringify({"Token":token, "Deck": deck}),
 	}
 
 	console.log(reqOpt)
@@ -85,3 +85,25 @@ export async function cloneDeck(deck) {
 	let resp = await fetch(apiURL() + "/cloneDeck", reqOpt);
 	return resp;
 }
+export async function notifyUserLogin(token, profileObj) {
+	let reqOpt = {
+		method: "POST",
+		headers: {"Content-Type": "application/json"},
+		body: JSON.stringify({"Token": token, "NickName": profileObj.name, "ProfilePicture":profileObj.imageUrl}),
+	}
+
+	let resp = await fetch(apiURL() + "/userLogin", reqOpt);
+}
+
+export async function getUser(userID, includePrivate=false, token="") {
+	let reqOpt = {
+		method: "POST",
+		headers: {"Content-Type": "application/json"},
+		body: JSON.stringify({"ID":userID, "Private":includePrivate, "Token": token}),
+	}
+
+	let resp = await fetch(apiURL() + "/getUser", reqOpt);
+	return resp.json();
+}
+
+

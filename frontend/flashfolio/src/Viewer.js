@@ -1,11 +1,19 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import Flashcard from "./Flashcard";
-import {getDeck, saveDeck, cloneDeck} from "./Calls.js";
+
+import {getUser, getDeck, saveDeck, cloneDeck} from "./Calls.js";
+
+import Popup from "reactjs-popup";
+
 
 import UserInfoPreview from "./UserInfoPreview.js";
 import "./Viewer.css";
 import "./styles.css";
+
+import "./NewDeckButton.css";
+
+import {loginContext} from "./App.js";
 
 /*
 Viewer
@@ -26,6 +34,21 @@ export default function Viewer({ viewMode = "view" }) {
 	const [shufOn, setShufOn] = useState(false);
 
 	const [tileCards, setTileCards] = useState(false);
+
+	const { loginState, loadedAuthState } = useContext(loginContext);
+
+	const [deckOwner, setDeckOwner] = useState(null);
+
+	function flipView(){
+		if(viewMode==="view")
+			history.replace("/edit/"+deckId);
+		else
+		{
+			if(tileCards)
+				setTileCards(false);
+			history.replace("/view/"+deckId);
+		}
+	}
 
 	function shufFunction() {
 		hidden = false;
@@ -52,8 +75,10 @@ export default function Viewer({ viewMode = "view" }) {
 
 
 	function saveChanges(){
-		console.log(flashdeck.current)
-		saveDeck(flashdeck.current)
+		if (loginState !== null) {
+			console.log(flashdeck.current)
+			saveDeck(loginState.tokenId, flashdeck.current)
+		}
 	}
 
 	function cloneD(){
@@ -81,12 +106,12 @@ export default function Viewer({ viewMode = "view" }) {
 		)
 	}
 
-	useEffect(() => {
-		getDeck(Number(deckId))
-			.then(deck => {
-				flashdeck.current = deck;
-				setFlashcard(flashdeck.current.Cards[0]);
-			});
+	useEffect(async () => {
+		let deck = await getDeck(Number(deckId));
+		flashdeck.current = deck;
+		setFlashcard(flashdeck.current.Cards[0]);
+		let owner = await getUser(flashdeck.current.Owner);
+		setDeckOwner(owner);
 	}, [deckId]);
 
 	useEffect(() => {
@@ -105,8 +130,14 @@ export default function Viewer({ viewMode = "view" }) {
 		}
 	}, [cardIterator])
 
+	useEffect(() => {
+		if (viewMode === "edit" && loadedAuthState && flashdeck.current != "" && (loginState === null || loginState.googleId != flashdeck.current.Owner)) {
+			history.replace("/view/"+deckId)
+		}
+	}, [loginState, loadedAuthState, flashdeck.current]);
+
 	function addCard() {
-		flashdeck.current.Cards[flashdeck.current.Cards.length] = {frontSide: "new", backSide: "null"};
+		flashdeck.current.Cards[flashdeck.current.Cards.length] = {FrontSide: "", BackSide: ""};
 		setCardIterator(flashdeck.current.Cards.length-1);
 		setFlashcard(flashdeck.current.Cards[cardIterator]);
 	}
@@ -150,6 +181,9 @@ export default function Viewer({ viewMode = "view" }) {
 			Title: {flashdeck.current.Title}
 			DeckId: {deckId}
 			<br />
+			{ (loginState !== null && loginState.googleId === flashdeck.current.Owner) &&
+				<button onClick = {flipView}> {viewMode == "edit" ? "View Deck" : "Edit Deck"} </button>
+			}
 			{viewMode == "edit" && <button onClick={changeLayout}>Change Layout</button>}
 			{tileLayout()}
 			{!tileCards && <button
@@ -172,6 +206,23 @@ export default function Viewer({ viewMode = "view" }) {
 			{viewMode == "edit" && <button onClick={cloneD}>Clone Deck</button>}
 			<button onClick={homeButton}>Home</button>
 			<button onClick={loadButton}>Load Deck</button>
+
+			{/* Pop up showing deck information */}
+			<Popup trigger={<a>Info</a>} position="right center" modal>
+				<div className="modal">
+					<div className="header">
+						{flashdeck.current.Title}
+					</div>
+					{flashdeck.current.Cards !== undefined && flashdeck.current.Cards.length} Cards
+					<br/>
+					Created by:
+					<br/>
+					<img src={deckOwner === null ? "" : deckOwner.ProfilePicture} />
+					{deckOwner === null ? "" : deckOwner.NickName}
+					<br/>
+					Deck# {flashdeck.current.ID}
+				</div>
+			</Popup>
 		</div>
 	);
 }
