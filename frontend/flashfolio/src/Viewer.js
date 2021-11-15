@@ -93,9 +93,10 @@ export default function Viewer({ viewMode = "view" }) {
 			})
 	}, [deckId]);
 
-	/* if flashdeck changes, update flashdeck */
+	/* this will display the current card */
 	useEffect(() => {
-		tileLayout();
+		if (!isInitialMount.current)
+			setFlashcard(flashdeck.Cards[cardIterator])
 	}, [flashdeck]);
 
 	useEffect(() => {

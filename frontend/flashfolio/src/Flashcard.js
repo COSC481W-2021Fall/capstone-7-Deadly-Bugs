@@ -66,33 +66,20 @@ export default function Flashcard({flashcard, editMode=false, flashdeck}) {
 	}, [flashcard]);
 
 	function deleteCard() {
-		//change flashdeck to state not reference
-		
-		/* if there's 1 card, then make an empty card
+		/* if there's one card, make a blank card */
 		if (flashdeck.Cards.length === 1) {
 			flashdeck.Cards[0] = {};
 			flashdeck.Cards[0].FrontSide = "";
 			flashdeck.Cards[0].BackSide = "";
-			/* view the blank card 
-			setFlashcard(flashdeck.Cards[cardIterator]);
-			
 			return;
 		}
-		*/
 
 		/* delete the card */
 		var index = flashdeck.Cards.indexOf(flashcard);
 		delete flashdeck.Cards[index];
 
-		/* update Cards removing the null pointer */
+		/* update Cards list by removing the null pointer */
 		flashdeck.Cards = flashdeck.Cards.filter(function () { return true; });
-
-		/* update view 
-		flashdeck.Cards.map(fc => {
-			return <div><Flashcard flashcard={fc} editMode={editMode} flashdeck={flashdeck} /></div>
-		});
-		*/
-		//cardContents();
 		}
 
 	return (
