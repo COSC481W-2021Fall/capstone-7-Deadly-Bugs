@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import Flashcard from "./Flashcard";
-import {getUser, getDeck, saveDeck} from "./Calls.js";
+
+import {getUser, getDeck, saveDeck, cloneDeck} from "./Calls.js";
 
 import Popup from "reactjs-popup";
+
 
 import UserInfoPreview from "./UserInfoPreview.js";
 import "./Viewer.css";
@@ -36,6 +38,12 @@ export default function Viewer({ viewMode = "view" }) {
 	const { loginState, loadedAuthState } = useContext(loginContext);
 
 	const [deckOwner, setDeckOwner] = useState(null);
+
+	const [isPrivate, setIsPrivate] = useState(false);
+	const handlePrivacyChange = () => {
+		setIsPrivate(!isPrivate);
+		flashdeck.current.IsPublic = isPrivate;
+	}
 
 	function flipView(){
 		if(viewMode==="view")
@@ -79,6 +87,17 @@ export default function Viewer({ viewMode = "view" }) {
 		}
 	}
 
+	async function cloneD(){
+		if (loginState !== null){
+			console.log(flashdeck.current)
+			let resp = await cloneDeck(loginState.tokenId, flashdeck.current)
+			console.log(resp)
+
+			history.push("/edit/"+resp.ID)
+		}
+		
+	}
+
 	function changeLayout() {
 		setTileCards(!tileCards)
 	}
@@ -100,12 +119,14 @@ export default function Viewer({ viewMode = "view" }) {
 	}
 
 	useEffect(async () => {
-		let deck = await getDeck(Number(deckId));
+		let deck = await getDeck(Number(deckId), loginState !== null ? loginState.tokenId : "");
 		flashdeck.current = deck;
 		setFlashcard(flashdeck.current.Cards[0]);
 		let owner = await getUser(flashdeck.current.Owner);
 		setDeckOwner(owner);
-	}, [deckId]);
+		/* Set Privacy toggle to match deck info */
+		setIsPrivate(!flashdeck.current.IsPublic);
+	}, [deckId, loginState]);
 
 	useEffect(() => {
 		if (isInitialMount.current) {
@@ -196,6 +217,7 @@ export default function Viewer({ viewMode = "view" }) {
 				download="myDeck.json"
 			>Download</a>
 			{viewMode == "edit" && <button onClick={saveChanges}>Save Changes</button>}
+			{loginState !== null && <button onClick={cloneD}>Clone Deck</button>}
 			<button onClick={homeButton}>Home</button>
 			<button onClick={loadButton}>Load Deck</button>
 
@@ -211,6 +233,12 @@ export default function Viewer({ viewMode = "view" }) {
 					<br/>
 					<img src={deckOwner === null ? "" : deckOwner.ProfilePicture} />
 					{deckOwner === null ? "" : deckOwner.NickName}
+					{viewMode == "edit" &&
+						<>
+						<br/>
+						Private Deck? <input type="checkbox" checked={isPrivate} onChange={handlePrivacyChange} />
+						</>
+					}
 					<br/>
 					Deck# {flashdeck.current.ID}
 				</div>
