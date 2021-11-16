@@ -1,19 +1,22 @@
-import React, {useState, useRef, useEffect} from 'react'
+import React, {useState, useRef, useEffect, useContext } from 'react'
 import './Flashcard.css'
 
-export default function Flashcard({flashcard, editMode=false, flashdeck}) {
+
+export default function Flashcard({flashcard, editMode=false, delfunc}) {
 
 	const [flip, setFlip] = useState(false);
 	const [showEditor, setShowEditor] = useState(false);	
 
 	/* Returns appropriate side according to flip state */
-	const currentSide = () => flip ? flashcard.BackSide : flashcard.FrontSide;
+	const currentSide = () => flip ? cardState.BackSide : cardState.FrontSide;
 
 	/* Ref for the actual textarea (maybe can be removed?)*/
 	const editor = useRef(null);
 
 	/* State for the editor textarea's value */
 	const [editVal, setEditVal] = useState("");
+
+	const [cardState, setCardState] = useState(flashcard);
 
 	/* Executed when editor textarea is changed by user */
 	const updateCard = () => {
@@ -63,24 +66,10 @@ export default function Flashcard({flashcard, editMode=false, flashdeck}) {
 	/* If the flashcard changes to a different one, update the editor */
 	useEffect(() => {
 		setEditVal(currentSide());
+		setCardState(flashcard);
 	}, [flashcard]);
 
-	function deleteCard() {
-		/* if there's one card, make a blank card */
-		if (flashdeck.Cards.length === 1) {
-			flashdeck.Cards[0] = {};
-			flashdeck.Cards[0].FrontSide = "";
-			flashdeck.Cards[0].BackSide = "";
-			return;
-		}
-
-		/* delete the card */
-		var index = flashdeck.Cards.indexOf(flashcard);
-		delete flashdeck.Cards[index];
-
-		/* update Cards list by removing the null pointer */
-		flashdeck.Cards = flashdeck.Cards.filter(function () { return true; });
-		}
+	const deleteCard = () => delfunc(flashcard);
 
 	return (
 		<div>

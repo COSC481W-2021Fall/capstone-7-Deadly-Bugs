@@ -15,6 +15,7 @@ Displays a single card at a time to the screen.
 */
 var shufOrder = [];
 var hidden = true;
+
 export default function Viewer({ viewMode = "view" }) {
 	const history = useHistory();
 
@@ -76,13 +77,13 @@ export default function Viewer({ viewMode = "view" }) {
 			return (
 				<div class="flash-grid">
 					{flashdeck.Cards.map(fc => {
-						return <div><Flashcard flashcard={fc} editMode={viewMode === "edit"} flashdeck={flashdeck} /></div>
+						return <div><Flashcard flashcard={fc} editMode={viewMode === "edit"} delfunc={deleteCard}/></div>
 					})}
 				</div>
 			)
 		}
 		return (
-			<Flashcard flashcard={flashcard} editMode={viewMode === "edit"} flashdeck={flashdeck} />
+			<Flashcard flashcard={flashcard} editMode={viewMode === "edit"} delfunc={deleteCard}/>
 		)
 	}
 
@@ -119,6 +120,31 @@ export default function Viewer({ viewMode = "view" }) {
 		flashdeck.Cards[flashdeck.Cards.length] = {FrontSide: "", BackSide: ""};
 		setCardIterator(flashdeck.Cards.length-1);
 		setFlashcard(flashdeck.Cards[cardIterator]);
+	}
+
+	function deleteCard(card, clear) {
+		/* Extremely hacky disgusting way of deepcopying */
+		let copy = { ... flashdeck}
+		copy.Cards = flashdeck.Cards
+		/* if there's one card, make a blank card */
+		if (copy.Cards.length === 1) {
+			copy.Cards[0] = {
+				FrontSide: "",
+				BackSide: ""
+			}
+			setFlashcard(copy.Cards[0]);
+			return;
+		}
+
+		/* delete the card */
+		var index = copy.Cards.indexOf(card);
+		delete copy.Cards[index];
+
+		/* update Cards list by removing the null pointer */
+		copy.Cards = copy.Cards.filter(function () { return true; });
+		setFlashdeck(copy)
+		console.log(copy)
+		console.log(flashdeck)
 	}
 
 	function previousCard() {
