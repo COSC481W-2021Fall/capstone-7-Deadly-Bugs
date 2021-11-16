@@ -28,6 +28,16 @@ export default function Viewer({ viewMode = "view" }) {
 
 	const [tileCards, setTileCards] = useState(false);
 
+	const { loginState, loadedAuthState } = useContext(loginContext);
+
+	const [deckOwner, setDeckOwner] = useState(null);
+
+	const [isPrivate, setIsPrivate] = useState(false);
+	const handlePrivacyChange = () => {
+		setIsPrivate(!isPrivate);
+		flashdeck.IsPublic = isPrivate;
+	}
+
 	function flipView(){
 		if(viewMode==="view")
 			history.replace("/edit/"+deckId);
@@ -87,12 +97,15 @@ export default function Viewer({ viewMode = "view" }) {
 		)
 	}
 
-	useEffect(() => {
-		getDeck(Number(deckId))
-			.then(deck => {
-				setFlashdeck(deck);
-			})
-	}, [deckId]);
+	useEffect(async () => {
+		let deck = await getDeck(Number(deckId), loginState !== null ? loginState.tokenId : "");
+		setFlashdeck(deck);
+		setFlashcard(flashdeck.Cards[0]);
+		let owner = await getUser(flashdeck.Owner);
+		setDeckOwner(owner);
+		/* Set Privacy toggle to match deck info */
+		setIsPrivate(!flashdeck.IsPublic);
+	}, [deckId, loginState]);
 
 	/* this will display the current card */
 	useEffect(() => {
@@ -191,6 +204,29 @@ export default function Viewer({ viewMode = "view" }) {
 			{viewMode === "edit" && <button onClick={saveChanges}>Save Changes</button>}
 			<button onClick={homeButton}>Home</button>
 			<button onClick={loadButton}>Load Deck</button>
+
+			{/* Pop up showing deck information */}
+			<Popup trigger={<a>Info</a>} position="right center" modal>
+				<div className="modal">
+					<div className="header">
+						{flashdeck.Title}
+					</div>
+					{flashdeck.Cards !== undefined && flashdeck.Cards.length} Cards
+					<br/>
+					Created by:
+					<br/>
+					<img src={deckOwner === null ? "" : deckOwner.ProfilePicture} />
+					{deckOwner === null ? "" : deckOwner.NickName}
+					{viewMode == "edit" &&
+						<>
+						<br/>
+						Private Deck? <input type="checkbox" checked={isPrivate} onChange={handlePrivacyChange} />
+						</>
+					}
+					<br/>
+					Deck# {flashdeck.ID}
+				</div>
+			</Popup>
 		</div>
 	);
 }
