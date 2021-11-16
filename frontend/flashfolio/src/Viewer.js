@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import Flashcard from "./Flashcard";
-import {getUser, getDeck, saveDeck} from "./Calls.js";
+
+import { getUser, getDeck, saveDeck, cloneDeck } from "./Calls.js";
 
 import Popup from "reactjs-popup";
+
 
 import UserInfoPreview from "./UserInfoPreview.js";
 import "./Viewer.css";
@@ -11,7 +13,7 @@ import "./styles.css";
 
 import "./NewDeckButton.css";
 
-import {loginContext} from "./App.js";
+import { loginContext } from "./App.js";
 
 /*
 Viewer
@@ -44,14 +46,13 @@ export default function Viewer({ viewMode = "view" }) {
 		flashdeck.IsPublic = isPrivate;
 	}
 
-	function flipView(){
-		if(viewMode==="view")
-			history.replace("/edit/"+deckId);
-		else
-		{
-			if(tileCards)
+	function flipView() {
+		if (viewMode === "view")
+			history.replace("/edit/" + deckId);
+		else {
+			if (tileCards)
 				setTileCards(false);
-			history.replace("/view/"+deckId);
+			history.replace("/view/" + deckId);
 		}
 	}
 
@@ -79,9 +80,19 @@ export default function Viewer({ viewMode = "view" }) {
 	let { deckId } = useParams();
 
 
-	function saveChanges(){
+	function saveChanges() {
 		console.log(flashdeck)
 		saveDeck(flashdeck)
+	}
+
+	async function cloneD() {
+		if (loginState !== null) {
+			console.log(flashdeck)
+			let resp = await cloneDeck(loginState.tokenId, flashdeck)
+			console.log(resp)
+
+			history.push("/edit/" + resp.ID)
+		}
 	}
 
 	function changeLayout() {
@@ -93,13 +104,13 @@ export default function Viewer({ viewMode = "view" }) {
 			return (
 				<div class="flash-grid">
 					{flashdeck.Cards.map(fc => {
-						return <div><Flashcard flashcard={fc} editMode={viewMode === "edit"} delfunc={deleteCard}/></div>
+						return <div><Flashcard flashcard={fc} editMode={viewMode === "edit"} delfunc={deleteCard} /></div>
 					})}
 				</div>
 			)
 		}
 		return (
-			<Flashcard flashcard={flashcard} editMode={viewMode === "edit"} delfunc={deleteCard}/>
+			<Flashcard flashcard={flashcard} editMode={viewMode === "edit"} delfunc={deleteCard} />
 		)
 	}
 
@@ -135,14 +146,14 @@ export default function Viewer({ viewMode = "view" }) {
 	}, [cardIterator])
 
 	function addCard() {
-		flashdeck.Cards[flashdeck.Cards.length] = {FrontSide: "", BackSide: ""};
-		setCardIterator(flashdeck.Cards.length-1);
+		flashdeck.Cards[flashdeck.Cards.length] = { FrontSide: "", BackSide: "" };
+		setCardIterator(flashdeck.Cards.length - 1);
 		setFlashcard(flashdeck.Cards[cardIterator]);
 	}
 
 	function deleteCard(card, clear) {
 		/* Extremely hacky disgusting way of deepcopying */
-		let copy = { ... flashdeck}
+		let copy = { ...flashdeck }
 		copy.Cards = flashdeck.Cards
 		/* if there's one card, make a blank card */
 		if (copy.Cards.length === 1) {
@@ -166,7 +177,7 @@ export default function Viewer({ viewMode = "view" }) {
 	}
 
 	function previousCard() {
-		if (cardIterator===0) {
+		if (cardIterator === 0) {
 			setCardIterator(flashdeck.Cards.length - 1);
 		} else {
 			setCardIterator(cardIterator - 1);
@@ -186,7 +197,7 @@ export default function Viewer({ viewMode = "view" }) {
 			Title: {flashdeck.Title}
 			DeckId: {deckId}
 			<br />
-			<button onClick = {flipView}> {viewMode === "edit" ? "View Deck" : "Edit Deck"} </button>
+			<button onClick={flipView}> {viewMode === "edit" ? "View Deck" : "Edit Deck"} </button>
 			{viewMode === "edit" && <button onClick={changeLayout}>Change Layout</button>}
 			{tileLayout()}
 			{!tileCards && <button
@@ -199,14 +210,15 @@ export default function Viewer({ viewMode = "view" }) {
 				<button id="shuf" onClick={() => shufFunction()}>Shuffle</button> :
 				<button id="unshuf" onClick={() => shufOn ? unshufFunction() : null}>Unshuffle</button>)
 			}
-			{viewMode === "edit" && <button onClick = {addCard}>Add a card</button>}
+			{viewMode === "edit" && <button onClick={addCard}>Add a card</button>}
 			<a
 				href={`data:text/json;charset=utf-8,${encodeURIComponent(
 					JSON.stringify(flashdeck, null, '\t')
 				)}`}
 				download="myDeck.json"
 			>Download</a>
-			{viewMode === "edit" && <button onClick={saveChanges}>Save Changes</button>}
+			{viewMode == "edit" && <button onClick={saveChanges}>Save Changes</button>}
+			{loginState !== null && <button onClick={cloneD}>Clone Deck</button>}
 			<button onClick={homeButton}>Home</button>
 			<button onClick={loadButton}>Load Deck</button>
 
@@ -217,18 +229,18 @@ export default function Viewer({ viewMode = "view" }) {
 						{flashdeck.Title}
 					</div>
 					{flashdeck.Cards !== undefined && flashdeck.Cards.length} Cards
-					<br/>
+					<br />
 					Created by:
-					<br/>
+					<br />
 					<img src={deckOwner === null ? "" : deckOwner.ProfilePicture} />
 					{deckOwner === null ? "" : deckOwner.NickName}
 					{viewMode == "edit" &&
 						<>
-						<br/>
-						Private Deck? <input type="checkbox" checked={isPrivate} onChange={handlePrivacyChange} />
+							<br />
+							Private Deck? <input type="checkbox" checked={isPrivate} onChange={handlePrivacyChange} />
 						</>
 					}
-					<br/>
+					<br />
 					Deck# {flashdeck.ID}
 				</div>
 			</Popup>
