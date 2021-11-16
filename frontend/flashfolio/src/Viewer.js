@@ -1,11 +1,17 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import Flashcard from "./Flashcard";
-import {getDeck, saveDeck} from "./Calls.js";
+import {getUser, getDeck, saveDeck} from "./Calls.js";
+
+import Popup from "reactjs-popup";
 
 import UserInfoPreview from "./UserInfoPreview.js";
 import "./Viewer.css";
 import "./styles.css";
+
+import "./NewDeckButton.css";
+
+import {loginContext} from "./App.js";
 
 /*
 Viewer
@@ -100,7 +106,6 @@ export default function Viewer({ viewMode = "view" }) {
 	useEffect(async () => {
 		let deck = await getDeck(Number(deckId), loginState !== null ? loginState.tokenId : "");
 		setFlashdeck(deck);
-		setFlashcard(flashdeck.Cards[0]);
 		let owner = await getUser(flashdeck.Owner);
 		setDeckOwner(owner);
 		/* Set Privacy toggle to match deck info */
