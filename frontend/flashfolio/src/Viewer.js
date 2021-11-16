@@ -20,7 +20,7 @@ var hidden = true;
 export default function Viewer({ viewMode = "view" }) {
 	const history = useHistory();
 
-	const [flashdeck, setFlashdeck] = useState("");
+	const [flashdeck, setFlashdeck] = useState({});
 	const isInitialMount = useRef(true);
 
 	const [flashcard, setFlashcard] = useState("");
@@ -87,7 +87,6 @@ export default function Viewer({ viewMode = "view" }) {
 
 			history.push("/edit/" + resp.ID)
 		}
-
 	}
 
 	function changeLayout() {
@@ -123,6 +122,7 @@ export default function Viewer({ viewMode = "view" }) {
 		if (!isInitialMount.current)
 			setFlashcard(flashdeck.Cards[cardIterator])
 	}, [flashdeck]);
+
 	useEffect(() => {
 		if (isInitialMount.current) {
 			isInitialMount.current = false;
@@ -144,6 +144,7 @@ export default function Viewer({ viewMode = "view" }) {
 			history.replace("/view/" + deckId)
 		}
 	}, [loginState, loadedAuthState, flashdeck]);
+
 	function addCard() {
 		flashdeck.Cards[flashdeck.Cards.length] = { FrontSide: "", BackSide: "" };
 		setCardIterator(flashdeck.Cards.length - 1);
@@ -183,9 +184,54 @@ export default function Viewer({ viewMode = "view" }) {
 		}
 	}
 
+	const getJsonUpload = () =>
+		new Promise(resolve => {
+			const inputFileElement = document.createElement('input')
+			inputFileElement.setAttribute('type', 'file')
+			inputFileElement.setAttribute('multiple', 'false')
+			inputFileElement.setAttribute('accept', '.json')
+
+			inputFileElement.addEventListener(
+				'change',
+				async (event) => {
+					const { files } = event.target
+					if (!files) {
+						return
+					}
+
+					const filePromises = [...files].map(file => file.text())
+
+					resolve(await Promise.all(filePromises))
+				},
+				false,
+			)
+			inputFileElement.click()
+		})
+
+	window.onload = function () {
+		document.getElementById('upload-button').onclick = async () => {
+			/* get the json */
+			const jsonFile = await getJsonUpload();
+
+			/* convert to object */
+			let tempDeck = JSON.parse(jsonFile);
+
+			/* keep the important properties unchanged */
+			tempDeck.ID = flashdeck.ID;
+			tempDeck.IsPublic = flashdeck.IsPublic;
+			tempDeck.Owner = flashdeck.Owner;
+
+			/* update flashdeck with new title and cards list */
+			setFlashdeck(tempDeck);
+			console.log(tempDeck);
+			console.log(flashdeck);
+		}
+	}
+
 	const loadButton = () => {
 		history.push("/load");
 	};
+
 	const homeButton = () => {
 		history.push("/");
 	};
@@ -220,6 +266,9 @@ export default function Viewer({ viewMode = "view" }) {
 				)}`}
 				download="myDeck.json"
 			>Download</a>
+			<button id="upload-button">
+				Import
+			</button>
 			{viewMode === "edit" && <button onClick={saveChanges}>Save Changes</button>}
 			{loginState !== null && <button onClick={cloneD}>Clone Deck</button>}
 			<button onClick={homeButton}>Home</button>
