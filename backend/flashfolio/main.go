@@ -149,35 +149,13 @@ func saveDeckReq(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req struct {
-		Deck  Deck   `json:"Deck"`
-		Token string `json:"Token"`
+		Deck Deck `json:"Deck"`
 	}
 
 	json.Unmarshal(reqBody, &req)
 
-	tokenInfo, err := VerifyIdToken(req.Token)
-	if err != nil {
-		/* Bad Token => Unauthorized */
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
-
-	collection := MongoClient.Database("flashfolio").Collection("decks")
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	var realDeck Deck
-	err = collection.FindOne(ctx, bson.D{{Key: "id", Value: req.Deck.ID}}).Decode(&realDeck)
-	if err != nil {
-		/* That deck doesn't exist => 404 */
-		w.WriteHeader(http.StatusNotFound)
-		return
-	}
-	if tokenInfo.UserId != realDeck.Owner {
-		/* Not the deck owner => Forbidden */
-		w.WriteHeader(http.StatusForbidden)
-		return
-	}
+	fmt.Println(string(reqBody))
+	fmt.Println("Got save req for", req)
 
 	overwriteDeck(req.Deck)
 
@@ -317,13 +295,6 @@ func createNewDeckReq(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	user, err := GetUserByID(tokenInfo.UserId, ctx)
-	if err != nil {
-		panic(err)
-		return
-	}
 
 	newID := generateID()
 
@@ -333,14 +304,14 @@ func createNewDeckReq(w http.ResponseWriter, r *http.Request) {
 	newDeck.Cards = []Card{{"", ""}}
 	newDeck.ID = newID
 	newDeck.Title = req.DeckName
-	newDeck.Owner = user.ID
+	newDeck.Owner = tokenInfo.Email
 	newDeck.IsPublic = true
 
 	collection := MongoClient.Database("flashfolio").Collection("decks")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	collection.InsertOne(ctx, newDeck)
-	user.OwnedDecks = append(user.OwnedDecks, newDeck.ID)
-	OverwriteUser(*user, false, ctx)
 
 	ret.ID = newID
 	json.NewEncoder(w).Encode(ret)

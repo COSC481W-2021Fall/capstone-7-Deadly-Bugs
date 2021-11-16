@@ -59,11 +59,11 @@ export async function createNewDeck(token, deckName) {
 	return resp.json();
 }
 
-export async function saveDeck(token, deck) {
+export async function saveDeck(deck) {
 	let reqOpt = {
 		method: "POST",
 		headers: {"Content-Type": "application/json"},
-		body: JSON.stringify({"Token":token, "Deck": deck}),
+		body: JSON.stringify({"Deck": deck}),
 	}
 
 	console.log(reqOpt)
@@ -73,11 +73,11 @@ export async function saveDeck(token, deck) {
 	return resp;
 }
 
-export async function notifyUserLogin(token, profileObj) {
+export async function notifyUserLogin(token) {
 	let reqOpt = {
 		method: "POST",
 		headers: {"Content-Type": "application/json"},
-		body: JSON.stringify({"Token": token, "NickName": profileObj.name, "ProfilePicture":profileObj.imageUrl}),
+		body: JSON.stringify({'Token': token}),
 	}
 
 	let resp = await fetch(apiURL() + "/userLogin", reqOpt);

@@ -1,17 +1,11 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import Flashcard from "./Flashcard";
-import {getUser, getDeck, saveDeck} from "./Calls.js";
-
-import Popup from "reactjs-popup";
+import {getDeck, saveDeck} from "./Calls.js";
 
 import UserInfoPreview from "./UserInfoPreview.js";
 import "./Viewer.css";
 import "./styles.css";
-
-import "./NewDeckButton.css";
-
-import {loginContext} from "./App.js";
 
 /*
 Viewer
@@ -33,10 +27,6 @@ export default function Viewer({ viewMode = "view" }) {
 	const [shufOn, setShufOn] = useState(false);
 
 	const [tileCards, setTileCards] = useState(false);
-
-	const { loginState, loadedAuthState } = useContext(loginContext);
-
-	const [deckOwner, setDeckOwner] = useState(null);
 
 	function flipView(){
 		if(viewMode==="view")
@@ -74,10 +64,8 @@ export default function Viewer({ viewMode = "view" }) {
 
 
 	function saveChanges(){
-		if (loginState !== null) {
-			console.log(flashdeck)
-			saveDeck(loginState.tokenId, flashdeck)
-		}
+		console.log(flashdeck)
+		saveDeck(flashdeck)
 	}
 
 	function changeLayout() {
@@ -99,11 +87,11 @@ export default function Viewer({ viewMode = "view" }) {
 		)
 	}
 
-	useEffect(async () => {
-		let deck = await getDeck(Number(deckId));
-		setFlashdeck(deck);
-		let owner = await getUser(flashdeck.Owner);
-		setDeckOwner(owner);
+	useEffect(() => {
+		getDeck(Number(deckId))
+			.then(deck => {
+				setFlashdeck(deck);
+			})
 	}, [deckId]);
 
 	/* this will display the current card */
@@ -127,12 +115,6 @@ export default function Viewer({ viewMode = "view" }) {
 			else { setCardIterator(0); }
 		}
 	}, [cardIterator])
-
-	useEffect(() => {
-		if (viewMode === "edit" && loadedAuthState && flashdeck != "" && (loginState === null || loginState.googleId != flashdeck.Owner)) {
-			history.replace("/view/"+deckId)
-		}
-	}, [loginState, loadedAuthState, flashdeck]);
 
 	function addCard() {
 		flashdeck.Cards[flashdeck.Cards.length] = {FrontSide: "", BackSide: ""};
@@ -186,10 +168,8 @@ export default function Viewer({ viewMode = "view" }) {
 			Title: {flashdeck.Title}
 			DeckId: {deckId}
 			<br />
-			{ (loginState !== null && loginState.googleId === flashdeck.Owner) &&
-				<button onClick = {flipView}> {viewMode == "edit" ? "View Deck" : "Edit Deck"} </button>
-			}
-			{viewMode == "edit" && <button onClick={changeLayout}>Change Layout</button>}
+			<button onClick = {flipView}> {viewMode === "edit" ? "View Deck" : "Edit Deck"} </button>
+			{viewMode === "edit" && <button onClick={changeLayout}>Change Layout</button>}
 			{tileLayout()}
 			{!tileCards && <button
 				onClick={previousCard}
@@ -211,23 +191,6 @@ export default function Viewer({ viewMode = "view" }) {
 			{viewMode === "edit" && <button onClick={saveChanges}>Save Changes</button>}
 			<button onClick={homeButton}>Home</button>
 			<button onClick={loadButton}>Load Deck</button>
-
-			{/* Pop up showing deck information */}
-			<Popup trigger={<a>Info</a>} position="right center" modal>
-				<div className="modal">
-					<div className="header">
-						{flashdeck.Title}
-					</div>
-					{flashdeck.Cards !== undefined && flashdeck.Cards.length} Cards
-					<br/>
-					Created by:
-					<br/>
-					<img src={deckOwner === null ? "" : deckOwner.ProfilePicture} />
-					{deckOwner === null ? "" : deckOwner.NickName}
-					<br/>
-					Deck# {flashdeck.ID}
-				</div>
-			</Popup>
 		</div>
 	);
 }
