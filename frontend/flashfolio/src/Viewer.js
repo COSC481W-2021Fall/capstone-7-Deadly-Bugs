@@ -8,6 +8,8 @@ import Popup from "reactjs-popup";
 import UserInfoPreview from "./UserInfoPreview.js";
 import "./Viewer.css";
 import "./styles.css";
+import './background_styles.css'
+
 
 import "./NewDeckButton.css";
 
@@ -170,6 +172,16 @@ export default function Viewer({ viewMode = "view" }) {
 
 	return (
 		<div>
+						<nav class="navbar">
+			<div class="brand-title">Flashfolio</div>
+			<div class="navbar-links">
+			<ul>
+				<li><a href="/">Home</a></li>
+				<li><a href="/load">Load Deck</a></li>
+			</ul>
+			</div>
+
+		  </nav>
 			<UserInfoPreview />
 			Title: {flashdeck.current.Title}
 			DeckId: {deckId}
