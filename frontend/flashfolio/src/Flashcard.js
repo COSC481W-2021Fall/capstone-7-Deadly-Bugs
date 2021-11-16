@@ -80,9 +80,10 @@ export default function Flashcard({flashcard, editMode=false, delfunc}) {
 		<button onClick={flipCard}>
 			Flip
 		</button>
-		<button onClick={deleteCard}>
-			Delete
-		</button>
+		{editMode ? 
+			<button onClick={deleteCard}>
+				Delete
+			</button>:""}
 		<div data-testid = "card" onClick={cardClick} class="card">
 			{cardContents()}
 		</div>
