@@ -73,3 +73,13 @@ export async function saveDeck(deck) {
 	return resp;
 }
 
+export async function queryDecks(pageNumber, query) {
+	let reqOpt = {
+		method: "POST",
+		headers: {"Content-Type": "application/json"},
+		body: JSON.stringify({"PageNumber": pageNumber, "Query": query}),
+	}
+	let resp = await fetch(apiURL() + "/queryDecks", reqOpt);
+	return resp.json();
+}
+
