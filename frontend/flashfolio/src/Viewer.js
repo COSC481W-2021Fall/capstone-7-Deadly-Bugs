@@ -39,6 +39,12 @@ export default function Viewer({ viewMode = "view" }) {
 
 	const [deckOwner, setDeckOwner] = useState(null);
 
+	const [isPrivate, setIsPrivate] = useState(false);
+	const handlePrivacyChange = () => {
+		setIsPrivate(!isPrivate);
+		flashdeck.current.IsPublic = isPrivate;
+	}
+
 	function flipView(){
 		if(viewMode==="view")
 			history.replace("/edit/"+deckId);
@@ -113,12 +119,14 @@ export default function Viewer({ viewMode = "view" }) {
 	}
 
 	useEffect(async () => {
-		let deck = await getDeck(Number(deckId));
+		let deck = await getDeck(Number(deckId), loginState !== null ? loginState.tokenId : "");
 		flashdeck.current = deck;
 		setFlashcard(flashdeck.current.Cards[0]);
 		let owner = await getUser(flashdeck.current.Owner);
 		setDeckOwner(owner);
-	}, [deckId]);
+		/* Set Privacy toggle to match deck info */
+		setIsPrivate(!flashdeck.current.IsPublic);
+	}, [deckId, loginState]);
 
 	useEffect(() => {
 		if (isInitialMount.current) {
@@ -225,6 +233,12 @@ export default function Viewer({ viewMode = "view" }) {
 					<br/>
 					<img src={deckOwner === null ? "" : deckOwner.ProfilePicture} />
 					{deckOwner === null ? "" : deckOwner.NickName}
+					{viewMode == "edit" &&
+						<>
+						<br/>
+						Private Deck? <input type="checkbox" checked={isPrivate} onChange={handlePrivacyChange} />
+						</>
+					}
 					<br/>
 					Deck# {flashdeck.current.ID}
 				</div>

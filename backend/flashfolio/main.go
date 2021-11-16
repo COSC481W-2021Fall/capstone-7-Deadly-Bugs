@@ -100,7 +100,8 @@ func getDeckReq(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req struct {
-		ID int `json:"ID"`
+		ID    int    `json:"ID"`
+		Token string `json:"Token"`
 	}
 
 	json.Unmarshal(reqBody, &req)
@@ -114,12 +115,25 @@ func getDeckReq(w http.ResponseWriter, r *http.Request) {
 
 	err = collection.FindOne(ctx, bson.D{{Key: "id", Value: req.ID}}).Decode(&deck)
 	if err != nil {
-
 		// TODO: There has gotta be a better way to do this haha
 		// Maybe send a 404 response?
 		json.NewEncoder(w).Encode(Deck{-1, "Deck does not exist.", []Card{{"Card Not found", ":("}}, true, ""})
-
 		return
+	}
+
+	/* If deck is private check the token */
+	if !deck.IsPublic {
+		tokenInfo, err := VerifyIdToken(req.Token)
+		if err != nil {
+			/* Bad Token => Unauthorized */
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		if tokenInfo.UserId != deck.Owner {
+			/* Not owner, ergo forbidden */
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
 	}
 
 	fmt.Println("Got a request for card: ", req.ID)

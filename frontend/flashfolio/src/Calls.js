@@ -10,13 +10,13 @@ getDeck(id: int)
 
 wrapper for getDeck/ call
 */
-export async function getDeck(deckID) {
+export async function getDeck(deckID, token="") {
 	
 	/* Set up and send req to get deck from backend */
 	let reqOpt = {
 		method: "POST",
 		headers: {"Content-Type": "application/json"},
-		body: JSON.stringify({'ID': Number(deckID)}),
+		body: JSON.stringify({'ID': Number(deckID), "Token":token}),
 	}
 
 	/* Send the Request */
