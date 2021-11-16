@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import {getDeck} from "./Calls.js";
-import './Flashcard.css'
+import './FlashcardPreview.css'
 
 
 export default function DeckPreview({deckId}){
@@ -23,10 +23,9 @@ export default function DeckPreview({deckId}){
     return(
         <div>
 	    {deck !== null && <>
-            Author: {deck.Owner}
             Title: {deck.Title}
-			DeckId: {deckId}
             <div class="card">{firstFlashcard}</div>
+            Author: {deck.Owner}
 		</>}
         </div>
     )

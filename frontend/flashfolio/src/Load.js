@@ -20,7 +20,6 @@ export default function Load() {
 			<div class ="buttons">
 					<button onClick={viewButton}>View deck 0</button>
 				</div>
-				<DeckPreview deckId={56715788}/>
 
 				<div class ="buttons">
 					<button onClick={homeButton}>Home</button>
