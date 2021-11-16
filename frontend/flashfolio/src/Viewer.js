@@ -208,7 +208,7 @@ export default function Viewer({ viewMode = "view" }) {
 			inputFileElement.click()
 		})
 
-	window.onload = function () {
+	if (!isInitialMount.current) {
 		document.getElementById('upload-button').onclick = async () => {
 			/* get the json */
 			const jsonFile = await getJsonUpload();
@@ -227,7 +227,7 @@ export default function Viewer({ viewMode = "view" }) {
 			console.log(flashdeck);
 		}
 	}
-
+	
 	const loadButton = () => {
 		history.push("/load");
 	};
