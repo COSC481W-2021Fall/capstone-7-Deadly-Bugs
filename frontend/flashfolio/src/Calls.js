@@ -73,17 +73,18 @@ export async function saveDeck(token, deck) {
 	return resp;
 }
 
-export async function cloneDeck(deck) {
+export async function cloneDeck(token, deck) {
 	let reqOpt = {
 		method: "POST",
 		headers: {"Content-Type": "application/json"},
-		body: JSON.stringify({"Deck": deck}),
+		body: JSON.stringify({"Token":token, "Deck": deck}),
 	}
 
 	console.log(reqOpt)
 
 	let resp = await fetch(apiURL() + "/cloneDeck", reqOpt);
-	return resp;
+	console.log(resp)
+	return resp.json();
 }
 export async function notifyUserLogin(token, profileObj) {
 	let reqOpt = {

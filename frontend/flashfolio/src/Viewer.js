@@ -81,9 +81,15 @@ export default function Viewer({ viewMode = "view" }) {
 		}
 	}
 
-	function cloneD(){
-		console.log(flashdeck.current)
-		cloneDeck(flashdeck.current)
+	async function cloneD(){
+		if (loginState !== null){
+			console.log(flashdeck.current)
+			let resp = await cloneDeck(loginState.tokenId, flashdeck.current)
+			console.log(resp)
+
+			history.push("/edit/"+resp.ID)
+		}
+		
 	}
 
 	function changeLayout() {
@@ -203,7 +209,7 @@ export default function Viewer({ viewMode = "view" }) {
 				download="myDeck.json"
 			>Download</a>
 			{viewMode == "edit" && <button onClick={saveChanges}>Save Changes</button>}
-			{viewMode == "edit" && <button onClick={cloneD}>Clone Deck</button>}
+			{loginState !== null && <button onClick={cloneD}>Clone Deck</button>}
 			<button onClick={homeButton}>Home</button>
 			<button onClick={loadButton}>Load Deck</button>
 
