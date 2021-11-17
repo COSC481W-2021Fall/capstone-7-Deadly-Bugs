@@ -112,17 +112,19 @@ export default function Viewer({ viewMode = "view" }) {
 	useEffect(async () => {
 		let deck = await getDeck(Number(deckId), loginState !== null ? loginState.tokenId : "");
 		setFlashdeck(deck);
-		let owner = await getUser(flashdeck.Owner);
-		setDeckOwner(owner);
-		/* Set Privacy toggle to match deck info */
-		setIsPrivate(!flashdeck.IsPublic);
 	}, [deckId, loginState]);
 
 	/* this will display the current card */
-	useEffect(() => {
-		if (!isInitialMount.current)
-			setFlashcard(flashdeck.Cards[cardIterator])
+	useEffect(async () => {
+		if (!isInitialMount.current) {
+			setFlashcard(flashdeck.Cards[0])
+			let owner = await getUser(flashdeck.Owner);
+			setDeckOwner(owner);
+			/* Set Privacy toggle to match deck info */
+			setIsPrivate(!flashdeck.IsPublic);
+		}
 	}, [flashdeck]);
+
 	useEffect(() => {
 		if (isInitialMount.current) {
 			isInitialMount.current = false;
