@@ -24,7 +24,7 @@ export default function DeckPreview({deckId}){
         <div>
 	    {deck !== null && <>
             Title: {deck.Title}
-            <div class="card">{firstFlashcard}</div>
+            <div className="cardPreview">{firstFlashcard}</div>
             Author: {deck.Owner}
 		</>}
         </div>

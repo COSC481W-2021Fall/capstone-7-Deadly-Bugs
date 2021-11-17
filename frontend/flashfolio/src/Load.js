@@ -4,6 +4,8 @@ import Flashcard from "./Flashcard";
 import "./Viewer.css";
 import DeckSearch from './DeckSearch'
 
+import DeckPreview from "./DeckPreview";
+
 import "./Flashcard.css"
 
 export default function Load() {
