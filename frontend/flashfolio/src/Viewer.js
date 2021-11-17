@@ -13,6 +13,7 @@ import "./styles.css";
 import "./NewDeckButton.css";
 import Navbar from "./Navbar.js";
 
+import { FilePicker } from "react-file-picker";
 
 /*
 Viewer
@@ -197,6 +198,27 @@ export default function Viewer({ viewMode = "view" }) {
 		history.push("/");
 	};
 
+	const importButton = () => {
+		const onChange = async (f) => {
+			let text = await f.text()
+			let deck = JSON.parse(text);
+			deck.ID = flashdeck.ID;
+			deck.IsPublic = flashdeck.IsPublic;
+			deck.Owner = flashdeck.Owner;
+			setFlashdeck(deck);
+		};
+		return (
+			<FilePicker
+				extensions={['json']}
+				onChange={(FileObject)=>onChange(FileObject)}
+			>
+				<button>
+					Import
+				</button>
+			</FilePicker>
+		)
+	}
+
 	return (
 		<div>
 			<UserInfoPreview />
@@ -254,6 +276,7 @@ export default function Viewer({ viewMode = "view" }) {
 					Deck# {flashdeck.ID}
 				</div>
 			</Popup>
+			{viewMode === "edit" && importButton()}
 		</div>
 	);
 }
