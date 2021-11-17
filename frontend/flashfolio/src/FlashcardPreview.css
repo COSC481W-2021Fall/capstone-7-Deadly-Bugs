@@ -2,7 +2,7 @@
 /*
 visual styling for the flashcard preview
 */
-.card {
+.card_preview {
 	background-color: white;
 	border-radius: 8px;
 	box-shadow: 2.5px 5px 5px rgba(0, 0, 0, 0.4);
