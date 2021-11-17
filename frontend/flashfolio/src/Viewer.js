@@ -4,17 +4,11 @@ import Popup from "reactjs-popup";
 import { loginContext } from "./App.js";
 import { cloneDeck, getDeck, getUser, saveDeck } from "./Calls.js";
 import Flashcard from "./Flashcard";
+import Navbar from "./Navbar.js";
 import "./NewDeckButton.css";
 import "./styles.css";
 import UserInfoPreview from "./UserInfoPreview.js";
 import "./Viewer.css";
-import "./styles.css";
-
-import "./NewDeckButton.css";
-import Navbar from "./Navbar.js";
-
-
-import {loginContext} from "./App.js";
 
 /*
 Viewer
@@ -118,16 +112,16 @@ export default function Viewer({ viewMode = "view" }) {
 	useEffect(async () => {
 		let deck = await getDeck(Number(deckId), loginState !== null ? loginState.tokenId : "");
 		setFlashdeck(deck);
-		let owner = await getUser(flashdeck.Owner);
-		setDeckOwner(owner);
-		/* Set Privacy toggle to match deck info */
-		setIsPrivate(!flashdeck.IsPublic);
 	}, [deckId, loginState]);
 
-	/* this will display the current card */
-	useEffect(() => {
-		if (!isInitialMount.current)
-			setFlashcard(flashdeck.Cards[cardIterator])
+	useEffect(async () => {
+		if (!isInitialMount.current) {
+			setFlashcard(flashdeck.Cards[0])
+			let owner = await getUser(flashdeck.Owner);
+			setDeckOwner(owner);
+			/* Set Privacy toggle to match deck info */
+			setIsPrivate(!flashdeck.IsPublic);
+		}
 	}, [flashdeck]);
 
 	useEffect(() => {
@@ -171,7 +165,6 @@ export default function Viewer({ viewMode = "view" }) {
 			setFlashcard(copy.Cards[0]);
 			return;
 		}
-
 		/* delete the card */
 		var index = copy.Cards.indexOf(card);
 		delete copy.Cards[index];
@@ -234,7 +227,7 @@ export default function Viewer({ viewMode = "view" }) {
 			console.log(flashdeck);
 		}
 	}
-	
+
 	const loadButton = () => {
 		history.push("/load");
 	};
