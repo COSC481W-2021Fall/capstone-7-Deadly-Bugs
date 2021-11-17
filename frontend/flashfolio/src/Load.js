@@ -8,6 +8,8 @@ import {getUser} from "./Calls.js"
 
 import DeckPreview from "./DeckPreview";
 
+import "./Viewer.css";
+
 import {loginContext} from "./App.js";
 
 export default function Load() {
@@ -74,11 +76,14 @@ export default function Load() {
 			{loginState !== null &&
 			<>
 				<h3>My Decks:</h3><br/>
+				<div className="flash-grid">
 				{myDecks.map((deck, index) => {
 					return <div key={deck} onClick={()=>{visit(deck)}}><DeckPreview deckId={deck}/></div>
 				})}
+				</div>
 			</>}
 			<h3>Public Decks:</h3><br/>
+				<div className="flash-grid">
 				{decks.map((deck, index) => {
 					if (decks.length === index + 1) {
 						return <div ref={lastDeckElementRef} key={deck} onClick={()=>{visit(deck)}}><DeckPreview deckId={deck} /></div>
@@ -86,6 +91,7 @@ export default function Load() {
 						return <div key={deck} onClick={()=>{visit(deck)}}> <DeckPreview deckId={deck} /></div>
         			}
 				})}
+				</div>
 		</div>
 		)
 }
