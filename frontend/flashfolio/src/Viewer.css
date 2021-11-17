@@ -9,3 +9,25 @@
 .flash-grid-item {
 	
 }
+
+/* Styling for the profile page */
+.profile {
+	text-align: left;
+	padding: 45px 20px;
+	display:flex;
+	font-size:24px;
+	background-image: url("profile_background.jpeg");
+	background-size: cover;
+	background-repeat: no-repeat;
+	color:white;
+	margin-bottom: 20px;
+}
+
+.profile img {
+	border-radius:50%
+}
+
+.profileText {
+	margin: auto 0;
+	padding: 15px;
+}

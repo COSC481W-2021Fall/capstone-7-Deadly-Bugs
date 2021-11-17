@@ -7,12 +7,7 @@ export default function Load() {
 	const viewButton = () => {
 		history.push("/view/0");
 	  };
-	  const homeButton = () => {
-		history.push("/");
-	  };
-	  const editButton = () => {
-		history.push("/edit/0");
-	  };
+
 	return (
 		<div>
 			load page
@@ -20,13 +15,6 @@ export default function Load() {
 					<button onClick={viewButton}>View deck 0</button>
 				</div>
 
-				<div class ="buttons">
-					<button onClick={homeButton}>Home</button>
-				</div>
-
-				<div class ="buttons">
-					<button onClick={editButton}>Edit deck 0</button>
-				</div>
 		</div>
 		
 	)

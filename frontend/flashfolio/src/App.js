@@ -2,9 +2,11 @@ import React, { useEffect, createContext, useState, useContext } from "react";
 import {BrowserRouter as Router, Route, Switch, useHistory } from "react-router-dom";
 import Viewer from "./Viewer.js";
 import Load from "./Load.js";
+import Profile from "./Profile.js";
 import LoginButton from "./LoginButton.js"
 import LogoutButton from "./LogoutButton.js"
 import UserInfoPreview from "./UserInfoPreview.js"
+import Navbar from "./Navbar.js";
 import './App.css'
 
 import NewDeckButton from "./NewDeckButton.js"
@@ -53,6 +55,7 @@ function App() {
 
 	return (
 		<loginContext.Provider value={{loginState, setLoginState, loadedAuthState}}>
+		<Navbar />
 		<Router>
 			{/* Router to create a multi-page application */}
 			<Switch>
@@ -67,6 +70,9 @@ function App() {
 			</Route>
 			<Route path="/load">
 				<Load />
+			</Route>
+			<Route path="/profile/:userId">
+				<Profile />
 			</Route>
 			</Switch>
 		</Router>
@@ -89,6 +95,13 @@ function Home() {
 	
 	const loadButton = () => {
 		history.push("/load");
+	  };
+
+	const profileButton = () => {
+		if (loginState === null)
+			history.push("/profile/");
+		else
+			history.push("/profile/" + loginState.googleId);
 	  };
 	
 
@@ -118,6 +131,7 @@ function Home() {
 						<NewDeckButton />
 						</>}
 					{/*<UserInfoPreview />*/}
+					<button onClick={profileButton}>Profile</button>
 				</div>
 			</div>
 		</div>

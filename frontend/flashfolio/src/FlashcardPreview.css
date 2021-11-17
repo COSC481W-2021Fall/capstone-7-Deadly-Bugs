@@ -1,0 +1,15 @@
+
+/*
+visual styling for the flashcard preview
+*/
+.card {
+	background-color: white;
+	border-radius: 8px;
+	box-shadow: 2.5px 5px 5px rgba(0, 0, 0, 0.4);
+	height: 150px;
+	width: 300px;
+	margin: 10px auto;
+	/* Center Text */
+	display: grid;
+	place-items: center;
+}
