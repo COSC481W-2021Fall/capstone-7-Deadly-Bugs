@@ -73,6 +73,16 @@ export async function saveDeck(token, deck) {
 	return resp;
 }
 
+export async function queryDecks(pageNumber, query) {
+	let reqOpt = {
+		method: "POST",
+		headers: {"Content-Type": "application/json"},
+		body: JSON.stringify({"PageNumber": pageNumber, "Query": query}),
+	}
+	let resp = await fetch(apiURL() + "/queryDecks", reqOpt);
+	return resp.json();
+}
+
 export async function cloneDeck(token, deck) {
 	let reqOpt = {
 		method: "POST",
@@ -106,5 +116,4 @@ export async function getUser(userID, includePrivate=false, token="") {
 	let resp = await fetch(apiURL() + "/getUser", reqOpt);
 	return resp.json();
 }
-
 

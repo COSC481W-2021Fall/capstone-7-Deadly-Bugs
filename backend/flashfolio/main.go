@@ -79,6 +79,8 @@ func handleRequests() {
 	router.HandleFunc("/userLogin", UserLoginReq)
 	router.HandleFunc("/getUser", GetUserReq)
 
+	router.HandleFunc("/queryDecks", QueryDecksReq)
+
 	log.Fatal(http.ListenAndServe(":1337",
 		handlers.CORS(
 			handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
@@ -420,3 +422,52 @@ func createNewDeckReq(w http.ResponseWriter, r *http.Request) {
 	ret.ID = newID
 	json.NewEncoder(w).Encode(ret)
 }
+
+func QueryDecksReq(w http.ResponseWriter, r *http.Request) {
+	pageSize := 5
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	var req struct {
+		PageNumber int    `json:"PageNumber"`
+		Query      string `json:"Query"`
+	}
+
+	json.Unmarshal(reqBody, &req)
+
+	var ret struct {
+		DeckIDs        []int  `json:"DeckIDs"`
+		RemainingDecks bool   `json:"RemainingDecks"`
+	}
+
+	/* get collection */
+	collection := MongoClient.Database("flashfolio").Collection("decks")
+
+	/* set up context for call */
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	/* Find the decks */
+	cur, err := collection.Find(ctx, bson.D{{Key: "ispublic", Value:true}})
+	defer cur.Close(ctx)
+	if err != nil {
+		panic(err)
+		return
+	}
+	/* Skip to the correct page */
+	for i := 0; i < pageSize * req.PageNumber; i++ {
+		cur.Next(ctx)
+	}
+	ret.RemainingDecks = true
+	/* Get the page */
+	for i := 0; i < pageSize; i++ {
+		ret.RemainingDecks = cur.Next(ctx)
+		var deck Deck
+		cur.Decode(&deck)
+		ret.DeckIDs = append(ret.DeckIDs, deck.ID)
+	}
+	json.NewEncoder(w).Encode(ret)
+}
+
