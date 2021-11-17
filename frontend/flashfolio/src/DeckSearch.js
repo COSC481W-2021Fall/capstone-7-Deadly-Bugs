@@ -16,8 +16,9 @@ export default function DeckSearch(query, pageNumber) {
 		setDecks(decks => {
 			return [...new Set([...decks, ...res.DeckIDs])];
 		});
-		setHasMore(true);
+		setHasMore(res.RemainingDecks);
 		setLoading(false);
+		console.log("getting more!", pageNumber)
 	}, [query, pageNumber]);
 
 	return { loading, decks, hasMore };

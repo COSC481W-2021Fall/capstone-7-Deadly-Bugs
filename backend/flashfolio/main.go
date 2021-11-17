@@ -331,8 +331,8 @@ func QueryDecksReq(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal(reqBody, &req)
 
 	var ret struct {
-		DeckIDs   []int `json:"DeckIDs"`
-		DeckCount int   `json:"DeckCount"`
+		DeckIDs        []int  `json:"DeckIDs"`
+		RemainingDecks bool   `json:"RemainingDecks"`
 	}
 
 	/* get collection */
@@ -353,9 +353,10 @@ func QueryDecksReq(w http.ResponseWriter, r *http.Request) {
 	for i := 0; i < pageSize * req.PageNumber; i++ {
 		cur.Next(ctx)
 	}
+	ret.RemainingDecks = true
 	/* Get the page */
 	for i := 0; i < pageSize; i++ {
-		cur.Next(ctx)
+		ret.RemainingDecks = cur.Next(ctx)
 		var deck Deck
 		cur.Decode(&deck)
 		ret.DeckIDs = append(ret.DeckIDs, deck.ID)
