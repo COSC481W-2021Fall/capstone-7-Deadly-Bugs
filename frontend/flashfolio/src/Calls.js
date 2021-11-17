@@ -10,13 +10,13 @@ getDeck(id: int)
 
 wrapper for getDeck/ call
 */
-export async function getDeck(deckID) {
+export async function getDeck(deckID, token="") {
 	
 	/* Set up and send req to get deck from backend */
 	let reqOpt = {
 		method: "POST",
 		headers: {"Content-Type": "application/json"},
-		body: JSON.stringify({'ID': Number(deckID)}),
+		body: JSON.stringify({'ID': Number(deckID), "Token":token}),
 	}
 
 	/* Send the Request */
@@ -73,6 +73,19 @@ export async function saveDeck(token, deck) {
 	return resp;
 }
 
+export async function cloneDeck(token, deck) {
+	let reqOpt = {
+		method: "POST",
+		headers: {"Content-Type": "application/json"},
+		body: JSON.stringify({"Token":token, "Deck": deck}),
+	}
+
+	console.log(reqOpt)
+
+	let resp = await fetch(apiURL() + "/cloneDeck", reqOpt);
+	console.log(resp)
+	return resp.json();
+}
 export async function notifyUserLogin(token, profileObj) {
 	let reqOpt = {
 		method: "POST",

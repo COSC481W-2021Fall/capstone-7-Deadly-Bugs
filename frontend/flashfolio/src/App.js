@@ -2,6 +2,7 @@ import React, { useEffect, createContext, useState, useContext } from "react";
 import {BrowserRouter as Router, Route, Switch, useHistory } from "react-router-dom";
 import Viewer from "./Viewer.js";
 import Load from "./Load.js";
+import Profile from "./Profile.js";
 import LoginButton from "./LoginButton.js"
 import LogoutButton from "./LogoutButton.js"
 import UserInfoPreview from "./UserInfoPreview.js"
@@ -70,6 +71,9 @@ function App() {
 			<Route path="/load">
 				<Load />
 			</Route>
+			<Route path="/profile/:userId">
+				<Profile />
+			</Route>
 			</Switch>
 		</Router>
 		</loginContext.Provider>
@@ -91,6 +95,13 @@ function Home() {
 	
 	const loadButton = () => {
 		history.push("/load");
+	  };
+
+	const profileButton = () => {
+		if (loginState === null)
+			history.push("/profile/");
+		else
+			history.push("/profile/" + loginState.googleId);
 	  };
 	
 
@@ -120,6 +131,7 @@ function Home() {
 						<NewDeckButton />
 						</>}
 					{/*<UserInfoPreview />*/}
+					<button onClick={profileButton}>Profile</button>
 				</div>
 			</div>
 		</div>
