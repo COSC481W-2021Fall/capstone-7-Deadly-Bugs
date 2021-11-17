@@ -14,8 +14,6 @@ import "./NewDeckButton.css";
 import Navbar from "./Navbar.js";
 
 
-import {loginContext} from "./App.js";
-
 /*
 Viewer
 
