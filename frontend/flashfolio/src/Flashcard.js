@@ -1,19 +1,22 @@
-import React, {useState, useRef, useEffect} from 'react'
-import './Flashcard.css'
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import './Flashcard.css';
 
-export default function Flashcard({flashcard, editMode=false}) {
+
+export default function Flashcard({ flashcard, editMode = false, delfunc }) {
 
 	const [flip, setFlip] = useState(false);
-	const [showEditor, setShowEditor] = useState(false);	
+	const [showEditor, setShowEditor] = useState(false);
 
 	/* Returns appropriate side according to flip state */
-	const currentSide = () => flip ? flashcard.BackSide : flashcard.FrontSide;
+	const currentSide = () => flip ? cardState.BackSide : cardState.FrontSide;
 
 	/* Ref for the actual textarea (maybe can be removed?)*/
 	const editor = useRef(null);
 
 	/* State for the editor textarea's value */
 	const [editVal, setEditVal] = useState("");
+
+	const [cardState, setCardState] = useState(flashcard);
 
 	/* Executed when editor textarea is changed by user */
 	const updateCard = () => {
@@ -63,20 +66,27 @@ export default function Flashcard({flashcard, editMode=false}) {
 	/* If the flashcard changes to a different one, update the editor */
 	useEffect(() => {
 		setEditVal(currentSide());
+		setCardState(flashcard);
 	}, [flashcard]);
+
+	const deleteCard = () => delfunc(flashcard);
 
 	return (
 		<div>
-		{editMode ? 
-			<button onClick={editCard}>
-				{showEditor ? "Done" : "Edit Card"} 
-			</button>:""}
-		<button onClick={flipCard}>
-			Flip
-		</button>
-		<div data-testid = "card" onClick={cardClick} class="card">
-			{cardContents()}
-		</div>
+			{editMode ?
+				<button onClick={editCard}>
+					{showEditor ? "Done" : "Edit Card"}
+				</button> : ""}
+			<button onClick={flipCard}>
+				Flip
+			</button>
+			{editMode ?
+				<button onClick={deleteCard}>
+					Delete
+				</button> : ""}
+			<div data-testid="card" onClick={cardClick} class="card">
+				{cardContents()}
+			</div>
 		</div>
 	)
 }
