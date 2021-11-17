@@ -5,6 +5,7 @@ import Load from "./Load.js";
 import LoginButton from "./LoginButton.js"
 import LogoutButton from "./LogoutButton.js"
 import UserInfoPreview from "./UserInfoPreview.js"
+import Navbar from "./Navbar.js";
 import './App.css'
 
 import NewDeckButton from "./NewDeckButton.js"
@@ -53,6 +54,7 @@ function App() {
 
 	return (
 		<loginContext.Provider value={{loginState, setLoginState, loadedAuthState}}>
+		<Navbar />
 		<Router>
 			{/* Router to create a multi-page application */}
 			<Switch>

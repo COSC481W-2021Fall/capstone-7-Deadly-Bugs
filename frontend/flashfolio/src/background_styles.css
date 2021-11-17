@@ -1,11 +1,3 @@
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    padding: 0;
-}
 
 .navbar {
     display: flex;
@@ -97,12 +89,3 @@ body {
     }
 }
 
-@import url('https://fonts.googleapis.com/css?family=Raleway');
-
-* {
-    font-family: Raleway;
-}
-
-html {
-    background-color: #DFDFDF;
-}

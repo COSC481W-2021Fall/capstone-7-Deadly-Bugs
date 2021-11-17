@@ -12,15 +12,6 @@ export default function Load() {
 
 	return (
 		<div>
-			<nav class="navbar">
-			<div class="brand-title">Flashfolio</div>
-			<div class="navbar-links">
-			<ul>
-				<li><a href="/">Home</a></li>
-			</ul>
-			</div>
-
-		  </nav>
 			load page
 			<div class ="buttons">
 					<button onClick={viewButton}>View deck 0</button>
