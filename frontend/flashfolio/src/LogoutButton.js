@@ -10,6 +10,7 @@ function LogoutButton() {
 	const success = async () => {
 		console.log('Logged out');
 		setLoginState(null);
+		localStorage.removeItem("userCache");
 	}
 
 	return (

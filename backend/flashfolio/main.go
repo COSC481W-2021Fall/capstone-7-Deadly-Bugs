@@ -57,20 +57,6 @@ func main() {
 
 	fmt.Println("Successfully connected to MongoDB")
 
-	/********************************************************************
-	//*** THIS METHOD IS FOR TESTING OVERWRITING DECK WITHIN DATABASE ***
-
-	deck := Deck{10,
-		"TestDeck",
-		[]Card{{
-			"ch-ch-changes.",
-			"Is this strange?"}},
-		true,
-		"Alex"}
-	overwriteDeck(deck)
-
-	//*******************************************************************/
-
 	handleRequests()
 }
 
@@ -88,6 +74,10 @@ func handleRequests() {
 	router.HandleFunc("/createNewDeck", createNewDeckReq)
 
 	router.HandleFunc("/saveDeck", saveDeckReq)
+	router.HandleFunc("/cloneDeck", cloneDeckReq)
+
+	router.HandleFunc("/userLogin", UserLoginReq)
+	router.HandleFunc("/getUser", GetUserReq)
 
 	router.HandleFunc("/queryDecks", QueryDecksReq)
 
@@ -112,7 +102,8 @@ func getDeckReq(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req struct {
-		ID int `json:"ID"`
+		ID    int    `json:"ID"`
+		Token string `json:"Token"`
 	}
 
 	json.Unmarshal(reqBody, &req)
@@ -126,12 +117,25 @@ func getDeckReq(w http.ResponseWriter, r *http.Request) {
 
 	err = collection.FindOne(ctx, bson.D{{Key: "id", Value: req.ID}}).Decode(&deck)
 	if err != nil {
-
 		// TODO: There has gotta be a better way to do this haha
 		// Maybe send a 404 response?
 		json.NewEncoder(w).Encode(Deck{-1, "Deck does not exist.", []Card{{"Card Not found", ":("}}, true, ""})
-
 		return
+	}
+
+	/* If deck is private check the token */
+	if !deck.IsPublic {
+		tokenInfo, err := VerifyIdToken(req.Token)
+		if err != nil {
+			/* Bad Token => Unauthorized */
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		if tokenInfo.UserId != deck.Owner {
+			/* Not owner, ergo forbidden */
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
 	}
 
 	fmt.Println("Got a request for card: ", req.ID)
@@ -148,17 +152,79 @@ func saveDeckReq(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req struct {
-		Deck Deck `json:"Deck"`
+		Deck  Deck   `json:"Deck"`
+		Token string `json:"Token"`
 	}
 
 	json.Unmarshal(reqBody, &req)
 
-	fmt.Println(string(reqBody))
-	fmt.Println("Got save req for", req)
+	tokenInfo, err := VerifyIdToken(req.Token)
+	if err != nil {
+		/* Bad Token => Unauthorized */
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	collection := MongoClient.Database("flashfolio").Collection("decks")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	var realDeck Deck
+	err = collection.FindOne(ctx, bson.D{{Key: "id", Value: req.Deck.ID}}).Decode(&realDeck)
+	if err != nil {
+		/* That deck doesn't exist => 404 */
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	if tokenInfo.UserId != realDeck.Owner {
+		/* Not the deck owner => Forbidden */
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
 
 	overwriteDeck(req.Deck)
 
 	w.WriteHeader(http.StatusOK)
+}
+
+func cloneDeckReq(w http.ResponseWriter, r *http.Request) {
+
+	reqBody, err := ioutil.ReadAll(r.Body)
+
+	if err != nil {
+		panic(err)
+	}
+
+	var req struct {
+		Deck  Deck   `json:"Deck"`
+		Token string `json:"Token"`
+	}
+
+	json.Unmarshal(reqBody, &req)
+
+	var ret struct {
+		ID int `json:"ID"`
+	}
+
+	tokenInfo, err := VerifyIdToken(req.Token)
+	if err != nil {
+		/* Bad Token => Unauthorized */
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	fmt.Println(string(reqBody))
+	fmt.Println("Got save req for", req)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	user, err := GetUserByID(tokenInfo.UserId, ctx)
+
+	ret.ID = cloneDeck(req.Deck, *user)
+
+	user.OwnedDecks = append(user.OwnedDecks, ret.ID)
+	w.WriteHeader(http.StatusOK)
+
+	json.NewEncoder(w).Encode(ret)
 }
 
 // Saves deck to Database, overwriting existing deck with same id if present.
@@ -216,15 +282,49 @@ func generateID() int {
 	return genID
 }
 
+// Clones the deck.
+func cloneDeck(deck Deck, user User) int {
+
+	// set up collection
+	collection := MongoClient.Database("flashfolio").Collection("decks")
+	newDeck := deck
+	var sameID Deck
+	newDeck.Owner = user.ID
+
+	// set up context
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// set up filter to locate document with identical user generated ID
+	filter := bson.D{{Key: "id", Value: newDeck.ID}}
+	err := collection.FindOne(ctx, filter).Decode(&sameID)
+	if err != nil {
+
+		// Error handling. This should never be nil when it first runs.
+		fmt.Println("No duplicate deck found.")
+		collection.InsertOne(ctx, newDeck)
+	} else {
+
+		// Duplicate value found. Iterate through values until value isn't a duplicate
+		fmt.Println("Duplicate value found. finding empty value")
+
+		newDeck.ID = generateID()
+
+		// insert document when deckID that isn't currently used is found.
+		collection.InsertOne(ctx, newDeck)
+	}
+	return newDeck.ID
+}
+
 /*
-verifyIdToken
+VerifyIdToken
 
 Verifies that a google ID token is genuine & returns token/User info
 
 Tokeninfo Struct found here: https://github.com/googleapis/google-api-go-client/blob/2447556ecdd4aae37b4cff8c46fc88a25036e7a1/oauth2/v2/oauth2-gen.go#L182
 
 */
-func verifyIdToken(idToken string) (*oauth2.Tokeninfo, error) {
+func VerifyIdToken(idToken string) (*oauth2.Tokeninfo, error) {
 	httpClient := http.Client{}
 	oauth2Service, err := oauth2.New(&httpClient)
 	tokenInfoCall := oauth2Service.Tokeninfo()
@@ -251,7 +351,7 @@ func getSecretReq(w http.ResponseWriter, r *http.Request) {
 
 	json.Unmarshal(reqBody, &req)
 
-	tokenInfo, err := verifyIdToken(req.Token)
+	tokenInfo, err := VerifyIdToken(req.Token)
 
 	if err != nil {
 		panic(err)
@@ -271,14 +371,14 @@ func getSecretReq(w http.ResponseWriter, r *http.Request) {
 }
 
 func createNewDeckReq(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(":(((((((")
+
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		panic(err)
 	}
 
 	var req struct {
-		Token string `json:"Token"`
+		Token    string `json:"Token"`
 		DeckName string `json:"DeckName"`
 	}
 
@@ -288,10 +388,17 @@ func createNewDeckReq(w http.ResponseWriter, r *http.Request) {
 		ID int `json:"ID"`
 	}
 
-	tokenInfo, err := verifyIdToken(req.Token)
+	tokenInfo, err := VerifyIdToken(req.Token)
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	user, err := GetUserByID(tokenInfo.UserId, ctx)
+	if err != nil {
+		panic(err)
 		return
 	}
 
@@ -303,14 +410,14 @@ func createNewDeckReq(w http.ResponseWriter, r *http.Request) {
 	newDeck.Cards = []Card{{"", ""}}
 	newDeck.ID = newID
 	newDeck.Title = req.DeckName
-	newDeck.Owner = tokenInfo.Email
+	newDeck.Owner = user.ID
 	newDeck.IsPublic = true
 
 	collection := MongoClient.Database("flashfolio").Collection("decks")
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
 
 	collection.InsertOne(ctx, newDeck)
+	user.OwnedDecks = append(user.OwnedDecks, newDeck.ID)
+	OverwriteUser(*user, false, ctx)
 
 	ret.ID = newID
 	json.NewEncoder(w).Encode(ret)
