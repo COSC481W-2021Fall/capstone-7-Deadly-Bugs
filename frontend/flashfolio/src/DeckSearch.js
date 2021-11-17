@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import { queryDecks } from "./Calls.js";
 
-export default function DeckSearch(query, pageNumber) {
+export default function DeckSearch(query, pageNumber, initial=[]) {
 	const [loading, setLoading] = useState(true)
 	const [decks, setDecks] = useState([])
 	const [hasMore, setHasMore] = useState(false)
 
 	useEffect(() => {
-		setDecks([]);
+		setDecks(initial);
 	}, [query]);
 
 	useEffect(async () => {

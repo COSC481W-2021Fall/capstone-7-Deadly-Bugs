@@ -1,14 +1,18 @@
-import React, { useState, useRef, useCallback } from 'react'
+import React, { useState, useRef, useCallback, useContext, useEffect} from 'react'
 import { useHistory } from 'react-router-dom';
 import Flashcard from "./Flashcard";
 import "./Viewer.css";
 import DeckSearch from './DeckSearch'
 
+import {getUser} from "./Calls.js"
+
 import DeckPreview from "./DeckPreview";
 
-import "./Flashcard.css"
+import {loginContext} from "./App.js";
 
 export default function Load() {
+
+	const {loginState} = useContext(loginContext);
 
 	const arrayOfCards = [
 		{ FrontSide: "1", BackSide: "1B" },
@@ -25,13 +29,23 @@ export default function Load() {
 	  
 	//////////////////////////////////////////////Erik Test Code
 	const [query, setQuery] = useState('')
-	const [pageNumber, setPageNumber] = useState(1)
+	const [pageNumber, setPageNumber] = useState(0)
+	const [myDecks, setMyDecks] = useState([]);
 
 	const {
 		decks,
 		hasMore,
-		loading
+		loading,
 	} = DeckSearch(query, pageNumber)
+
+	useEffect(async () => {
+		console.log(loginState);
+		if (loginState !== null) {
+			let user = await getUser(loginState.googleId)
+			console.log(user);
+			setMyDecks(user.OwnedDecks)
+		}
+	},[loginState]);
 
 	const observer = useRef()
 	const lastDeckElementRef = useCallback(node => {
@@ -55,25 +69,21 @@ export default function Load() {
 	
 	return (
 		<div>
-			Discover<br/>
-	
-				{/*<div class="flash-grid">
-					{arrayOfCards.map(fc => {
-						return <div>{fc}</div>
-					})}
-				</div>*/}
-				
-				{/*code to add search bar*/}
-				{/* <input type="text" value={query} onChange={handleSearch}></input> */}
+			{loginState !== null &&
+			<>
+				<h3>My Decks:</h3><br/>
+				{myDecks.map((deck, index) => {
+					return <div key={deck}><DeckPreview deckId={deck}/></div>
+				})}
+			</>}
+			<h3>Public Decks:</h3><br/>
 				{decks.map((deck, index) => {
 					if (decks.length === index + 1) {
-						return <div className="card" ref={lastDeckElementRef} key={deck}>{deck}</div>
+						return <div ref={lastDeckElementRef} key={deck}><DeckPreview deckId={deck} /></div>
 					} else {
-						return <div className="card" key={deck}>{deck}</div>
-        					}
-											}
-							)
-				}
+						return <div key={deck}> <DeckPreview deckId={deck} /></div>
+        			}
+				})}
 		</div>
 		)
 }
