@@ -1,11 +1,21 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import Flashcard from "./Flashcard";
-import {getDeck, saveDeck} from "./Calls.js";
+
+import {getUser, getDeck, saveDeck, cloneDeck} from "./Calls.js";
+
+import Popup from "reactjs-popup";
+
 
 import UserInfoPreview from "./UserInfoPreview.js";
 import "./Viewer.css";
 import "./styles.css";
+
+import "./NewDeckButton.css";
+import Navbar from "./Navbar.js";
+
+
+import {loginContext} from "./App.js";
 
 /*
 Viewer
@@ -26,6 +36,16 @@ export default function Viewer({ viewMode = "view" }) {
 	const [shufOn, setShufOn] = useState(false);
 
 	const [tileCards, setTileCards] = useState(false);
+
+	const { loginState, loadedAuthState } = useContext(loginContext);
+
+	const [deckOwner, setDeckOwner] = useState(null);
+
+	const [isPrivate, setIsPrivate] = useState(false);
+	const handlePrivacyChange = () => {
+		setIsPrivate(!isPrivate);
+		flashdeck.current.IsPublic = isPrivate;
+	}
 
 	function flipView(){
 		if(viewMode==="view")
@@ -63,8 +83,21 @@ export default function Viewer({ viewMode = "view" }) {
 
 
 	function saveChanges(){
-		console.log(flashdeck.current)
-		saveDeck(flashdeck.current)
+		if (loginState !== null) {
+			console.log(flashdeck.current)
+			saveDeck(loginState.tokenId, flashdeck.current)
+		}
+	}
+
+	async function cloneD(){
+		if (loginState !== null){
+			console.log(flashdeck.current)
+			let resp = await cloneDeck(loginState.tokenId, flashdeck.current)
+			console.log(resp)
+
+			history.push("/edit/"+resp.ID)
+		}
+		
 	}
 
 	function changeLayout() {
@@ -87,13 +120,15 @@ export default function Viewer({ viewMode = "view" }) {
 		)
 	}
 
-	useEffect(() => {
-		getDeck(Number(deckId))
-			.then(deck => {
-				flashdeck.current = deck;
-				setFlashcard(flashdeck.current.Cards[0]);
-			});
-	}, [deckId]);
+	useEffect(async () => {
+		let deck = await getDeck(Number(deckId), loginState !== null ? loginState.tokenId : "");
+		flashdeck.current = deck;
+		setFlashcard(flashdeck.current.Cards[0]);
+		let owner = await getUser(flashdeck.current.Owner);
+		setDeckOwner(owner);
+		/* Set Privacy toggle to match deck info */
+		setIsPrivate(!flashdeck.current.IsPublic);
+	}, [deckId, loginState]);
 
 	useEffect(() => {
 		if (isInitialMount.current) {
@@ -110,6 +145,12 @@ export default function Viewer({ viewMode = "view" }) {
 			else { setCardIterator(0); }
 		}
 	}, [cardIterator])
+
+	useEffect(() => {
+		if (viewMode === "edit" && loadedAuthState && flashdeck.current != "" && (loginState === null || loginState.googleId != flashdeck.current.Owner)) {
+			history.replace("/view/"+deckId)
+		}
+	}, [loginState, loadedAuthState, flashdeck.current]);
 
 	function addCard() {
 		flashdeck.current.Cards[flashdeck.current.Cards.length] = {FrontSide: "", BackSide: ""};
@@ -156,7 +197,9 @@ export default function Viewer({ viewMode = "view" }) {
 			Title: {flashdeck.current.Title}
 			DeckId: {deckId}
 			<br />
-			<button onClick = {flipView}> {viewMode == "edit" ? "View Deck" : "Edit Deck"} </button>
+			{ (loginState !== null && loginState.googleId === flashdeck.current.Owner) &&
+				<button onClick = {flipView}> {viewMode == "edit" ? "View Deck" : "Edit Deck"} </button>
+			}
 			{viewMode == "edit" && <button onClick={changeLayout}>Change Layout</button>}
 			{tileLayout()}
 			{!tileCards && <button
@@ -176,8 +219,32 @@ export default function Viewer({ viewMode = "view" }) {
 				download="myDeck.json"
 			>Download</a>
 			{viewMode == "edit" && <button onClick={saveChanges}>Save Changes</button>}
+			{loginState !== null && <button onClick={cloneD}>Clone Deck</button>}
 			<button onClick={homeButton}>Home</button>
 			<button onClick={loadButton}>Load Deck</button>
+
+			{/* Pop up showing deck information */}
+			<Popup trigger={<a>Info</a>} position="right center" modal>
+				<div className="modal">
+					<div className="header">
+						{flashdeck.current.Title}
+					</div>
+					{flashdeck.current.Cards !== undefined && flashdeck.current.Cards.length} Cards
+					<br/>
+					Created by:
+					<br/>
+					<img src={deckOwner === null ? "" : deckOwner.ProfilePicture} />
+					{deckOwner === null ? "" : deckOwner.NickName}
+					{viewMode == "edit" &&
+						<>
+						<br/>
+						Private Deck? <input type="checkbox" checked={isPrivate} onChange={handlePrivacyChange} />
+						</>
+					}
+					<br/>
+					Deck# {flashdeck.current.ID}
+				</div>
+			</Popup>
 		</div>
 	);
 }
