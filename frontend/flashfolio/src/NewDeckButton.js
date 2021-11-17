@@ -18,8 +18,6 @@ function NewDeckButton() {
 	async function newDeck() {
 		console.log("New Deck ", deckName.current.value)
 		let resp = await createNewDeck(loginState.tokenId, deckName.current.value)
-		console.log(resp)
-
 		history.push("/edit/" + resp.ID)
 
 	}

@@ -66,22 +66,24 @@ export default function Load() {
 	/////////////////////////////////////////////////////////////Erik End
 	
 	const history = useHistory();
-	
+
+	const visit = (id) => history.push("/view/" + id);
+
 	return (
 		<div>
 			{loginState !== null &&
 			<>
 				<h3>My Decks:</h3><br/>
 				{myDecks.map((deck, index) => {
-					return <div key={deck}><DeckPreview deckId={deck}/></div>
+					return <div key={deck} onClick={()=>{visit(deck)}}><DeckPreview deckId={deck}/></div>
 				})}
 			</>}
 			<h3>Public Decks:</h3><br/>
 				{decks.map((deck, index) => {
 					if (decks.length === index + 1) {
-						return <div ref={lastDeckElementRef} key={deck}><DeckPreview deckId={deck} /></div>
+						return <div ref={lastDeckElementRef} key={deck} onClick={()=>{visit(deck)}}><DeckPreview deckId={deck} /></div>
 					} else {
-						return <div key={deck}> <DeckPreview deckId={deck} /></div>
+						return <div key={deck} onClick={()=>{visit(deck)}}> <DeckPreview deckId={deck} /></div>
         			}
 				})}
 		</div>
