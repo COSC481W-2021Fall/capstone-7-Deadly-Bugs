@@ -4,6 +4,8 @@ import Flashcard from "./Flashcard";
 import "./Viewer.css";
 import DeckSearch from './DeckSearch'
 
+import "./Flashcard.css"
+
 export default function Load() {
 
 	const arrayOfCards = [
@@ -30,22 +32,22 @@ export default function Load() {
 	} = DeckSearch(query, pageNumber)
 
 	const observer = useRef()
-    const lastDeckElementRef = useCallback(node => {
-    if (loading) return
-    if (observer.current) observer.current.disconnect()
-    observer.current = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && hasMore) {
-        setPageNumber(prevPageNumber => prevPageNumber + 1)
-      }
-    })
-    if (node) observer.current.observe(node)
-  }, [loading, hasMore])
-
-  function handleSearch(e) {
-    setQuery(e.target.value)
-    setPageNumber(1)
-  }
-    /////////////////////////////////////////////////////////////Erik End
+	const lastDeckElementRef = useCallback(node => {
+		if (loading) return
+		if (observer.current) observer.current.disconnect()
+		observer.current = new IntersectionObserver(entries => {
+			if (entries[0].isIntersecting && hasMore) {
+				setPageNumber(pageNumber + 1)
+			}
+		})
+		if (node) observer.current.observe(node)
+	}, [loading, hasMore])
+	
+	function handleSearch(e) {
+		setQuery(e.target.value)
+		setPageNumber(1)
+	}
+	/////////////////////////////////////////////////////////////Erik End
 	
 	const history = useHistory();
 	
@@ -74,19 +76,19 @@ export default function Load() {
 					<button onClick={editButton}>Edit deck 0</button>
 				</div>
 	
-				{/* <div class="flash-grid">
+				{/*<div class="flash-grid">
 					{arrayOfCards.map(fc => {
-						return <div><Flashcard flashcard={fc} /></div>
+						return <div>{fc}</div>
 					})}
-				</div> */}
+				</div>*/}
 				
 				{/*code to add search bar*/}
 				{/* <input type="text" value={query} onChange={handleSearch}></input> */}
 				{decks.map((deck, index) => {
 					if (decks.length === index + 1) {
-						return <div ref={lastDeckElementRef} key={deck}>{deck}</div>
+						return <div className="card" ref={lastDeckElementRef} key={deck}>{deck}</div>
 					} else {
-						return <div key={deck}>{deck}</div>
+						return <div className="card" key={deck}>{deck}</div>
         					}
 											}
 							)
