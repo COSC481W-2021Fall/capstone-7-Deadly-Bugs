@@ -1,16 +1,17 @@
-import React, { useState, useRef, useCallback, useContext, useEffect} from 'react'
-import { useHistory } from 'react-router-dom';
-import Flashcard from "./Flashcard";
-import "./Viewer.css";
-import DeckSearch from './DeckSearch'
+import React, { useState, useRef, useCallback, useContext, useEffect } from "react";
 
-import {getUser} from "./Calls.js"
+/* External Dependencies */
+import { useHistory } from "react-router-dom";
 
+/* Internal Dependencies */
+import Flashcard from "./Flashcard.js";
+import DeckSearch from "./DeckSearch.js"
 import DeckPreview from "./DeckPreview";
-
-import "./Viewer.css";
-
+import {getUser} from "./Calls.js";
 import {loginContext} from "./App.js";
+
+/* Styling */
+import "./Viewer.css";
 
 export default function Load() {
 

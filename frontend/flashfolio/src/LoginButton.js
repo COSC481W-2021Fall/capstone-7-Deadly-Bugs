@@ -1,7 +1,10 @@
-import React, { useContext } from 'react';
-import { GoogleLogin } from 'react-google-login';
-import { getUser, notifyUserLogin } from "./Calls.js";
+import React, { useContext } from "react";
 
+/* External Dependencies */
+import { GoogleLogin } from "react-google-login";
+
+/* Internal Dependencies */
+import { getUser, notifyUserLogin } from "./Calls.js";
 import { loginContext } from "./App.js";
 
 

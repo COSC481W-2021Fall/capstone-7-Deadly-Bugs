@@ -1,10 +1,15 @@
-import React, { useContext, useRef } from 'react';
-import { createNewDeck } from "./Calls.js";
-import { loginContext } from "./App.js";
+import React, { useContext, useRef } from "react";
+
+/* External Dependencies */
 import Popup from "reactjs-popup";
 import { useHistory } from "react-router-dom";
 
-import "./NewDeckButton.css"
+/* Internal Dependencies */
+import { createNewDeck } from "./Calls.js";
+import { loginContext } from "./App.js";
+
+/* Styling */
+import "./NewDeckButton.css";
 
 
 function NewDeckButton() {

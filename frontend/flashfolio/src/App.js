@@ -1,5 +1,10 @@
 import React, { useEffect, createContext, useState, useContext } from "react";
-import {BrowserRouter as Router, Route, Switch, useHistory } from "react-router-dom";
+
+/* External Dependencies */
+import { BrowserRouter as Router, Route, Switch, useHistory } from "react-router-dom";
+import { useGoogleLogin } from "react-google-login";
+
+/* Internal Dependencies */
 import Viewer from "./Viewer.js";
 import Load from "./Load.js";
 import Profile from "./Profile.js";
@@ -7,11 +12,12 @@ import LoginButton from "./LoginButton.js"
 import LogoutButton from "./LogoutButton.js"
 import UserInfoPreview from "./UserInfoPreview.js"
 import Navbar from "./Navbar.js";
-import './App.css'
+import NewDeckButton from "./NewDeckButton.js";
 
-import NewDeckButton from "./NewDeckButton.js"
+/* Styling */
+import "./App.css";
 
-import { useGoogleLogin } from "react-google-login";
+
 
 /*
 App

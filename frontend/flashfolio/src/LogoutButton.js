@@ -1,6 +1,9 @@
 import React, { useContext } from "react";
+
+/* External Dependencies */
 import { GoogleLogout } from "react-google-login";
 
+/* Internal Dependencies */
 import { loginContext } from "./App.js";
 
 function LogoutButton() {

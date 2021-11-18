@@ -1,8 +1,14 @@
-import React, { useEffect, useContext, useState } from 'react'
+import React, { useEffect, useContext, useState } from "react";
+
+/* External Dependencies */
 import { useParams } from "react-router-dom";
-import "./Viewer.css";
+
+/* Internal Dependencies */
 import { getUser } from "./Calls.js";
 import { loginContext } from "./App.js";
+
+/* Styling */
+import "./Viewer.css";
 
 export default function Profile() {
 

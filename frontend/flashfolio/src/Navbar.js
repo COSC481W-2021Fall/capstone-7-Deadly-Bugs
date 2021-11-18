@@ -1,4 +1,6 @@
-import React from 'react';
+import React from "react";
+
+/* Styling */
 import "./background_styles.css";
 
 export default function Navbar() {

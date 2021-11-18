@@ -1,5 +1,7 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import './Flashcard.css';
+import React, { useContext, useEffect, useRef, useState } from "react";
+
+/* Styling */
+import "./Flashcard.css";
 
 
 export default function Flashcard({ flashcard, editMode = false, delfunc }) {

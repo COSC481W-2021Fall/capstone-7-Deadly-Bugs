@@ -1,6 +1,10 @@
-import { render, screen } from '@testing-library/react';
-import Viewer from './Viewer';
-import { MemoryRouter } from 'react-router-dom';
+import { render, screen } from "@testing-library/react";
+
+/* External Dependencies */
+import { MemoryRouter } from "react-router-dom";
+
+/* Internal Dependencies */
+import Viewer from "./Viewer.js";
 
 const customRender = (ui, options) => {
     return render(ui, {wrapper: MemoryRouter, ...options})

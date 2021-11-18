@@ -1,5 +1,7 @@
-import Flashcard from "./Flashcard";
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent } from "@testing-library/react";
+
+/* Internal Dependencies */
+import Flashcard from "./Flashcard.js";
 
 test('Clicking card is possible', () => {
     var testFlash = {

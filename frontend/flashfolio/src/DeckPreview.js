@@ -1,8 +1,12 @@
 import React, { useEffect, useState, useContext } from "react";
-import {getDeck} from "./Calls.js";
-import './FlashcardPreview.css'
 
-import {loginContext} from "./App.js";
+/* Internal Dependencies */
+import { getDeck } from "./Calls.js";
+import { loginContext } from "./App.js";
+
+/* Styling */
+import "./FlashcardPreview.css";
+
 
 export default function DeckPreview({deckId}){
 	

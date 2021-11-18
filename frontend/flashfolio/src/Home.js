@@ -1,6 +1,8 @@
 import React, { createContext, useState, useContext } from "react";
-import LoginButton from "./LoginButton.js"
-import LogoutButton from "./LogoutButton.js"
+
+/* Internal Dependencies */
+import LoginButton from "./LoginButton.js";
+import LogoutButton from "./LogoutButton.js";
 
 export const loginContext = createContext(null)
 

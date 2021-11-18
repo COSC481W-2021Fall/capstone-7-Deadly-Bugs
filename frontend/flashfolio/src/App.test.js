@@ -1,5 +1,7 @@
-import { render, screen } from '@testing-library/react';
-import App from './App';
+import { render, screen } from "@testing-library/react";
+
+/* Internal Dependencies */
+import App from "./App.js";
 
 /*
 Temporary test to check if homepage has loaded!

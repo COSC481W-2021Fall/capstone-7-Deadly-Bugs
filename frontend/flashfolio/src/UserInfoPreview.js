@@ -1,5 +1,6 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext } from "react";
 
+/* Internal Dependencies */
 import { loginContext } from "./App.js";
 
 function UserInfoPreview() {

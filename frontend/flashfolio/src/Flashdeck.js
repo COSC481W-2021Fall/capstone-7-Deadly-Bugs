@@ -1,5 +1,7 @@
-import React from 'react'
-import Flashcard from './Flashcard'
+import React from "react";
+
+/* Internal Dependencies */
+import Flashcard from "./Flashcard.js";
 
 export default function Flashdeck({flashcards}) {
 	return (

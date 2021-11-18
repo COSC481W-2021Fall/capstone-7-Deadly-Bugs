@@ -1,19 +1,22 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { useHistory, useParams } from "react-router-dom";
+
+/* External Dependencies */
 import Popup from "reactjs-popup";
+import FilePicker from "react-file-picker";
+import { useHistory, useParams } from "react-router-dom";
+
+/* Internal Dependencies */
+import Navbar from "./Navbar.js";
+import Flashcard from "./Flashcard.js";
+import UserInfoPreview from "./UserInfoPreview.js";
 import { loginContext } from "./App.js";
 import { cloneDeck, getDeck, getUser, saveDeck } from "./Calls.js";
-import Flashcard from "./Flashcard";
-import "./NewDeckButton.css";
-import "./styles.css";
-import UserInfoPreview from "./UserInfoPreview.js";
+
+/* Styling */
 import "./Viewer.css";
 import "./styles.css";
-
 import "./NewDeckButton.css";
-import Navbar from "./Navbar.js";
 
-import { FilePicker } from "react-file-picker";
 
 /*
 Viewer
