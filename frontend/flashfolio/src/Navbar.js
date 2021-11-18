@@ -1,4 +1,4 @@
-
+import React from 'react';
 import "./background_styles.css";
 
 export default function Navbar() {

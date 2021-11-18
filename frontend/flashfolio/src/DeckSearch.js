@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { queryDecks } from "./Calls.js";
 
 export default function DeckSearch(query, pageNumber, initial=[]) {
