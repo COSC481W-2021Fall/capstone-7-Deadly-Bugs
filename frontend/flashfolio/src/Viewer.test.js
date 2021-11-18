@@ -7,11 +7,11 @@ import { MemoryRouter } from "react-router-dom";
 import Viewer from "./Viewer.js";
 
 const customRender = (ui, options) => {
-    return render(ui, {wrapper: MemoryRouter, ...options})
+	return render(ui, {wrapper: MemoryRouter, ...options})
 }
 
 test('Viewer renders properly', () => {
 	customRender(<Viewer />)
-    const viewerElement = screen.getByText(/DeckId:/)
-    expect(viewerElement).toBeInTheDocument();
+	const viewerElement = screen.getByText(/DeckId:/)
+	expect(viewerElement).toBeInTheDocument();
 });

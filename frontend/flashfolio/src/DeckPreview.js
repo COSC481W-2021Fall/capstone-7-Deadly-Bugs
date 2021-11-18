@@ -9,31 +9,27 @@ import "./FlashcardPreview.css";
 
 
 export default function DeckPreview({deckId}){
-	
-    const [deck,setDeck] = useState(null);
-    const [firstFlashcard,setFirstFlashcard] = useState("");
-
+	const [deck,setDeck] = useState(null);
+	const [firstFlashcard,setFirstFlashcard] = useState("");
 	const {loginState} = useContext(loginContext);
-
-    useEffect(async () => {
+	useEffect(async () => {
 		let res = await getDeck(deckId, (loginState !== null?loginState.tokenId:""));
 		setDeck(res);
-    },[deckId, loginState]);
-
+	},[deckId, loginState]);
+	
 	useEffect(() => {
 		if (deck !== null)
-        	setFirstFlashcard(deck.Cards[0].FrontSide);
+			setFirstFlashcard(deck.Cards[0].FrontSide);
 	}, [deck]);
-
-
-    return(
-        <div>
-	    {deck !== null && <>
-            Title: {deck.Title}
-            <div className="card_preview">{firstFlashcard}</div>
-            Author: {deck.Owner}
-		</>}
-        </div>
-    )
-    
+	
+	
+	return(
+		<div>
+			{deck !== null && <>
+				Title: {deck.Title}
+				<div className="card_preview">{firstFlashcard}</div>
+				Author: {deck.Owner}
+			</>}
+		</div>
+	)
 }

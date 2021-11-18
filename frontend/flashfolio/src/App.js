@@ -115,11 +115,11 @@ function Home() {
 		<div class="container">
 			<div class="left">
 				<div class="logoCard">
-    				<h1 class="logo">FLASH</h1>
-  				</div>
-  				<div class="slide">
-    				<h1 class="logo">FOLIO</h1>
-  				</div>
+				<h1 class="logo">FLASH</h1>
+				</div>
+				<div class="slide">
+				<h1 class="logo">FOLIO</h1>
+				</div>
 			</div>
 			
 			<div class="right">

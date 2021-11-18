@@ -90,7 +90,7 @@ export default function Load() {
 						return <div ref={lastDeckElementRef} key={deck} onClick={()=>{visit(deck)}}><DeckPreview deckId={deck} /></div>
 					} else {
 						return <div key={deck} onClick={()=>{visit(deck)}}> <DeckPreview deckId={deck} /></div>
-        			}
+				}
 				})}
 				</div>
 		</div>
