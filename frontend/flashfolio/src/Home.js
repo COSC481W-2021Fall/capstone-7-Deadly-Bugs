@@ -1,28 +1,29 @@
 import React, { createContext, useState, useContext } from "react";
 
+/* External Dependencies */
+import { useHistory } from "react-router-dom";
+
 /* Internal Dependencies */
 import LoginButton from "./LoginButton.js";
 import LogoutButton from "./LogoutButton.js";
-
-export const loginContext = createContext(null)
-
+import NewDeckButton from "./NewDeckButton.js";
+import { loginContext } from "./App.js";
 
 export default function Home() {
-	const [loginState, setLoginState] = useState(null);
-
-	const { signIn, loaded } = useGoogleLogin({
-		onSuccess: (res) => {
-				setLoginState(res);
-				console.log("signed in!");
-			},
-		clientId: process.env.REACT_APP_GOOGLE_CLIENT_ID,
-		isSignedIn: true,
-		accessType: "offline",
-	});
-
-	console.log("Hello!", process.env.REACT_APP_GOOGLE_CLIENT_ID)
-
 	const { loginState } = useContext(loginContext);
+
+	const history = useHistory();
+	
+	const loadButton = () => {
+		history.push("/load");
+	};
+
+	const profileButton = () => {
+		if (loginState === null)
+			history.push("/profile/");
+		else
+			history.push("/profile/" + loginState.googleId);
+	};
 
 	return (
 		<div class="container">
@@ -37,17 +38,20 @@ export default function Home() {
 			
 			<div class="right">
 				<div class="intro">
-					Hi! We're Flashfolio! A flashcard website you can use to study to your heart's desire.
-					If you would like to create a deck, please click "Sign Up." Otherwise, to peruse
+					Hi! We&#39;re Flashfolio! A flashcard website you can use to study to your heart&#39;s desire.
+					If you would like to create a deck, please click "Log In." Otherwise, to peruse
 					our large variety of public decks, hit "Discover."
 				</div>
 				<div class ="buttons">
-					<button>Discover</button>
+					<button onClick={loadButton}>Discover</button>
 					{/*<button>Sign Up</button>*/}
 					{ loginState === null ?
 						<LoginButton /> :
-						<LogoutButton />}
+						<><LogoutButton />
+						<NewDeckButton />
+						</>}
 					{/*<UserInfoPreview />*/}
+					<button onClick={profileButton}>Profile</button>
 				</div>
 			</div>
 		</div>
