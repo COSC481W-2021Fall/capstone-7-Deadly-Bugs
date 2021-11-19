@@ -105,12 +105,15 @@ func UserLoginReq(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 
 	user, err := GetUserByEmail(tokenInfo.Email, ctx)
+
 	if err != nil {
 		// Not found -- make new user.
 		var newUser User
 		newUser.ID = tokenInfo.UserId
 		newUser.Email = tokenInfo.Email
 		newUser.OwnedDecks = []int{}
+		newUser.ProfilePicture = req.ProfilePicture
+		newUser.NickName = req.NickName
 		OverwriteUser(newUser, true, ctx)
 	} else {
 		// User found -- update stored user info.
