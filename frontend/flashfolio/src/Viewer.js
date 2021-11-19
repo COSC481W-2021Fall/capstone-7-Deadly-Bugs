@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 
 /* External Dependencies */
 import Popup from "reactjs-popup";
-import FilePicker from "react-file-picker";
+import { FilePicker } from "react-file-picker";
 import { useHistory, useParams } from "react-router-dom";
 
 /* Internal Dependencies */
