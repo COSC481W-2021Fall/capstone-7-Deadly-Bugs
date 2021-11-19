@@ -24,23 +24,6 @@ export async function getDeck(deckID, token="") {
 	return resp.json();
 }
 
-
-/*
-getSecret
-
-just a temp method used to test user auth
-*/
-export async function getSecret(token) {
-	let reqOpt = {
-		method: "POST",
-		headers: {"Content-Type": "application/json"},
-		body: JSON.stringify({'Token': token}),
-	}
-
-	let resp = await fetch(apiURL() + "/getSecret", reqOpt);
-	return resp.json();
-}
-
 /*
 createNewDeck
 

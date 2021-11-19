@@ -70,7 +70,6 @@ func handleRequests() {
 
 	router.HandleFunc("/getDeck", getDeckReq)
 
-	router.HandleFunc("/getSecret", getSecretReq)
 	router.HandleFunc("/createNewDeck", createNewDeckReq)
 
 	router.HandleFunc("/saveDeck", saveDeckReq)
@@ -336,38 +335,6 @@ func VerifyIdToken(idToken string) (*oauth2.Tokeninfo, error) {
 	}
 
 	return tokenInfo, nil
-}
-
-func getSecretReq(w http.ResponseWriter, r *http.Request) {
-
-	reqBody, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		panic(err)
-	}
-
-	var req struct {
-		Token string `json:"Token"`
-	}
-
-	json.Unmarshal(reqBody, &req)
-
-	tokenInfo, err := VerifyIdToken(req.Token)
-
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println(tokenInfo)
-
-	var ret struct {
-		Secret string `json:"Secret"`
-	}
-
-	ret.Secret = "It's a secret to everybody. Actually this seceret is for " + tokenInfo.Email
-
-	fmt.Println("Got a req for the secret!")
-
-	json.NewEncoder(w).Encode(ret)
 }
 
 func createNewDeckReq(w http.ResponseWriter, r *http.Request) {
