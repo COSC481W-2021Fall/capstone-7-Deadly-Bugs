@@ -23,13 +23,12 @@ export default function DeckPreview({deckId}){
 	}, [deck]);
 	
 	
-	return(
+	if (deck !== null) return(
 		<div>
-			{deck !== null && <>
-				Title: {deck.Title}
-				<div className="card_preview">{firstFlashcard}</div>
-				Author: {deck.Owner}
-			</>}
+			Title: {deck.Title}
+			<div className="card_preview">{firstFlashcard}</div>
+			Author: {deck.Owner}
 		</div>
 	)
+	else return null
 }
