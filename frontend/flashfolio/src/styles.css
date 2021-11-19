@@ -23,7 +23,7 @@ h1 {
 	font-size:3.25em;
 }
 
-button, a {
+button, a.faux-button {
 	background-color: #24305E;
 	color:white;
 	text-decoration: none;
@@ -36,7 +36,7 @@ button, a {
 	cursor: context-menu;
 }
 
-button:active {
+button:active, a.faux-button:active {
 	background: #24305E;
 	-webkit-box-shadow: inset 0px 0px 5px #c1c1c1;
 	-moz-box-shadow: inset 0px 0px 5px #c1c1c1;

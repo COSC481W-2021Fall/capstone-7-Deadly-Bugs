@@ -246,19 +246,13 @@ export default function Viewer({ viewMode = "view" }) {
 			{viewMode === "edit" && <button onClick={addCard}>Add a card</button>}
 			{viewMode === "edit" && <button onClick={deleteCard}>
 				Delete</button>}
-			<a
-				href={`data:text/json;charset=utf-8,${encodeURIComponent(
-					JSON.stringify(flashdeck, null, '\t')
-				)}`}
-				download="myDeck.json"
-			>Download</a>
 			{viewMode === "edit" && <button onClick={saveChanges}>Save Changes</button>}
 			{loginState !== null && <button onClick={cloneD}>Clone Deck</button>}
 			<button onClick={homeButton}>Home</button>
 			<button onClick={loadButton}>Load Deck</button>
 
 			{/* Pop up showing deck information */}
-			<Popup trigger={<a>Info</a>} position="right center" modal>
+			<Popup trigger={<button>Info</button>} position="right center" modal>
 				<div className="modal">
 					<div className="header">
 						{flashdeck.Title}
@@ -275,6 +269,13 @@ export default function Viewer({ viewMode = "view" }) {
 							Private Deck? <input type="checkbox" checked={isPrivate} onChange={handlePrivacyChange} />
 						</>
 					}
+					<br />
+					<a
+						href={`data:text/json;charset=utf-8,${encodeURIComponent(
+						JSON.stringify(flashdeck, null, '\t')
+						)}`}
+						download={flashdeck.Title + ".json"}
+					>Download This Deck</a>
 					<br />
 					Deck# {flashdeck.ID}
 				</div>
