@@ -21,6 +21,9 @@ export async function getDeck(deckID, token="") {
 
 	/* Send the Request */
 	let resp = await fetch(apiURL() + "/getDeck", reqOpt);
+	if (!resp.ok) {
+		return null;
+	}
 	return resp.json();
 }
 

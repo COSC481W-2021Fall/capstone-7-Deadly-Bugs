@@ -16,7 +16,7 @@ export default function Profile() {
 	const { loginState } = useContext(loginContext);
 	const { userId } = useParams();
 	const [user, setUser] = useState(null);
-	const userDecks = [];
+	const [userDecks, setUserDecks] = useState([]);
 	const history = useHistory();
 
 	// Get all user info for the user associated with the Id in the url.
@@ -31,18 +31,23 @@ export default function Profile() {
 
 	// Get all valid decks to be shown based on loginStatus.
 	useEffect(() => {
-		async function deckInfo()
-		{
+		console.log("test");
+		async function deckInfo() {
+			console.log("test2");
 			if(user !== null) {
-			for (let fc of user.OwnedDecks)
-			{
-				let deck = await getDeck(Number(fc), loginState !== null ? loginState.tokenId : "");
-				if(deck !== null)
-					userDecks.push(deck);
-			}}
+				console.log("test3");
+				let decks = [];
+				for (let fc of user.OwnedDecks) {
+					let deck = await getDeck(Number(fc), loginState !== null ? loginState.tokenId : "");
+					if(deck !== null) {
+						decks.push(deck);
+					}
+				}
+				setUserDecks(decks);
+			}
 		}
 		deckInfo();
-	}, [userId, loginState]);
+	}, [userId, loginState, user]);
 
 	return (
 		<div>
