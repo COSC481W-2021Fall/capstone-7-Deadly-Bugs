@@ -5,7 +5,7 @@ import { useParams, useHistory } from "react-router-dom";
 
 /* Internal Dependencies */
 import DeckPreview from "./DeckPreview.js";
-import { getUser } from "./Calls.js";
+import { getUser, getDeck } from "./Calls.js";
 import { loginContext } from "./App.js";
 
 /* Styling */
@@ -16,6 +16,7 @@ export default function Profile() {
 	const { loginState } = useContext(loginContext);
 	const { userId } = useParams();
 	const [user, setUser] = useState(null);
+	const userDecks = [];
 	const history = useHistory();
 
 	// Get all user info for the user associated with the Id in the url.
@@ -23,11 +24,25 @@ export default function Profile() {
 		async function storeInfo()
 		{
 			let owner = await getUser(userId);
-			console.log("Owner: " + owner.NickName);
 			setUser(owner);
 		}
 		storeInfo();
 	}, [userId]);
+
+	// Get all valid decks to be shown based on loginStatus.
+	useEffect(() => {
+		async function deckInfo()
+		{
+			if(user !== null) {
+			for (let fc of user.OwnedDecks)
+			{
+				let deck = await getDeck(Number(fc), loginState !== null ? loginState.tokenId : "");
+				if(deck !== null)
+					userDecks.push(deck);
+			}}
+		}
+		deckInfo();
+	}, [userId, loginState]);
 
 	return (
 		<div>
@@ -43,8 +58,8 @@ export default function Profile() {
 				{user === null ? 
 				<> No Existing User Specified. </> :
 				<>
-					{user.OwnedDecks.map(fc => {
-						return <div onClick={()=>{history.push("/view/"+fc)}}><DeckPreview deckId={fc} /></div>
+					{userDecks.map(fc => {
+							return <div onClick={()=>{history.push("/view/"+fc.ID)}}><DeckPreview deckId={fc.ID} /></div>
 					})}
 				</>
 				}
