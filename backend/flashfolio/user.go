@@ -84,7 +84,8 @@ be the place to put any logic we want to execute when a user logs in.
 func UserLoginReq(w http.ResponseWriter, r *http.Request) {
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		panic(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 
 	var req struct {
@@ -139,7 +140,8 @@ Request to get a user's info from the back end.
 func GetUserReq(w http.ResponseWriter, r *http.Request) {
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		panic(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 
 	var req struct {

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+
 	//"fmt"
 	"io/ioutil"
 	"math/rand"
@@ -31,7 +32,8 @@ func GetDeckReq(w http.ResponseWriter, r *http.Request) {
 
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		panic(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 
 	var req struct {
@@ -79,7 +81,8 @@ func SaveDeckReq(w http.ResponseWriter, r *http.Request) {
 	reqBody, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
-		panic(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 
 	var req struct {
@@ -123,7 +126,8 @@ func CloneDeckReq(w http.ResponseWriter, r *http.Request) {
 	reqBody, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
-		panic(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 
 	var req struct {
@@ -243,7 +247,8 @@ func CreateNewDeckReq(w http.ResponseWriter, r *http.Request) {
 
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		panic(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 
 	var req struct {
@@ -292,7 +297,8 @@ func QueryDecksReq(w http.ResponseWriter, r *http.Request) {
 	pageSize := 5
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		panic(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 
 	var req struct {
