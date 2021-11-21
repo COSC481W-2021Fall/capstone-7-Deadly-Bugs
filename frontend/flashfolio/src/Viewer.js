@@ -83,20 +83,15 @@ export default function Viewer({ viewMode = "view" }) {
 
 	function saveChanges() {
 		if (loginState !== null) {
-			console.log(flashdeck)
 			saveDeck(loginState.tokenId, flashdeck)
 		}
 	}
 
 	async function cloneD() {
 		if (loginState !== null) {
-			console.log(flashdeck)
 			let resp = await cloneDeck(loginState.tokenId, flashdeck)
-			console.log(resp)
-
 			history.push("/edit/" + resp.ID)
 		}
-
 	}
 
 	function changeLayout() {
@@ -182,8 +177,6 @@ export default function Viewer({ viewMode = "view" }) {
 		/* update Cards list by removing the null pointer */
 		copy.Cards = copy.Cards.filter(function () { return true; });
 		setFlashdeck(copy)
-		console.log(copy)
-		console.log(flashdeck)
 	}
 
 	function previousCard() {

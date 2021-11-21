@@ -39,9 +39,7 @@ export async function createNewDeck(token, deckName) {
 		headers: {"Content-Type": "application/json"},
 		body: JSON.stringify({"Token": token, "DeckName": deckName}),
 	}
-	console.log(reqOpt)
 	let resp = await fetch(apiURL() + "/createNewDeck", reqOpt);
-	console.log(resp)
 	return resp.json();
 }
 
@@ -51,8 +49,6 @@ export async function saveDeck(token, deck) {
 		headers: {"Content-Type": "application/json"},
 		body: JSON.stringify({"Token":token, "Deck": deck}),
 	}
-
-	console.log(reqOpt)
 
 	/* Send the Request */
 	let resp = await fetch(apiURL() + "/saveDeck", reqOpt);
@@ -76,10 +72,7 @@ export async function cloneDeck(token, deck) {
 		body: JSON.stringify({"Token":token, "Deck": deck}),
 	}
 
-	console.log(reqOpt)
-
 	let resp = await fetch(apiURL() + "/cloneDeck", reqOpt);
-	console.log(resp)
 	return resp.json();
 }
 export async function notifyUserLogin(token, profileObj) {

@@ -14,7 +14,6 @@ function LoginButton() {
 	const { loginState, setLoginState } = useContext(loginContext);
 
 	const success = async (res) => {
-		console.log('Logged in');
 		setLoginState(res);
 		await notifyUserLogin(res.tokenId, res.profileObj);
 		localStorage.setItem("userCache", JSON.stringify(res));

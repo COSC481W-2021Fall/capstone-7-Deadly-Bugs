@@ -16,21 +16,7 @@ import "./Viewer.css";
 export default function Load() {
 
 	const {loginState} = useContext(loginContext);
-
-	const arrayOfCards = [
-		{ FrontSide: "1", BackSide: "1B" },
-		{ FrontSide: "2", BackSide: "2B" },
-		{ FrontSide: "3", BackSide: "3B" },
-		{ FrontSide: "4", BackSide: "4B" },
-		{ FrontSide: "5", BackSide: "5B" },
-		{ FrontSide: "6", BackSide: "6B" },
-		{ FrontSide: "7", BackSide: "7B" },
-		{ FrontSide: "8", BackSide: "8B" },
-		{ FrontSide: "9", BackSide: "9B" },
-		{ FrontSide: "10", BackSide: "10B" },
-	  ];
 	  
-	//////////////////////////////////////////////Erik Test Code
 	const [query, setQuery] = useState('')
 	const [pageNumber, setPageNumber] = useState(0)
 	const [myDecks, setMyDecks] = useState([]);
@@ -45,7 +31,6 @@ export default function Load() {
 		console.log(loginState);
 		if (loginState !== null) {
 			let user = await getUser(loginState.googleId)
-			console.log(user);
 			setMyDecks(user.OwnedDecks)
 		}
 	},[loginState]);
@@ -66,7 +51,6 @@ export default function Load() {
 		setQuery(e.target.value)
 		setPageNumber(1)
 	}
-	/////////////////////////////////////////////////////////////Erik End
 	
 	const history = useHistory();
 

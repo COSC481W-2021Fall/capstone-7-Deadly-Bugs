@@ -97,7 +97,6 @@ func UserLoginReq(w http.ResponseWriter, r *http.Request) {
 
 	tokenInfo, err := VerifyIdToken(req.Token)
 	if err != nil {
-		fmt.Println(err)
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}

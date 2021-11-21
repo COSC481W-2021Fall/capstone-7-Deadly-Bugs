@@ -58,8 +58,6 @@ function App() {
 		setLoadedAuthState(true);
 	},[]);
 
-	console.log("Hello!", process.env.REACT_APP_GOOGLE_CLIENT_ID)
-
 	return (
 		<loginContext.Provider value={{loginState, setLoginState, loadedAuthState}}>
 		<Navbar />

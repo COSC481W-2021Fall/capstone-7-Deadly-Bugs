@@ -20,7 +20,6 @@ export default function DeckSearch(query, pageNumber, initial=[]) {
 		});
 		setHasMore(res.RemainingDecks);
 		setLoading(false);
-		console.log("getting more!", pageNumber)
 	}, [query, pageNumber]);
 
 	return { loading, decks, hasMore };

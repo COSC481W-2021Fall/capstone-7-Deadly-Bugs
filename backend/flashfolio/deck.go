@@ -71,8 +71,6 @@ func GetDeckReq(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	fmt.Println("Got a request for card: ", req.ID)
-
 	json.NewEncoder(w).Encode(deck)
 }
 
@@ -146,8 +144,6 @@ func CloneDeckReq(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(string(reqBody))
-	fmt.Println("Got save req for", req)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	user, err := GetUserByID(tokenInfo.UserId, ctx)
@@ -196,14 +192,10 @@ func GenerateID() int {
 	if err != nil {
 
 		// didn't find an duplicate ID. return genID
-		fmt.Println("No dupelicate value found.")
-		fmt.Print("generated ID: ")
-		fmt.Println(genID)
 		return genID
 	}
 
 	// Duplicate value found. Iterate through values until value isn't a duplicate
-	fmt.Println("Duplicate value found. finding empty value")
 	for {
 		genID += 1 // <-- Algorithm for security goes here. Yes it's weak right now
 		filter = bson.D{{Key: "id", Value: genID}}
@@ -234,12 +226,10 @@ func CloneDeck(deck Deck, user User) int {
 	if err != nil {
 
 		// Error handling. This should never be nil when it first runs.
-		fmt.Println("No duplicate deck found.")
 		collection.InsertOne(ctx, newDeck)
 	} else {
 
 		// Duplicate value found. Iterate through values until value isn't a duplicate
-		fmt.Println("Duplicate value found. finding empty value")
 
 		newDeck.ID = GenerateID()
 
@@ -269,7 +259,6 @@ func CreateNewDeckReq(w http.ResponseWriter, r *http.Request) {
 
 	tokenInfo, err := VerifyIdToken(req.Token)
 	if err != nil {
-		fmt.Println(err)
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -281,8 +270,6 @@ func CreateNewDeckReq(w http.ResponseWriter, r *http.Request) {
 	}
 
 	newID := GenerateID()
-
-	fmt.Println("Creating new deck @", newID)
 
 	var newDeck Deck
 	newDeck.Cards = []Card{{"", ""}}

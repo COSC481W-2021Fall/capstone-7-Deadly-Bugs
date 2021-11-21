@@ -21,7 +21,6 @@ function NewDeckButton() {
 	const history = useHistory();
 
 	async function newDeck() {
-		console.log("New Deck ", deckName.current.value)
 		let resp = await createNewDeck(loginState.tokenId, deckName.current.value)
 		history.push("/edit/" + resp.ID)
 

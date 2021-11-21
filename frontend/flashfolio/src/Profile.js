@@ -31,11 +31,8 @@ export default function Profile() {
 
 	// Get all valid decks to be shown based on loginStatus.
 	useEffect(() => {
-		console.log("test");
 		async function deckInfo() {
-			console.log("test2");
 			if(user !== null) {
-				console.log("test3");
 				let decks = [];
 				for (let fc of user.OwnedDecks) {
 					let deck = await getDeck(Number(fc), loginState !== null ? loginState.tokenId : "");
