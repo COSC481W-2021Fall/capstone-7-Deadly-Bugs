@@ -11,7 +11,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-
 /*
 Test that you can properly connect to MongoDB and ping it, and disconnect.
 
@@ -40,6 +39,3 @@ func TestMongoConnection(t *testing.T) {
 		t.Fatal(err)
 	}
 }
-
-
-

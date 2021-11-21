@@ -6,8 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-//	"log"
-//	"math/rand"
+
+	//	"log"
+	//	"math/rand"
 	"net/http"
 
 	"time"
@@ -17,17 +18,17 @@ import (
 )
 
 type User struct {
-	ID             string `json:"ID" bson:"id"`
-	Email          string `json:"Email" bson:"email"`
+	ID    string `json:"ID" bson:"id"`
+	Email string `json:"Email" bson:"email"`
 
 	// Google User name
-	NickName       string `json:"NickName" bson:"nickname"`
+	NickName string `json:"NickName" bson:"nickname"`
 
 	// Google Profile Picture
 	ProfilePicture string `json:"ProfilePicture" bson:"profilepicture"`
 
 	// List of deckIDs owned by this user
-	OwnedDecks     []int  `json:"OwnedDecks" bson:"owneddecks"`
+	OwnedDecks []int `json:"OwnedDecks" bson:"owneddecks"`
 }
 
 func GetUserByEmail(email string, ctx context.Context) (*User, error) {
@@ -123,7 +124,6 @@ func UserLoginReq(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
 /*
 This method will clean a user object of values we don't want other people to see:
 
@@ -133,7 +133,6 @@ func CleanUser(user User) *User {
 	user.Email = ""
 	return &user
 }
-
 
 /*
 Request to get a user's info from the back end.
@@ -150,7 +149,7 @@ func GetUserReq(w http.ResponseWriter, r *http.Request) {
 		Token   string `json:"Token"`
 
 		/* ID of the user trying to be requested */
-		ID      string `json:"ID"`
+		ID string `json:"ID"`
 	}
 	json.Unmarshal(reqBody, &req)
 
@@ -181,5 +180,3 @@ func GetUserReq(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(CleanUser(*user))
 }
-
-
