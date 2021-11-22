@@ -271,7 +271,8 @@ func CreateNewDeckReq(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 	user, err := GetUserByID(tokenInfo.UserId, ctx)
 	if err != nil {
-		panic(err)
+		w.WriteHeader(http.StatusNotFound)
+		return
 	}
 
 	newID := GenerateID()
@@ -325,7 +326,7 @@ func QueryDecksReq(w http.ResponseWriter, r *http.Request) {
 
 	defer cur.Close(ctx)
 	if err != nil {
-		panic(err)
+		json.NewEncoder(w).Encode(Deck{-2, "Deck does not exist.", []Card{{"No public decks found", ":("}}, true, ""})
 		return
 	}
 
