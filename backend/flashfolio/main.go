@@ -36,19 +36,19 @@ func main() {
 	var err error
 	MongoClient, err = mongo.Connect(ctx, options.Client().ApplyURI(MongoURI))
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	/* Safely disconnect from Mongo once server is shut down */
 	defer func() {
 		if err = MongoClient.Disconnect(ctx); err != nil {
-			panic(err)
+			log.Fatal(err)
 		}
 	}()
 
 	/* Ping Mongo to test connection */
 	if err := MongoClient.Ping(ctx, readpref.Primary()); err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	fmt.Println("Successfully connected to MongoDB")
