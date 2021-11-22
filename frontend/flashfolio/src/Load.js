@@ -4,7 +4,6 @@ import React, { useState, useRef, useCallback, useContext, useEffect } from "rea
 import { useHistory } from "react-router-dom";
 
 /* Internal Dependencies */
-import Flashcard from "./Flashcard.js";
 import DeckSearch from "./DeckSearch.js"
 import DeckPreview from "./DeckPreview";
 import {getUser} from "./Calls.js";
@@ -16,8 +15,8 @@ import "./Viewer.css";
 export default function Load() {
 
 	const {loginState} = useContext(loginContext);
-	  
-	const [query, setQuery] = useState('')
+	
+	const [query] = useState('') // setQuery was defined but never used
 	const [pageNumber, setPageNumber] = useState(0)
 	const [myDecks, setMyDecks] = useState([]);
 
@@ -45,13 +44,15 @@ export default function Load() {
 			}
 		})
 		if (node) observer.current.observe(node)
-	}, [loading, hasMore])
+	}, [loading, hasMore, pageNumber])
 	
+	// function defined but never used 
+	/*
 	function handleSearch(e) {
 		setQuery(e.target.value)
 		setPageNumber(1)
 	}
-	
+	*/
 	const history = useHistory();
 
 	const visit = (id) => history.push("/view/" + id);

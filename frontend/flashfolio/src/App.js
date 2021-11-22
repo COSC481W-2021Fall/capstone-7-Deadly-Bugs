@@ -1,24 +1,17 @@
-import React, { useEffect, createContext, useState, useContext } from "react";
+import React, { useEffect, createContext, useState } from "react";
 
 /* External Dependencies */
-import { BrowserRouter as Router, Route, Switch, useHistory } from "react-router-dom";
-import { useGoogleLogin } from "react-google-login";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 /* Internal Dependencies */
 import Viewer from "./Viewer.js";
 import Load from "./Load.js";
 import Profile from "./Profile.js";
-import LoginButton from "./LoginButton.js"
-import LogoutButton from "./LogoutButton.js"
-import UserInfoPreview from "./UserInfoPreview.js"
 import Navbar from "./Navbar.js";
-import NewDeckButton from "./NewDeckButton.js";
 import Home from "./Home.js";
 
 /* Styling */
 import "./App.css";
-
-
 
 /*
 App

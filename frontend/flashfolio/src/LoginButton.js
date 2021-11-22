@@ -4,14 +4,14 @@ import React, { useContext } from "react";
 import { GoogleLogin } from "react-google-login";
 
 /* Internal Dependencies */
-import { getUser, notifyUserLogin } from "./Calls.js";
+import { notifyUserLogin } from "./Calls.js";
 import { loginContext } from "./App.js";
 
 
 function LoginButton() {
 
 
-	const { loginState, setLoginState } = useContext(loginContext);
+	const { setLoginState } = useContext(loginContext);
 
 	const success = async (res) => {
 		setLoginState(res);
