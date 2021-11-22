@@ -26,12 +26,15 @@ export default function Load() {
 		loading,
 	} = DeckSearch(query, pageNumber)
 
-	useEffect(async () => {
-		console.log(loginState);
-		if (loginState !== null) {
-			let user = await getUser(loginState.googleId)
-			setMyDecks(user.OwnedDecks)
+	useEffect(() => {
+		const fetchData = async () => {
+			console.log(loginState);
+			if (loginState !== null) {
+				let user = await getUser(loginState.googleId)
+				setMyDecks(user.OwnedDecks)
+			}
 		}
+		fetchData();
 	},[loginState]);
 
 	const observer = useRef()
