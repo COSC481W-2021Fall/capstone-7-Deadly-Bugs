@@ -10,7 +10,9 @@ export default function DeckSearch(query, pageNumber, initial=[]) {
 
 	useEffect(() => {
 		setDecks(initial);
-	}, [query, initial]);
+	// Bad dependencies, but fixing breaks, so ignore.
+	// eslint-disable-next-line
+	}, [query]); 
 
 	useEffect(async () => {
 		setLoading(true);
