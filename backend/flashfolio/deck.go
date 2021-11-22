@@ -43,14 +43,12 @@ func GetDeckReq(w http.ResponseWriter, r *http.Request) {
 
 	json.Unmarshal(reqBody, &req)
 
-	/* get collection */
-	collection := MongoClient.Database("flashfolio").Collection("decks")
 
 	/* set up context for call */
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	err = collection.FindOne(ctx, bson.D{{Key: "id", Value: req.ID}}).Decode(&deck)
+	err = DeckCollection.FindOne(ctx, bson.D{{Key: "id", Value: req.ID}}).Decode(&deck)
 	if err != nil {
 		// TODO: There has gotta be a better way to do this haha
 		// Maybe send a 404 response?
@@ -99,12 +97,11 @@ func SaveDeckReq(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	collection := MongoClient.Database("flashfolio").Collection("decks")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	var realDeck Deck
-	err = collection.FindOne(ctx, bson.D{{Key: "id", Value: req.Deck.ID}}).Decode(&realDeck)
+	err = DeckCollection.FindOne(ctx, bson.D{{Key: "id", Value: req.Deck.ID}}).Decode(&realDeck)
 	if err != nil {
 		/* That deck doesn't exist => 404 */
 		w.WriteHeader(http.StatusNotFound)
@@ -163,9 +160,6 @@ func CloneDeckReq(w http.ResponseWriter, r *http.Request) {
 // Saves deck to Database, overwriting existing deck with same id if present.
 func OverwriteDeck(deck Deck) {
 
-	// set up collection
-	collection := MongoClient.Database("flashfolio").Collection("decks")
-
 	// set up context
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -177,7 +171,7 @@ func OverwriteDeck(deck Deck) {
 	filter := bson.D{{Key: "id", Value: deck.ID}}
 
 	// Replace document within mongo if found.
-	collection.ReplaceOne(ctx, filter, deck, opt)
+	DeckCollection.ReplaceOne(ctx, filter, deck, opt)
 }
 
 // Generates a random integer for use as deck ID
@@ -186,13 +180,12 @@ func GenerateID() int {
 	rand.Seed(time.Now().UnixNano())
 	genID := rand.Intn(99999999)
 
-	// Check collection to guarantee generated ID isn't a duplicate value
+	// Check DeckCollection to guarantee generated ID isn't a duplicate value
 	var deck Deck
-	collection := MongoClient.Database("flashfolio").Collection("decks")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	filter := bson.D{{Key: "id", Value: genID}}
-	err := collection.FindOne(ctx, filter).Decode(&deck)
+	err := DeckCollection.FindOne(ctx, filter).Decode(&deck)
 	if err != nil {
 
 		// didn't find an duplicate ID. return genID
@@ -203,7 +196,7 @@ func GenerateID() int {
 	for {
 		genID += 1 // <-- Algorithm for security goes here. Yes it's weak right now
 		filter = bson.D{{Key: "id", Value: genID}}
-		err = collection.FindOne(ctx, filter).Decode(&deck)
+		err = DeckCollection.FindOne(ctx, filter).Decode(&deck)
 		if err != nil {
 			break
 		}
@@ -214,8 +207,6 @@ func GenerateID() int {
 // Clones the deck.
 func CloneDeck(deck Deck, user User) int {
 
-	// set up collection
-	collection := MongoClient.Database("flashfolio").Collection("decks")
 	newDeck := deck
 	var sameID Deck
 	newDeck.Owner = user.ID
@@ -226,11 +217,11 @@ func CloneDeck(deck Deck, user User) int {
 
 	// set up filter to locate document with identical user generated ID
 	filter := bson.D{{Key: "id", Value: newDeck.ID}}
-	err := collection.FindOne(ctx, filter).Decode(&sameID)
+	err := DeckCollection.FindOne(ctx, filter).Decode(&sameID)
 	if err != nil {
 
 		// Error handling. This should never be nil when it first runs.
-		collection.InsertOne(ctx, newDeck)
+		DeckCollection.InsertOne(ctx, newDeck)
 	} else {
 
 		// Duplicate value found. Iterate through values until value isn't a duplicate
@@ -238,7 +229,7 @@ func CloneDeck(deck Deck, user User) int {
 		newDeck.ID = GenerateID()
 
 		// insert document when deckID that isn't currently used is found.
-		collection.InsertOne(ctx, newDeck)
+		DeckCollection.InsertOne(ctx, newDeck)
 	}
 	return newDeck.ID
 }
@@ -284,9 +275,7 @@ func CreateNewDeckReq(w http.ResponseWriter, r *http.Request) {
 	newDeck.Owner = user.ID
 	newDeck.IsPublic = true
 
-	collection := MongoClient.Database("flashfolio").Collection("decks")
-
-	collection.InsertOne(ctx, newDeck)
+	DeckCollection.InsertOne(ctx, newDeck)
 	user.OwnedDecks = append(user.OwnedDecks, newDeck.ID)
 	OverwriteUser(*user, false, ctx)
 
@@ -314,15 +303,12 @@ func QueryDecksReq(w http.ResponseWriter, r *http.Request) {
 		RemainingDecks bool  `json:"RemainingDecks"`
 	}
 
-	/* get collection */
-	collection := MongoClient.Database("flashfolio").Collection("decks")
-
 	/* set up context for call */
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	/* Find the decks */
-	cur, err := collection.Find(ctx, bson.D{{Key: "ispublic", Value: true}})
+	cur, err := DeckCollection.Find(ctx, bson.D{{Key: "ispublic", Value: true}})
 
 	defer cur.Close(ctx)
 	if err != nil {

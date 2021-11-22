@@ -35,9 +35,7 @@ func GetUserByEmail(email string, ctx context.Context) (*User, error) {
 
 	var user User
 
-	collection := MongoClient.Database("flashfolio").Collection("users")
-
-	err := collection.FindOne(ctx, bson.D{{Key: "email", Value: email}}).Decode(&user)
+	err := UserCollection.FindOne(ctx, bson.D{{Key: "email", Value: email}}).Decode(&user)
 
 	if err != nil {
 		return nil, err
@@ -49,9 +47,8 @@ func GetUserByEmail(email string, ctx context.Context) (*User, error) {
 func GetUserByID(id string, ctx context.Context) (*User, error) {
 	var user User
 
-	collection := MongoClient.Database("flashfolio").Collection("users")
 
-	err := collection.FindOne(ctx, bson.D{{Key: "id", Value: id}}).Decode(&user)
+	err := UserCollection.FindOne(ctx, bson.D{{Key: "id", Value: id}}).Decode(&user)
 	if err != nil {
 		return nil, err
 	}
@@ -61,8 +58,6 @@ func GetUserByID(id string, ctx context.Context) (*User, error) {
 
 func OverwriteUser(user User, create bool, ctx context.Context) {
 
-	// set up collection
-	collection := MongoClient.Database("flashfolio").Collection("users")
 
 	// Create new entry if one does not exist
 	opt := options.Replace().SetUpsert(create)
@@ -71,7 +66,7 @@ func OverwriteUser(user User, create bool, ctx context.Context) {
 	filter := bson.D{{Key: "id", Value: user.ID}}
 
 	// Replace document within mongo if found.
-	collection.ReplaceOne(ctx, filter, user, opt)
+	UserCollection.ReplaceOne(ctx, filter, user, opt)
 }
 
 /*

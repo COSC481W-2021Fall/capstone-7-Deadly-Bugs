@@ -22,6 +22,9 @@ const MongoURI string = "mongodb://localhost:27017/"
 
 var MongoClient *mongo.Client
 
+var DeckCollection *mongo.Collection
+var UserCollection *mongo.Collection
+
 func main() {
 
 	fmt.Println("Starting flashfolio back end...")
@@ -52,6 +55,10 @@ func main() {
 	}
 
 	fmt.Println("Successfully connected to MongoDB")
+
+	/* Create Pointers to Mongo Collections */
+	DeckCollection = MongoClient.Database("flashfolio").Collection("decks")
+	UserCollection = MongoClient.Database("flashfolio").Collection("users")
 
 	handleRequests()
 }
