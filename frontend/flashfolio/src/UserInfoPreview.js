@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useContext } from "react";
 
 /* Internal Dependencies */
 import { loginContext } from "./App.js";

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 /* Internal Dependencies */
 import { queryDecks } from "./Calls.js";
@@ -10,7 +10,7 @@ export default function DeckSearch(query, pageNumber, initial=[]) {
 
 	useEffect(() => {
 		setDecks(initial);
-	}, [query]);
+	}, [query, initial]);
 
 	useEffect(async () => {
 		setLoading(true);

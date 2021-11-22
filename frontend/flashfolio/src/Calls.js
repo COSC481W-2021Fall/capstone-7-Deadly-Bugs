@@ -81,8 +81,9 @@ export async function notifyUserLogin(token, profileObj) {
 		headers: {"Content-Type": "application/json"},
 		body: JSON.stringify({"Token": token, "NickName": profileObj.name, "ProfilePicture":profileObj.imageUrl}),
 	}
-
+	
 	let resp = await fetch(apiURL() + "/userLogin", reqOpt);
+	return resp.json();
 }
 
 export async function getUser(userID, includePrivate=false, token="") {

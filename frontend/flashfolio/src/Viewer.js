@@ -6,7 +6,6 @@ import { FilePicker } from "react-file-picker";
 import { useHistory, useParams } from "react-router-dom";
 
 /* Internal Dependencies */
-import Navbar from "./Navbar.js";
 import Flashcard from "./Flashcard.js";
 import UserInfoPreview from "./UserInfoPreview.js";
 import { loginContext } from "./App.js";
@@ -143,13 +142,14 @@ export default function Viewer({ viewMode = "view" }) {
 			}
 			else { setCardIterator(0); }
 		}
-	}, [cardIterator])
+	}, [cardIterator, flashdeck.Cards, shufOn])
 
 	useEffect(() => {
-		if (viewMode === "edit" && loadedAuthState && flashdeck != "" && (loginState === null || loginState.googleId != flashdeck.Owner)) {
+		if (viewMode === "edit" && loadedAuthState && flashdeck !== "" && (loginState === null || loginState.googleId !== flashdeck.Owner)) {
 			history.replace("/view/" + deckId)
 		}
-	}, [loginState, loadedAuthState, flashdeck]);
+	}, [loginState, loadedAuthState, flashdeck, deckId, history, viewMode]);
+	
 	function addCard() {
 		flashdeck.Cards[flashdeck.Cards.length] = { FrontSide: "", BackSide: "" };
 		setCardIterator(flashdeck.Cards.length - 1);
@@ -254,7 +254,7 @@ export default function Viewer({ viewMode = "view" }) {
 					<br />
 					Created by:
 					<br />
-					<img src={deckOwner === null ? "" : deckOwner.ProfilePicture} />
+					<img src={deckOwner === null ? "" : deckOwner.ProfilePicture} alt="deck owner" />
 					{deckOwner === null ? "" : deckOwner.NickName}
 					{viewMode === "edit" &&
 						<>

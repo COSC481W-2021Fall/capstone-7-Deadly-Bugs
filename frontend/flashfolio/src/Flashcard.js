@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 /* Styling */
 import "./Flashcard.css";
@@ -69,7 +69,7 @@ export default function Flashcard({ flashcard, editMode = false, delfunc }) {
 	useEffect(() => {
 		setEditVal(currentSide());
 		setCardState(flashcard);
-	}, [flashcard]);
+	}, [flashcard]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	const deleteCard = () => delfunc(flashcard);
 
