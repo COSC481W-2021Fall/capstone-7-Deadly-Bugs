@@ -1,24 +1,24 @@
-import React, { useState, useRef, useCallback, useContext, useEffect } from "react";
+import React, { useState, useRef, useCallback, useContext, useEffect } from "react"
 
 /* External Dependencies */
-import { useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom"
 
 /* Internal Dependencies */
 import DeckSearch from "./DeckSearch.js"
-import DeckPreview from "./DeckPreview";
-import {getUser} from "./Calls.js";
-import {loginContext} from "./App.js";
+import DeckPreview from "./DeckPreview"
+import { getUser } from "./Calls.js"
+import { loginContext } from "./App.js"
 
 /* Styling */
-import "./Viewer.css";
+import "./Viewer.css"
 
 export default function Load() {
 
-	const {loginState} = useContext(loginContext);
-	
-	const [query] = useState('') // setQuery was defined but never used
+	const { loginState } = useContext(loginContext)
+
+	const [query] = useState("") // setQuery was defined but never used
 	const [pageNumber, setPageNumber] = useState(0)
-	const [myDecks, setMyDecks] = useState([]);
+	const [myDecks, setMyDecks] = useState([])
 
 	const {
 		decks,
@@ -27,12 +27,12 @@ export default function Load() {
 	} = DeckSearch(query, pageNumber)
 
 	useEffect(async () => {
-		console.log(loginState);
+		console.log(loginState)
 		if (loginState !== null) {
 			let user = await getUser(loginState.googleId)
 			setMyDecks(user.OwnedDecks)
 		}
-	},[loginState]);
+	}, [loginState])
 
 	const observer = useRef()
 	const lastDeckElementRef = useCallback(node => {
@@ -45,7 +45,7 @@ export default function Load() {
 		})
 		if (node) observer.current.observe(node)
 	}, [loading, hasMore, pageNumber])
-	
+
 	// function defined but never used 
 	/*
 	function handleSearch(e) {
@@ -53,31 +53,31 @@ export default function Load() {
 		setPageNumber(1)
 	}
 	*/
-	const history = useHistory();
+	const history = useHistory()
 
-	const visit = (id) => history.push("/view/" + id);
+	const visit = (id) => history.push("/view/" + id)
 
 	return (
 		<div>
 			{loginState !== null &&
-			<>
-				<h3>My Decks:</h3><br/>
-				<div className="flash-grid">
-				{myDecks.map((deck, index) => {
-					return <div key={deck} onClick={()=>{visit(deck)}}><DeckPreview deckId={deck}/></div>
-				})}
-				</div>
-			</>}
-			<h3>Public Decks:</h3><br/>
-				<div className="flash-grid">
+				<>
+					<h3>My Decks:</h3><br />
+					<div className="flash-grid">
+						{myDecks.map((deck, index) => {
+							return <div key={deck} onClick={() => { visit(deck) }}><DeckPreview deckId={deck} /></div>
+						})}
+					</div>
+				</>}
+			<h3>Public Decks:</h3><br />
+			<div className="flash-grid">
 				{decks.map((deck, index) => {
 					if (decks.length === index + 1) {
-						return <div ref={lastDeckElementRef} key={deck} onClick={()=>{visit(deck)}}><DeckPreview deckId={deck} /></div>
+						return <div ref={lastDeckElementRef} key={deck} onClick={() => { visit(deck) }}><DeckPreview deckId={deck} /></div>
 					} else {
-						return <div key={deck} onClick={()=>{visit(deck)}}> <DeckPreview deckId={deck} /></div>
-				}
+						return <div key={deck} onClick={() => { visit(deck) }}> <DeckPreview deckId={deck} /></div>
+					}
 				})}
-				</div>
+			</div>
 		</div>
-		)
+	)
 }
