@@ -12,9 +12,12 @@ export default function DeckPreview({ deckId }) {
 	const [deck, setDeck] = useState(null)
 	const [firstFlashcard, setFirstFlashcard] = useState("")
 	const { loginState } = useContext(loginContext)
-	useEffect(async () => {
-		let res = await getDeck(deckId, (loginState !== null ? loginState.tokenId : ""))
-		setDeck(res)
+	useEffect(() => {
+		const fetchData = async () => {
+			let res = await getDeck(deckId, (loginState !== null ? loginState.tokenId : ""));
+			setDeck(res)
+		}
+		fetchData()
 	}, [deckId, loginState])
 
 	useEffect(() => {

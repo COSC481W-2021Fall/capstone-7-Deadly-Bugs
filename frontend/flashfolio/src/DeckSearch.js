@@ -14,14 +14,17 @@ export default function DeckSearch(query, pageNumber, initial = []) {
 		// eslint-disable-next-line
 	}, [query])
 
-	useEffect(async () => {
-		setLoading(true)
-		let res = await queryDecks(pageNumber, query)
-		setDecks(decks => {
-			return [...new Set([...decks, ...res.DeckIDs])]
-		})
-		setHasMore(res.RemainingDecks)
-		setLoading(false)
+	useEffect(() => {
+		const fetchData = async () => {
+			setLoading(true)
+			let res = await queryDecks(pageNumber, query)
+			setDecks(decks => {
+				return [...new Set([...decks, ...res.DeckIDs])]
+			})
+			setHasMore(res.RemainingDecks)
+			setLoading(false)
+		}
+		fetchData()
 	}, [query, pageNumber])
 
 	return { loading, decks, hasMore }
