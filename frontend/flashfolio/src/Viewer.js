@@ -23,8 +23,9 @@ Viewer
 Grabs a deck from the backend.
 Displays a single card at a time to the screen.
 */
-var shufOrder = []
-var hidden = true
+// Why does shuffling only work if these are here???? why???
+let shufOrder = []
+let hidden = true
 export default function Viewer({ viewMode = "view" }) {
 	const history = useHistory()
 
@@ -47,6 +48,7 @@ export default function Viewer({ viewMode = "view" }) {
 		flashdeck.IsPublic = isPrivate
 	}
 
+	/* Flips between edit and view mode */
 	function flipView() {
 		if (viewMode === "view")
 			history.replace("/edit/" + deckId)
@@ -57,6 +59,7 @@ export default function Viewer({ viewMode = "view" }) {
 		}
 	}
 
+	/* Shuffles cards in the deck */
 	function shufFunction() {
 		hidden = false
 		setCardIterator(0)
@@ -162,7 +165,7 @@ export default function Viewer({ viewMode = "view" }) {
 	}
 
 	function deleteCard(card, clear) {
-		/* Extremely hacky disgusting way of deepcopying */
+		/* hacky way of copying */
 		let copy = { ...flashdeck }
 		copy.Cards = flashdeck.Cards
 		/* if there's one card, make a blank card */
@@ -192,13 +195,7 @@ export default function Viewer({ viewMode = "view" }) {
 		}
 	}
 
-	const loadButton = () => {
-		history.push("/load")
-	}
-	const homeButton = () => {
-		history.push("/")
-	}
-
+	/* Import button when editing */
 	const importButton = () => {
 		const onChange = async (f) => {
 			let text = await f.text()
@@ -208,6 +205,7 @@ export default function Viewer({ viewMode = "view" }) {
 			deck.Owner = flashdeck.Owner
 			setFlashdeck(deck)
 		}
+		/* Returns this component */
 		return (
 			<FilePicker
 				extensions={["json"]}
@@ -246,8 +244,6 @@ export default function Viewer({ viewMode = "view" }) {
 				Delete</button>}
 			{viewMode === "edit" && <button onClick={saveChanges}>Save Changes</button>}
 			{loginState !== null && <button onClick={cloneD}>Clone Deck</button>}
-			<button onClick={homeButton}>Home</button>
-			<button onClick={loadButton}>Load Deck</button>
 
 			{/* Pop up showing deck information */}
 			<Popup trigger={<button>Info</button>} position="right center" modal>

@@ -9,9 +9,6 @@ export default function Flashcard({ flashcard, editMode = false, delfunc }) {
 	const [flip, setFlip] = useState(false)
 	const [showEditor, setShowEditor] = useState(false)
 
-	/* Returns appropriate side according to flip state */
-	const currentSide = () => flip ? cardState.BackSide : cardState.FrontSide
-
 	/* Ref for the actual textarea (maybe can be removed?)*/
 	const editor = useRef(null)
 
@@ -19,6 +16,9 @@ export default function Flashcard({ flashcard, editMode = false, delfunc }) {
 	const [editVal, setEditVal] = useState("")
 
 	const [cardState, setCardState] = useState(flashcard)
+	
+	/* Returns appropriate side according to flip state */
+	const currentSide = () => flip ? cardState.BackSide : cardState.FrontSide
 
 	/* Executed when editor textarea is changed by user */
 	const updateCard = () => {

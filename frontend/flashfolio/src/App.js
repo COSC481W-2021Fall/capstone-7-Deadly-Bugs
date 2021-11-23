@@ -16,9 +16,10 @@ import "./App.css"
 /*
 App
 
-Main entry point for the frontend
+Main entry point for the frontend.
 */
 
+/* Context provides user info to child components */
 export const loginContext = createContext(null)
 
 function App() {
@@ -27,7 +28,7 @@ function App() {
 
 	const [loadedAuthState, setLoadedAuthState] = useState(false)
 
-	/*
+	/* This may be of use later -- as such leave it here commented.
 	const { signIn, loaded } = useGoogleLogin({
 		onSuccess: (res) => {
 				setLoginState(res)
@@ -46,6 +47,9 @@ function App() {
 	})
 	*/
 
+	/* This use effect is executed at each render to
+	 * grab the latest user info and inform other components
+	 * that the Auth information is loaded. */
 	useEffect(() => {
 		setLoginState(JSON.parse(localStorage.getItem("userCache")))
 		setLoadedAuthState(true)
