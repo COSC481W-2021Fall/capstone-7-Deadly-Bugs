@@ -1,38 +1,24 @@
-import React, { useState, useRef, useCallback, useContext, useEffect} from 'react'
-import { useHistory } from 'react-router-dom';
-import Flashcard from "./Flashcard";
-import "./Viewer.css";
-import DeckSearch from './DeckSearch'
+import React, { useState, useRef, useCallback, useContext, useEffect } from "react"
 
-import {getUser} from "./Calls.js"
+/* External Dependencies */
+import { useHistory } from "react-router-dom"
 
-import DeckPreview from "./DeckPreview";
+/* Internal Dependencies */
+import DeckSearch from "./DeckSearch.js"
+import DeckPreview from "./DeckPreview"
+import { getUser } from "./Calls.js"
+import { loginContext } from "./App.js"
 
-import "./Viewer.css";
-
-import {loginContext} from "./App.js";
+/* Styling */
+import "./Viewer.css"
 
 export default function Load() {
 
-	const {loginState} = useContext(loginContext);
+	const { loginState } = useContext(loginContext)
 
-	const arrayOfCards = [
-		{ FrontSide: "1", BackSide: "1B" },
-		{ FrontSide: "2", BackSide: "2B" },
-		{ FrontSide: "3", BackSide: "3B" },
-		{ FrontSide: "4", BackSide: "4B" },
-		{ FrontSide: "5", BackSide: "5B" },
-		{ FrontSide: "6", BackSide: "6B" },
-		{ FrontSide: "7", BackSide: "7B" },
-		{ FrontSide: "8", BackSide: "8B" },
-		{ FrontSide: "9", BackSide: "9B" },
-		{ FrontSide: "10", BackSide: "10B" },
-	  ];
-	  
-	//////////////////////////////////////////////Erik Test Code
-	const [query, setQuery] = useState('')
+	const [query] = useState("") // setQuery was defined but never used
 	const [pageNumber, setPageNumber] = useState(0)
-	const [myDecks, setMyDecks] = useState([]);
+	const [myDecks, setMyDecks] = useState([])
 
 	const {
 		decks,
@@ -40,14 +26,16 @@ export default function Load() {
 		loading,
 	} = DeckSearch(query, pageNumber)
 
-	useEffect(async () => {
-		console.log(loginState);
-		if (loginState !== null) {
-			let user = await getUser(loginState.googleId)
-			console.log(user);
-			setMyDecks(user.OwnedDecks)
+	useEffect(() => {
+		const fetchData = async () => {
+			console.log(loginState)
+			if (loginState !== null) {
+				let user = await getUser(loginState.googleId)
+				setMyDecks(user.OwnedDecks)
+			}
 		}
-	},[loginState]);
+		fetchData()
+	}, [loginState])
 
 	const observer = useRef()
 	const lastDeckElementRef = useCallback(node => {
@@ -59,39 +47,40 @@ export default function Load() {
 			}
 		})
 		if (node) observer.current.observe(node)
-	}, [loading, hasMore])
-	
+	}, [loading, hasMore, pageNumber])
+
+	// function defined but never used 
+	/*
 	function handleSearch(e) {
 		setQuery(e.target.value)
 		setPageNumber(1)
 	}
-	/////////////////////////////////////////////////////////////Erik End
-	
-	const history = useHistory();
+	*/
+	const history = useHistory()
 
-	const visit = (id) => history.push("/view/" + id);
+	const visit = (id) => history.push("/view/" + id)
 
 	return (
 		<div>
 			{loginState !== null &&
-			<>
-				<h3>My Decks:</h3><br/>
-				<div className="flash-grid">
-				{myDecks.map((deck, index) => {
-					return <div key={deck} onClick={()=>{visit(deck)}}><DeckPreview deckId={deck}/></div>
-				})}
-				</div>
-			</>}
-			<h3>Public Decks:</h3><br/>
-				<div className="flash-grid">
+				<>
+					<h3>My Decks:</h3><br />
+					<div className="flash-grid">
+						{myDecks.map((deck, index) => {
+							return <div key={deck} onClick={() => { visit(deck) }}><DeckPreview deckId={deck} /></div>
+						})}
+					</div>
+				</>}
+			<h3>Public Decks:</h3><br />
+			<div className="flash-grid">
 				{decks.map((deck, index) => {
 					if (decks.length === index + 1) {
-						return <div ref={lastDeckElementRef} key={deck} onClick={()=>{visit(deck)}}><DeckPreview deckId={deck} /></div>
+						return <div ref={lastDeckElementRef} key={deck} onClick={() => { visit(deck) }}><DeckPreview deckId={deck} /></div>
 					} else {
-						return <div key={deck} onClick={()=>{visit(deck)}}> <DeckPreview deckId={deck} /></div>
-        			}
+						return <div key={deck} onClick={() => { visit(deck) }}> <DeckPreview deckId={deck} /></div>
+					}
 				})}
-				</div>
+			</div>
 		</div>
-		)
+	)
 }

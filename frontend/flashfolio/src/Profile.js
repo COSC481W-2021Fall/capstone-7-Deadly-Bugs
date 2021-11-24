@@ -1,75 +1,70 @@
-import React, { useEffect, useContext, useState } from 'react'
-import { useParams } from "react-router-dom";
-import "./Viewer.css";
-import { getUser } from "./Calls.js";
-import { loginContext } from "./App.js";
+import React, { useEffect, useContext, useState } from "react"
+
+/* External Dependencies */
+import { useParams, useHistory } from "react-router-dom"
+
+/* Internal Dependencies */
+import DeckPreview from "./DeckPreview.js"
+import { getUser, getDeck } from "./Calls.js"
+import { loginContext } from "./App.js"
+
+/* Styling */
+import "./Viewer.css"
 
 export default function Profile() {
 
-	const { loginState } = useContext(loginContext);
-	let { userId } = useParams();
-	const [user, setUser] = useState(null);
+	const { loginState } = useContext(loginContext)
+	const { userId } = useParams()
+	const [user, setUser] = useState(null)
+	const [userDecks, setUserDecks] = useState([])
+	const history = useHistory()
 
 	// Get all user info for the user associated with the Id in the url.
 	useEffect(() => {
-		async function storeInfo()
-		{
-			let owner = await getUser(userId);
-			console.log("Owner: " + owner.NickName);
-			setUser(owner);
+		async function storeInfo() {
+			let owner = await getUser(userId)
+			setUser(owner)
 		}
-		storeInfo();
-	}, [userId]);
+		storeInfo()
+	}, [userId])
+
+	// Get all valid decks to be shown based on loginStatus.
+	useEffect(() => {
+		async function deckInfo() {
+			if (user !== null) {
+				let decks = []
+				for (let fc of user.OwnedDecks) {
+					let deck = await getDeck(Number(fc), loginState !== null ? loginState.tokenId : "")
+					if (deck !== null) {
+						decks.push(deck)
+					}
+				}
+				setUserDecks(decks)
+			}
+		}
+		deckInfo()
+	}, [userId, loginState, user])
 
 	return (
 		<div>
-			{/*If no login or login != to userId in url, only show user specific public decks*/}
-			{loginState === null || loginState.googleId !== userId ?
-			<>
-				<div className="profile">
-					<img src={user === null ? "" : user.ProfilePicture} alt="" />
-					<div className="profileText">
-						{user === null ? "" : user.NickName + "'s Profile Page"} <br/>
-						{userId === null ? "" : "User Id: " + userId }<br/>
-					</div>
+			<div className="profile">
+				<img src={user === null ? "" : user.ProfilePicture} alt="" />
+				<div className="profileText">
+					{user === null ? "" : user.NickName + "'s Profile Page"} <br />
+					{userId === null ? "" : "User Id: " + userId}<br />
 				</div>
-				<hr/>
-				<div className="flash-grid">
-					{user === null ? 
+			</div>
+			<hr />
+			<div className="flash-grid">
+				{user === null ?
 					<> No Existing User Specified. </> :
 					<>
-						{user.OwnedDecks.map(fc => {
-							if (fc != null)
-								return <div><a href= {"../view/" + fc}>{"DeckID:" + fc}</a></div>
-							return
+						{userDecks.map(fc => {
+							return <div onClick={() => { history.push("/view/" + fc.ID) }}><DeckPreview deckId={fc.ID} /></div>
 						})}
 					</>
-					}
-				</div>
-			</> :
-			<> {/* Else, show all decks associated with the userId.*/}
-				<div className="profile">
-					<img src={user === null ? "" : user.ProfilePicture} alt="" />
-					<div className="profileText">
-						{user === null ? "" : user.NickName + "'s Profile Page"} <br/>
-						{userId === null ? "" : "User Id: " + userId }<br/>
-					</div>
-				</div>
-				<hr/>
-				<div className="flash-grid">
-					{user === null ? 
-					<> No Existing User Specified. </> :
-					<>
-						{user.OwnedDecks.map(fc => {
-							if (fc != null)
-								return <div><a href= {"../view/" + fc}>{"DeckID:" + fc}</a></div>
-							return
-						})}
-					</>
-					}
-				</div>
-			</>
-			}
-		</div>	
+				}
+			</div>
+		</div>
 	)
 }

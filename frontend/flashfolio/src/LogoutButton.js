@@ -1,16 +1,18 @@
-import React, { useContext } from "react";
-import { GoogleLogout } from "react-google-login";
+import React, { useContext } from "react"
 
-import { loginContext } from "./App.js";
+/* External Dependencies */
+import { GoogleLogout } from "react-google-login"
+
+/* Internal Dependencies */
+import { loginContext } from "./App.js"
 
 function LogoutButton() {
 
-	const { setLoginState } = useContext(loginContext);
+	const { setLoginState } = useContext(loginContext)
 
 	const success = async () => {
-		console.log('Logged out');
-		setLoginState(null);
-		localStorage.removeItem("userCache");
+		setLoginState(null)
+		localStorage.removeItem("userCache")
 	}
 
 	return (
@@ -24,5 +26,5 @@ function LogoutButton() {
 	)
 }
 
-export default LogoutButton;
+export default LogoutButton
 

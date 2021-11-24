@@ -1,13 +1,15 @@
-import Flashcard from "./Flashcard";
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent } from "@testing-library/react"
 
-test('Clicking card is possible', () => {
-    var testFlash = {
-        frontSide: 'front',
-        backSide: 'back'
-    };
+/* Internal Dependencies */
+import Flashcard from "./Flashcard.js"
 
-    render(<Flashcard flashcard = {testFlash} />);
-    const clicked = fireEvent.click(screen.getByTestId('card'));
-    expect(clicked);
-});
+test("Clicking card is possible", () => {
+	var testFlash = {
+		frontSide: "front",
+		backSide: "back"
+	}
+
+	render(<Flashcard flashcard={testFlash} />)
+	const clicked = fireEvent.click(screen.getByTestId("card"))
+	expect(clicked)
+})

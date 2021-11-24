@@ -1,22 +1,24 @@
-import React, { useContext, useRef } from 'react';
-import { createNewDeck } from "./Calls.js";
-import { loginContext } from "./App.js";
-import Popup from "reactjs-popup";
-import { useHistory } from "react-router-dom";
+import React, { useContext, useRef } from "react"
 
+/* External Dependencies */
+import Popup from "reactjs-popup"
+import { useHistory } from "react-router-dom"
+
+/* Internal Dependencies */
+import { createNewDeck } from "./Calls.js"
+import { loginContext } from "./App.js"
+
+/* Styling */
 import "./NewDeckButton.css"
 
 
 function NewDeckButton() {
 
-	const { loginState } = useContext(loginContext);
-
-	const deckName = useRef();
-
-	const history = useHistory();
+	const { loginState } = useContext(loginContext)
+	const deckName = useRef()
+	const history = useHistory()
 
 	async function newDeck() {
-		console.log("New Deck ", deckName.current.value)
 		let resp = await createNewDeck(loginState.tokenId, deckName.current.value)
 		history.push("/edit/" + resp.ID)
 
@@ -37,5 +39,5 @@ function NewDeckButton() {
 	)
 }
 
-export default NewDeckButton;
+export default NewDeckButton
 

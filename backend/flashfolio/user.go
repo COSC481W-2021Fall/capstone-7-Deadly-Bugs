@@ -4,10 +4,11 @@ import (
 	"context"
 
 	"encoding/json"
-	"fmt"
+	//"fmt"
 	"io/ioutil"
-//	"log"
-//	"math/rand"
+
+	//	"log"
+	//	"math/rand"
 	"net/http"
 
 	"time"
@@ -17,26 +18,24 @@ import (
 )
 
 type User struct {
-	ID             string `json:"ID" bson:"id"`
-	Email          string `json:"Email" bson:"email"`
+	ID    string `json:"ID" bson:"id"`
+	Email string `json:"Email" bson:"email"`
 
 	// Google User name
-	NickName       string `json:"NickName" bson:"nickname"`
+	NickName string `json:"NickName" bson:"nickname"`
 
 	// Google Profile Picture
 	ProfilePicture string `json:"ProfilePicture" bson:"profilepicture"`
 
 	// List of deckIDs owned by this user
-	OwnedDecks     []int  `json:"OwnedDecks" bson:"owneddecks"`
+	OwnedDecks []int `json:"OwnedDecks" bson:"owneddecks"`
 }
 
 func GetUserByEmail(email string, ctx context.Context) (*User, error) {
 
 	var user User
 
-	collection := MongoClient.Database("flashfolio").Collection("users")
-
-	err := collection.FindOne(ctx, bson.D{{Key: "email", Value: email}}).Decode(&user)
+	err := UserCollection.FindOne(ctx, bson.D{{Key: "email", Value: email}}).Decode(&user)
 
 	if err != nil {
 		return nil, err
@@ -48,9 +47,8 @@ func GetUserByEmail(email string, ctx context.Context) (*User, error) {
 func GetUserByID(id string, ctx context.Context) (*User, error) {
 	var user User
 
-	collection := MongoClient.Database("flashfolio").Collection("users")
 
-	err := collection.FindOne(ctx, bson.D{{Key: "id", Value: id}}).Decode(&user)
+	err := UserCollection.FindOne(ctx, bson.D{{Key: "id", Value: id}}).Decode(&user)
 	if err != nil {
 		return nil, err
 	}
@@ -60,8 +58,6 @@ func GetUserByID(id string, ctx context.Context) (*User, error) {
 
 func OverwriteUser(user User, create bool, ctx context.Context) {
 
-	// set up collection
-	collection := MongoClient.Database("flashfolio").Collection("users")
 
 	// Create new entry if one does not exist
 	opt := options.Replace().SetUpsert(create)
@@ -70,7 +66,7 @@ func OverwriteUser(user User, create bool, ctx context.Context) {
 	filter := bson.D{{Key: "id", Value: user.ID}}
 
 	// Replace document within mongo if found.
-	collection.ReplaceOne(ctx, filter, user, opt)
+	UserCollection.ReplaceOne(ctx, filter, user, opt)
 }
 
 /*
@@ -83,7 +79,8 @@ be the place to put any logic we want to execute when a user logs in.
 func UserLoginReq(w http.ResponseWriter, r *http.Request) {
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		panic(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 
 	var req struct {
@@ -96,7 +93,6 @@ func UserLoginReq(w http.ResponseWriter, r *http.Request) {
 
 	tokenInfo, err := VerifyIdToken(req.Token)
 	if err != nil {
-		fmt.Println(err)
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -105,12 +101,15 @@ func UserLoginReq(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 
 	user, err := GetUserByEmail(tokenInfo.Email, ctx)
+
 	if err != nil {
 		// Not found -- make new user.
 		var newUser User
 		newUser.ID = tokenInfo.UserId
 		newUser.Email = tokenInfo.Email
 		newUser.OwnedDecks = []int{}
+		newUser.ProfilePicture = req.ProfilePicture
+		newUser.NickName = req.NickName
 		OverwriteUser(newUser, true, ctx)
 	} else {
 		// User found -- update stored user info.
@@ -119,7 +118,6 @@ func UserLoginReq(w http.ResponseWriter, r *http.Request) {
 		OverwriteUser(*user, true, ctx)
 	}
 }
-
 
 /*
 This method will clean a user object of values we don't want other people to see:
@@ -131,14 +129,14 @@ func CleanUser(user User) *User {
 	return &user
 }
 
-
 /*
 Request to get a user's info from the back end.
 */
 func GetUserReq(w http.ResponseWriter, r *http.Request) {
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		panic(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 
 	var req struct {
@@ -147,7 +145,7 @@ func GetUserReq(w http.ResponseWriter, r *http.Request) {
 		Token   string `json:"Token"`
 
 		/* ID of the user trying to be requested */
-		ID      string `json:"ID"`
+		ID string `json:"ID"`
 	}
 	json.Unmarshal(reqBody, &req)
 
@@ -178,5 +176,3 @@ func GetUserReq(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(CleanUser(*user))
 }
-
-

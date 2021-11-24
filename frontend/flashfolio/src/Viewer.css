@@ -2,7 +2,7 @@
 .flash-grid {
 	display: grid;
 	gap: 1rem;
-
+	margin-top:20px;
 	grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
 }
 
@@ -20,7 +20,6 @@
 	background-size: cover;
 	background-repeat: no-repeat;
 	color:white;
-	margin-bottom: 20px;
 }
 
 .profile img {

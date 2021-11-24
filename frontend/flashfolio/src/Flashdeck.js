@@ -1,10 +1,12 @@
-import React from 'react'
-import Flashcard from './Flashcard'
+import React from "react"
 
-export default function Flashdeck({flashcards}) {
+/* Internal Dependencies */
+import Flashcard from "./Flashcard.js"
+
+export default function Flashdeck({ flashcards }) {
 	return (
 		<div>
-			{flashcards.map(flashcard =>{return <Flashcard flashcard={flashcard}/>})}
+			{flashcards.map(flashcard => { return <Flashcard flashcard={flashcard} /> })}
 		</div>
 	)
 }
