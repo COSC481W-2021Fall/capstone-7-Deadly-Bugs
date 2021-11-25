@@ -16,9 +16,11 @@ export default function Load() {
 
 	const { loginState } = useContext(loginContext)
 
-	const [query] = useState("") // setQuery was defined but never used
+	const [query, setQuery] = useState("") // setQuery was defined but never used
 	const [pageNumber, setPageNumber] = useState(0)
 	const [myDecks, setMyDecks] = useState([])
+
+	const queryField = useRef("");
 
 	const {
 		decks,
@@ -56,13 +58,20 @@ export default function Load() {
 		setPageNumber(1)
 	}
 	*/
+
+	const updateQuery = () => {
+		console.log(queryField.current.value)
+		setQuery(queryField.current.value)
+	}
+
 	const history = useHistory()
 
 	const visit = (id) => history.push("/view/" + id)
 
 	return (
 		<div>
-			{loginState !== null &&
+			<input type="text" ref={queryField} onChange={updateQuery}/>
+			{loginState !== null && query == "" &&
 				<>
 					<h3>My Decks:</h3><br />
 					<div className="flash-grid">
