@@ -9,7 +9,7 @@ import { useHistory, useParams } from "react-router-dom"
 import Flashcard from "./Flashcard.js"
 import UserInfoPreview from "./UserInfoPreview.js"
 import { loginContext } from "./App.js"
-import { cloneDeck, getDeck, getUser, saveDeck } from "./Calls.js"
+import { cloneDeck, getDeck, getUser, saveDeck, deleteDeck } from "./Calls.js"
 
 /* Styling */
 import "./Viewer.css"
@@ -86,6 +86,13 @@ export default function Viewer({ viewMode = "view" }) {
 	function saveChanges() {
 		if (loginState !== null) {
 			saveDeck(loginState.tokenId, flashdeck)
+		}
+	}
+
+	/* Deletes the current deck */
+	function delDeck() {
+		if (loginState !== null) {
+			deleteDeck(loginState.tokenId, flashdeck)
 		}
 	}
 
@@ -243,6 +250,7 @@ export default function Viewer({ viewMode = "view" }) {
 			{viewMode === "edit" && <button onClick={deleteCard}>
 				Delete</button>}
 			{viewMode === "edit" && <button onClick={saveChanges}>Save Changes</button>}
+			{viewMode === "edit" && <button onClick={delDeck}>Delete Deck</button>}
 			{loginState !== null && <button onClick={cloneD}>Clone Deck</button>}
 
 			{/* Pop up showing deck information */}
