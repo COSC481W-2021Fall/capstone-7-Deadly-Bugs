@@ -18,13 +18,17 @@ export default function DeckSearch(query, pageNumber, initial = []) {
 		const fetchData = async () => {
 			setLoading(true)
 			let res = await queryDecks(pageNumber, query)
-			setDecks(decks => {
-				return [...new Set([...decks, ...res.DeckIDs])]
-			})
+			console.log("res:", res.DeckIDs)
+			if (res.DeckIDs !== null) {
+				setDecks(decks => {
+					return [...new Set([...decks, ...res.DeckIDs])]
+				})
+			}
 			setHasMore(res.RemainingDecks)
 			setLoading(false)
 		}
 		fetchData()
+		console.log(decks)
 	}, [query, pageNumber])
 
 	return { loading, decks, hasMore }
