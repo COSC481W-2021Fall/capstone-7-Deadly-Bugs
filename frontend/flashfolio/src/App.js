@@ -67,6 +67,9 @@ function App() {
 					<Route path="/edit/:deckId">
 						<Viewer viewMode="edit" />
 					</Route>
+					<Route path="/study/:deckId">
+						<Viewer viewMode="study" />
+					</Route>
 					<Route exact path="/">
 						<Home />
 					</Route>

@@ -64,6 +64,17 @@ export default function Viewer({ viewMode = "view" }) {
 		}
 	}
 
+	function toggleStudyView() {
+		if (viewMode === "view") {
+			history.replace("/study/" + deckId)
+			setGame(true)
+		}
+		else {
+			history.replace("/view/" + deckId)
+			setGame(false)
+		}
+	}
+
 	/* Shuffles cards in the deck */
 	function shufFunction() {
 		hidden = false
@@ -136,6 +147,7 @@ export default function Viewer({ viewMode = "view" }) {
 				setDeckOwner(owner)
 				/* Set Privacy toggle to match deck info */
 				setIsPrivate(!flashdeck.IsPublic)
+				/* initialize shuffled game deck */
 				setGameDeck(flashdeck.Cards
 					.map((value) => ({ value, sort: Math.random() }))
 					.sort((a, b) => a.sort - b.sort)
@@ -205,18 +217,14 @@ export default function Viewer({ viewMode = "view" }) {
 	}
 
 	useEffect(() => {
-		if (isInitialMount.current) {
-			isInitialMount.current = false
-		} else {
-			/* useEffect code here to be run on count update only */
-			if (gameCardIterator < gameDeck.length) {
-				setFlashcard(gameDeck[gameCardIterator])
-			}
-			else {
+		if (game) {
+			if (gameCardIterator >= gameDeck.length)
 				setGameCardIterator(0)
-			}
+
+			if (gameCardIterator < gameDeck.length)
+				setFlashcard(gameDeck[gameCardIterator])
 		}
-	}, [gameCardIterator, gameDeck])
+	}, [game, gameDeck, gameCardIterator])
 
 	/* Import button when editing */
 	const importButton = () => {
@@ -241,88 +249,63 @@ export default function Viewer({ viewMode = "view" }) {
 		)
 	}
 
-	if (!game)
-		return (
-			<div>
-				<UserInfoPreview />
-				Title: {flashdeck.Title}
-				DeckId: {deckId}
-				<br />
-				{(loginState !== null && loginState.googleId === flashdeck.Owner) &&
-					<button onClick={flipView}> {viewMode === "edit" ? "View Deck" : "Edit Deck"} </button>
-				}
-				{viewMode === "view" && <button onClick={() => setGame(true)}>Start Game</button>}
-				{viewMode === "edit" && <button onClick={changeLayout}>Change Layout</button>}
-				{tileLayout()}
-				{!tileCards && <button
-					onClick={previousCard}
-				>Previous Card</button>}
-				{!tileCards && <button
-					onClick={() => setCardIterator(cardIterator + 1)}
-				>Next Card</button>}
-				{viewMode === "view" && (hidden ?
-					<button id="shuf" onClick={() => shufFunction()}>Shuffle</button> :
-					<button id="unshuf" onClick={() => shufOn ? unshufFunction() : null}>Unshuffle</button>)
-				}
-				{viewMode === "edit" && <button onClick={addCard}>Add a card</button>}
-				{viewMode === "edit" && <button onClick={deleteCard}>
-					Delete</button>}
-				{viewMode === "edit" && <button onClick={saveChanges}>Save Changes</button>}
-				{loginState !== null && <button onClick={cloneD}>Clone Deck</button>}
+	return (
+		<div>
+			<UserInfoPreview />
+			Title: {flashdeck.Title}
+			DeckId: {deckId}
+			<br />
+			{(loginState !== null && loginState.googleId === flashdeck.Owner) && (viewMode !== "study") &&
+				<button onClick={flipView}> {viewMode === "edit" ? "View Deck" : "Edit Deck"} </button>
+			}
+			{<button onClick={toggleStudyView}> {viewMode === "study" ? "End Game" : "Start Game"}</button>}
+			{viewMode === "edit" && <button onClick={changeLayout}>Change Layout</button>}
+			{tileLayout()}
+			{!tileCards && <button
+				onClick={previousCard}
+			>Previous Card</button>}
+			{!tileCards && <button onClick={() => setCardIterator(cardIterator + 1)}
+			>Next Card</button>}
+			{viewMode !== "edit" && (hidden ?
+				<button id="shuf" onClick={() => shufFunction()}>Shuffle</button> :
+				<button id="unshuf" onClick={() => shufOn ? unshufFunction() : null}>Unshuffle</button>)
+			}
+			{viewMode === "edit" && <button onClick={addCard}>Add a card</button>}
+			{viewMode === "edit" && <button onClick={deleteCard}>
+				Delete</button>}
+			{viewMode === "edit" && <button onClick={saveChanges}>Save Changes</button>}
+			{viewMode !== "study" && loginState !== null && <button onClick={cloneD}>Clone Deck</button>}
 
-				{/* Pop up showing deck information */}
-				<Popup trigger={<button>Info</button>} position="right center" modal>
-					<div className="modal">
-						<div className="header">
-							{flashdeck.Title}
-						</div>
-						{flashdeck.Cards !== undefined && flashdeck.Cards.length} Cards
-						<br />
-						Created by:
-						<br />
-						<img src={deckOwner === null ? "" : deckOwner.ProfilePicture} alt="deck owner" />
-						{deckOwner === null ? "" : deckOwner.NickName}
-						{viewMode === "edit" &&
-							<>
-								<br />
-								Private Deck? <input type="checkbox" checked={isPrivate} onChange={handlePrivacyChange} />
-							</>
-						}
-						<br />
-						<a
-							href={`data:text/json;charset=utf-8,${encodeURIComponent(
-								JSON.stringify(flashdeck, null, "\t")
-							)}`}
-							download={flashdeck.Title + ".json"}
-						>Download This Deck</a>
-						<br />
-						Deck# {flashdeck.ID}
+			{/* Pop up showing deck information */}
+			<Popup trigger={<button>Info</button>} position="right center" modal>
+				<div className="modal">
+					<div className="header">
+						{flashdeck.Title}
 					</div>
-				</Popup>
-				{viewMode === "edit" && importButton()}
-			</div>
-		)
-	else {
-
-
-
-
-
-		return (
-			<div>
-				<UserInfoPreview />
-				Title: {flashdeck.Title}
-				{viewMode === "view" && <button onClick={() => setGame(false)}>End Game</button>}
-				<Flashcard flashcard={gameDeck[gameCardIterator]} />
-
-				{!tileCards && <button
-					onClick={() => setGameCardIterator(gameCardIterator + 1)}
-				>Next Card</button>}
-
-				{/* {!tileCards && <button
-					onClick={() => setCardIterator(cardIterator + 1)}
-				>Next Card</button>} */}
-			</div>
-		)
-	}
+					{flashdeck.Cards !== undefined && flashdeck.Cards.length} Cards
+					<br />
+					Created by:
+					<br />
+					<img src={deckOwner === null ? "" : deckOwner.ProfilePicture} alt="deck owner" />
+					{deckOwner === null ? "" : deckOwner.NickName}
+					{viewMode === "edit" &&
+						<>
+							<br />
+							Private Deck? <input type="checkbox" checked={isPrivate} onChange={handlePrivacyChange} />
+						</>
+					}
+					<br />
+					<a
+						href={`data:text/json;charset=utf-8,${encodeURIComponent(
+							JSON.stringify(flashdeck, null, "\t")
+						)}`}
+						download={flashdeck.Title + ".json"}
+					>Download This Deck</a>
+					<br />
+					Deck# {flashdeck.ID}
+				</div>
+			</Popup>
+			{viewMode === "edit" && importButton()}
+		</div>
+	)
 }
