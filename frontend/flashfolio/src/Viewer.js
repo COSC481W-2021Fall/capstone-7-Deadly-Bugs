@@ -258,7 +258,7 @@ export default function Viewer({ viewMode = "view" }) {
 			{(loginState !== null && loginState.googleId === flashdeck.Owner) && (viewMode !== "study") &&
 				<button onClick={flipView}> {viewMode === "edit" ? "View Deck" : "Edit Deck"} </button>
 			}
-			{<button onClick={toggleStudyView}> {viewMode === "study" ? "End Game" : "Start Game"}</button>}
+			{(viewMode !== "edit") && <button onClick={toggleStudyView}> {viewMode === "study" ? "End Game" : "Start Game"}</button>}
 			{viewMode === "edit" && <button onClick={changeLayout}>Change Layout</button>}
 			{tileLayout()}
 			{!tileCards && <button
