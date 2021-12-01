@@ -16,9 +16,11 @@ export default function Load() {
 
 	const { loginState } = useContext(loginContext)
 
-	const [query] = useState("") // setQuery was defined but never used
+	const [query, setQuery] = useState("") // setQuery was defined but never used
 	const [pageNumber, setPageNumber] = useState(0)
 	const [myDecks, setMyDecks] = useState([])
+
+	const queryField = useRef("");
 
 	const {
 		decks,
@@ -49,20 +51,22 @@ export default function Load() {
 		if (node) observer.current.observe(node)
 	}, [loading, hasMore, pageNumber])
 
-	// function defined but never used 
-	/*
-	function handleSearch(e) {
-		setQuery(e.target.value)
-		setPageNumber(1)
+	const updateQuery = () => {
+		console.log(queryField.current.value)
+		setQuery(queryField.current.value)
+		setPageNumber(0)
 	}
-	*/
+
 	const history = useHistory()
 
 	const visit = (id) => history.push("/view/" + id)
 
 	return (
 		<div>
-			{loginState !== null &&
+			<div>
+				<input type="text" ref={queryField} onChange={updateQuery}/>
+			</div>
+			{loginState !== null && query === "" &&
 				<>
 					<h3>My Decks:</h3><br />
 					<div className="flash-grid">
@@ -73,7 +77,7 @@ export default function Load() {
 				</>}
 			<h3>Public Decks:</h3><br />
 			<div className="flash-grid">
-				{decks.map((deck, index) => {
+				{decks.length === 0 ? "No Decks Found" : decks.map((deck, index) => {
 					if (decks.length === index + 1) {
 						return <div ref={lastDeckElementRef} key={deck} onClick={() => { visit(deck) }}><DeckPreview deckId={deck} /></div>
 					} else {

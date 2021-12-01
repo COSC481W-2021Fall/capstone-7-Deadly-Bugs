@@ -359,8 +359,15 @@ func QueryDecksReq(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
+	var query bson.D
+	if req.Query == "" {
+		query = bson.D{{Key: "ispublic", Value: true}}
+	} else {
+		query = bson.D{{Key: "ispublic", Value: true}, {Key:"$text", Value: bson.D{{Key:"$search", Value:req.Query}}}}
+	}
+
 	/* Find the decks */
-	cur, err := DeckCollection.Find(ctx, bson.D{{Key: "ispublic", Value: true}})
+	cur, err := DeckCollection.Find(ctx, query)
 
 	defer cur.Close(ctx)
 	if err != nil {
@@ -376,6 +383,9 @@ func QueryDecksReq(w http.ResponseWriter, r *http.Request) {
 	/* Get the page */
 	for i := 0; i < pageSize; i++ {
 		ret.RemainingDecks = cur.Next(ctx)
+		if !ret.RemainingDecks {
+			break
+		}
 		var deck Deck
 		cur.Decode(&deck)
 		ret.DeckIDs = append(ret.DeckIDs, deck.ID)
