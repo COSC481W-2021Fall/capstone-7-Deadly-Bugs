@@ -247,11 +247,23 @@ export default function Viewer({ viewMode = "view" }) {
 				<button id="unshuf" onClick={() => shufOn ? unshufFunction() : null}>Unshuffle</button>)
 			}
 			{viewMode === "edit" && <button onClick={addCard}>Add a card</button>}
-			{viewMode === "edit" && <button onClick={deleteCard}>
-				Delete</button>}
+			{viewMode === "edit" && <button onClick={deleteCard}>Delete</button>}
 			{viewMode === "edit" && <button onClick={saveChanges}>Save Changes</button>}
-			{viewMode === "edit" && <button onClick={delDeck}>Delete Deck</button>}
 			{loginState !== null && <button onClick={cloneD}>Clone Deck</button>}
+			
+			{/* Pop up for delete deck */}
+			<Popup trigger={viewMode === "edit" && <button>Delete Deck</button>} position="right center" modal>
+				{close => (             
+					<div className="modal">
+						<div className="header">
+							{flashdeck.Title}
+						</div>
+						Are you sure you want to delete this deck?<br/>
+						<button onClick={() => {delDeck(); close();}}>Yes</button>
+						<button onClick={close}>No</button>
+					</div>
+				)}
+			</Popup>
 
 			{/* Pop up showing deck information */}
 			<Popup trigger={<button>Info</button>} position="right center" modal>
