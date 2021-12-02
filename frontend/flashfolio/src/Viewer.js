@@ -27,8 +27,7 @@ Displays a single card at a time to the screen.
 let shufOrder = []
 let hidden = true
 let backupOriginalCards = [];
-let correctCards = [];
-let incorrectCards = [];
+let incorrectCardCounter = [];
 
 export default function Viewer({ viewMode = "view" }) {
 	const history = useHistory()
@@ -38,7 +37,7 @@ export default function Viewer({ viewMode = "view" }) {
 
 	const [flashcard, setFlashcard] = useState("")
 	const [cardIterator, setCardIterator] = useState(0)
-	const [gameCardIterator, setGameCardIterator] = useState(0)
+	// const [gameCardIterator, setGameCardIterator] = useState(0)
 	const [shufOn, setShufOn] = useState(false)
 
 	const [tileCards, setTileCards] = useState(false)
@@ -49,8 +48,8 @@ export default function Viewer({ viewMode = "view" }) {
 
 	const [isPrivate, setIsPrivate] = useState(false)
 
-	const [game, setGame] = useState(false)
-	const [gameDeck, setGameDeck] = useState([])
+	// const [game, setGame] = useState(false)
+	// const [gameDeck, setGameDeck] = useState([])
 
 	const handlePrivacyChange = () => {
 		setIsPrivate(!isPrivate)
@@ -71,11 +70,11 @@ export default function Viewer({ viewMode = "view" }) {
 	function toggleStudyView() {
 		if (viewMode === "view") {
 			history.replace("/study/" + deckId)
-			setGame(true)
+			// setGame(true)
 		}
 		else {
 			history.replace("/view/" + deckId)
-			setGame(false)
+			// setGame(false)
 		}
 	}
 
@@ -139,9 +138,6 @@ export default function Viewer({ viewMode = "view" }) {
 		const fetchData = async () => {
 			let deck = await getDeck(Number(deckId), loginState !== null ? loginState.tokenId : "")
 			setFlashdeck(deck)
-
-			backupOriginalCards = { ...deck }
-			backupOriginalCards.Cards = deck.Cards
 		}
 		fetchData()
 	}, [deckId, loginState])
@@ -154,11 +150,6 @@ export default function Viewer({ viewMode = "view" }) {
 				setDeckOwner(owner)
 				/* Set Privacy toggle to match deck info */
 				setIsPrivate(!flashdeck.IsPublic)
-				/* initialize shuffled game deck */
-				setGameDeck(flashdeck.Cards
-					.map((value) => ({ value, sort: Math.random() }))
-					.sort((a, b) => a.sort - b.sort)
-					.map(({ value }) => value))
 			}
 			fetchData()
 		}
@@ -171,10 +162,12 @@ export default function Viewer({ viewMode = "view" }) {
 		else {
 			/* useEffect code here to be run on count update only */
 			if (cardIterator < flashdeck.Cards.length) {
-				if ((!shufOn))
+				if ((!shufOn)) {
 					setFlashcard(flashdeck.Cards[cardIterator])
-				else
+				}
+				else {
 					setFlashcard(flashdeck.Cards[shufOrder[cardIterator]])
+				}
 			}
 			else { setCardIterator(0) }
 		}
@@ -185,6 +178,7 @@ export default function Viewer({ viewMode = "view" }) {
 			history.replace("/view/" + deckId)
 		}
 	}, [loginState, loadedAuthState, flashdeck, deckId, history, viewMode])
+
 
 	function addCard() {
 		flashdeck.Cards[flashdeck.Cards.length] = { FrontSide: "", BackSide: "" }
@@ -225,11 +219,13 @@ export default function Viewer({ viewMode = "view" }) {
 
 	function collectCards(isCorrect) {
 		if (isCorrect) {
-			correctCards.push(flashdeck.Cards[cardIterator])
 			deleteCard(flashdeck.Cards[cardIterator])
+			// setCardIterator(cardIterator+1)
 		}
-		else
-			incorrectCards.push(flashdeck.Cards[cardIterator])
+		else {
+			incorrectCardCounter.push(flashdeck.Cards[cardIterator])
+			setCardIterator(cardIterator + 1)
+		}
 	}
 
 	function addGameCard(cardsArray) {
@@ -239,13 +235,13 @@ export default function Viewer({ viewMode = "view" }) {
 			flashdeck.Cards[i] = backupOriginalCards[i]
 			i++
 		}
-
 	}
 
 	function endGame() {
-		setFlashcard(flashdeck.Cards[cardIterator])
-		
-		if (viewMode != "study") {
+		setCardIterator(0)
+		setFlashcard(flashdeck.Cards[0])
+
+		if (viewMode !== "study") {
 			let i = 0;
 			backupOriginalCards = []
 			while (i < flashdeck.Cards.length) {
@@ -257,21 +253,11 @@ export default function Viewer({ viewMode = "view" }) {
 			addGameCard(backupOriginalCards)
 			if (flashdeck.Cards[0].FrontSide === "" && flashdeck.Cards[0].BackSide === "")
 				deleteCard(flashdeck.Cards[0])
-			correctCards = []
 			setFlashcard(flashdeck.Cards[0])
+
 		}
 		toggleStudyView()
 	}
-
-	useEffect(() => {
-		if (game) {
-			if (gameCardIterator < gameDeck.length)
-				setFlashcard(gameDeck[gameCardIterator])
-			// this use effect does not reach the else below
-			else
-				setGameCardIterator(0)
-		}
-	}, [game, gameDeck, gameCardIterator])
 
 	/* Import button when editing */
 	const importButton = () => {
