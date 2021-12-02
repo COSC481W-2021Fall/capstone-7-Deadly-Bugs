@@ -26,6 +26,7 @@ Displays a single card at a time to the screen.
 // Why does shuffling only work if these are here???? why???
 let shufOrder = []
 let hidden = true
+let isEndGameClicked = false
 let backupOriginalCards = [];
 let incorrectCardCounter = [];
 
@@ -37,7 +38,6 @@ export default function Viewer({ viewMode = "view" }) {
 
 	const [flashcard, setFlashcard] = useState("")
 	const [cardIterator, setCardIterator] = useState(0)
-	// const [gameCardIterator, setGameCardIterator] = useState(0)
 	const [shufOn, setShufOn] = useState(false)
 
 	const [tileCards, setTileCards] = useState(false)
@@ -48,8 +48,7 @@ export default function Viewer({ viewMode = "view" }) {
 
 	const [isPrivate, setIsPrivate] = useState(false)
 
-	// const [game, setGame] = useState(false)
-	// const [gameDeck, setGameDeck] = useState([])
+	const [numOfClicks, setNumOfClicks] = useState(0)
 
 	const handlePrivacyChange = () => {
 		setIsPrivate(!isPrivate)
@@ -70,11 +69,9 @@ export default function Viewer({ viewMode = "view" }) {
 	function toggleStudyView() {
 		if (viewMode === "view") {
 			history.replace("/study/" + deckId)
-			// setGame(true)
 		}
 		else {
 			history.replace("/view/" + deckId)
-			// setGame(false)
 		}
 	}
 
@@ -218,12 +215,10 @@ export default function Viewer({ viewMode = "view" }) {
 	}
 
 	function collectCards(isCorrect) {
-		if (isCorrect) {
+		if (isCorrect)
 			deleteCard(flashdeck.Cards[cardIterator])
-			// setCardIterator(cardIterator+1)
-		}
 		else {
-			incorrectCardCounter.push(flashdeck.Cards[cardIterator])
+			incorrectCardCounter[cardIterator] += 1
 			setCardIterator(cardIterator + 1)
 		}
 	}
@@ -238,6 +233,7 @@ export default function Viewer({ viewMode = "view" }) {
 	}
 
 	function endGame() {
+		setNumOfClicks(numOfClicks + 1)
 		setCardIterator(0)
 		setFlashcard(flashdeck.Cards[0])
 
@@ -245,18 +241,29 @@ export default function Viewer({ viewMode = "view" }) {
 			let i = 0;
 			backupOriginalCards = []
 			while (i < flashdeck.Cards.length) {
+				incorrectCardCounter[i] = 0
 				backupOriginalCards.push(flashdeck.Cards[i])
 				i++
 			}
+			toggleStudyView()
 		}
 		else {
 			addGameCard(backupOriginalCards)
 			if (flashdeck.Cards[0].FrontSide === "" && flashdeck.Cards[0].BackSide === "")
 				deleteCard(flashdeck.Cards[0])
 			setFlashcard(flashdeck.Cards[0])
-
 		}
-		toggleStudyView()
+		if (numOfClicks === 1) {
+			displaySummary()
+		}
+		if (numOfClicks === 2) {
+			setNumOfClicks(0);
+			toggleStudyView()
+		}
+	}
+
+	function displaySummary() {
+		
 	}
 
 	/* Import button when editing */
@@ -294,9 +301,11 @@ export default function Viewer({ viewMode = "view" }) {
 			{(viewMode !== "edit") && <button onClick={() => endGame()}> {viewMode === "study" ? "End Game" : "Start Game"}</button>}
 			{viewMode === "edit" && <button onClick={changeLayout}>Change Layout</button>}
 			<br />
-			{viewMode === "study" && <button onClick={() => collectCards(true)}>I got it right</button>}
-			{viewMode === "study" && <button onClick={() => collectCards(false)}>I got it wrong</button>}
+			{viewMode === "study" && numOfClicks !== 2 && <button onClick={() => collectCards(true)}>I got it right</button>}
+			{viewMode === "study" && numOfClicks !== 2 && <button onClick={() => collectCards(false)}>I got it wrong</button>}
 			{tileLayout()}
+			{ numOfClicks===2 && <div> You got the card wrong {incorrectCardCounter[cardIterator]} times</div>}
+			<br />
 			{!tileCards && <button
 				onClick={previousCard}
 			>Previous Card</button>}
