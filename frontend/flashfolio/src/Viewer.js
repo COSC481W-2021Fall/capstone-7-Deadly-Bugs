@@ -26,6 +26,10 @@ Displays a single card at a time to the screen.
 // Why does shuffling only work if these are here???? why???
 let shufOrder = []
 let hidden = true
+let backupOriginalCards = [];
+let correctCards = [];
+let incorrectCards = [];
+
 export default function Viewer({ viewMode = "view" }) {
 	const history = useHistory()
 
@@ -135,6 +139,9 @@ export default function Viewer({ viewMode = "view" }) {
 		const fetchData = async () => {
 			let deck = await getDeck(Number(deckId), loginState !== null ? loginState.tokenId : "")
 			setFlashdeck(deck)
+
+			backupOriginalCards = { ...deck }
+			backupOriginalCards.Cards = deck.Cards
 		}
 		fetchData()
 	}, [deckId, loginState])
@@ -216,13 +223,53 @@ export default function Viewer({ viewMode = "view" }) {
 		}
 	}
 
+	function collectCards(isCorrect) {
+		if (isCorrect) {
+			correctCards.push(flashdeck.Cards[cardIterator])
+			deleteCard(flashdeck.Cards[cardIterator])
+		}
+		else
+			incorrectCards.push(flashdeck.Cards[cardIterator])
+	}
+
+	function addGameCard(cardsArray) {
+		let i = 0
+		console.log(cardsArray.length)
+		while (i < cardsArray.length) {
+			flashdeck.Cards[i] = backupOriginalCards[i]
+			i++
+		}
+
+	}
+
+	function endGame() {
+		setFlashcard(flashdeck.Cards[cardIterator])
+		
+		if (viewMode != "study") {
+			let i = 0;
+			backupOriginalCards = []
+			while (i < flashdeck.Cards.length) {
+				backupOriginalCards.push(flashdeck.Cards[i])
+				i++
+			}
+		}
+		else {
+			addGameCard(backupOriginalCards)
+			if (flashdeck.Cards[0].FrontSide === "" && flashdeck.Cards[0].BackSide === "")
+				deleteCard(flashdeck.Cards[0])
+			correctCards = []
+			setFlashcard(flashdeck.Cards[0])
+		}
+		toggleStudyView()
+	}
+
 	useEffect(() => {
 		if (game) {
-			if (gameCardIterator >= gameDeck.length)
-				setGameCardIterator(0)
-
 			if (gameCardIterator < gameDeck.length)
 				setFlashcard(gameDeck[gameCardIterator])
+			// this use effect does not reach the else below
+			else
+				setGameCardIterator(0)
 		}
 	}, [game, gameDeck, gameCardIterator])
 
@@ -258,8 +305,11 @@ export default function Viewer({ viewMode = "view" }) {
 			{(loginState !== null && loginState.googleId === flashdeck.Owner) && (viewMode !== "study") &&
 				<button onClick={flipView}> {viewMode === "edit" ? "View Deck" : "Edit Deck"} </button>
 			}
-			{(viewMode !== "edit") && <button onClick={toggleStudyView}> {viewMode === "study" ? "End Game" : "Start Game"}</button>}
+			{(viewMode !== "edit") && <button onClick={() => endGame()}> {viewMode === "study" ? "End Game" : "Start Game"}</button>}
 			{viewMode === "edit" && <button onClick={changeLayout}>Change Layout</button>}
+			<br />
+			{viewMode === "study" && <button onClick={() => collectCards(true)}>I got it right</button>}
+			{viewMode === "study" && <button onClick={() => collectCards(false)}>I got it wrong</button>}
 			{tileLayout()}
 			{!tileCards && <button
 				onClick={previousCard}
