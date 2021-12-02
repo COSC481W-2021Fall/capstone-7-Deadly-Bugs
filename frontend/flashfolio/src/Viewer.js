@@ -94,6 +94,7 @@ export default function Viewer({ viewMode = "view" }) {
 		if (loginState !== null) {
 			deleteDeck(loginState.tokenId, flashdeck)
 		}
+		history.push("/load")
 	}
 
 	async function cloneD() {
