@@ -42,6 +42,23 @@ export async function createNewDeck(token, deckName) {
 	return resp.json()
 }
 
+/*
+deleteDeck
+
+Delete's a deck associated with the user.
+*/
+
+export async function deleteDeck(token, deck) {
+	let reqOpt = {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify({ "Token": token, "Deck": deck }),
+	}
+	/* Send the Request */
+	let resp = await fetch(apiURL() + "/deleteDeck", reqOpt)
+	return resp
+}
+
 export async function saveDeck(token, deck) {
 	let reqOpt = {
 		method: "POST",

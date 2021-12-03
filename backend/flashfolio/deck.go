@@ -43,7 +43,6 @@ func GetDeckReq(w http.ResponseWriter, r *http.Request) {
 
 	json.Unmarshal(reqBody, &req)
 
-
 	/* set up context for call */
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -155,6 +154,66 @@ func CloneDeckReq(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	json.NewEncoder(w).Encode(ret)
+}
+
+func DeleteDeckReq(w http.ResponseWriter, r *http.Request) {
+
+	reqBody, err := ioutil.ReadAll(r.Body)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	var req struct {
+		Deck  Deck   `json:"Deck"`
+		Token string `json:"Token"`
+	}
+
+	json.Unmarshal(reqBody, &req)
+
+	tokenInfo, err := VerifyIdToken(req.Token)
+	if err != nil {
+		/* Bad Token => Unauthorized */
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	user, err := GetUserByID(tokenInfo.UserId, ctx)
+
+	var savedDeck Deck
+	err = DeckCollection.FindOne(ctx, bson.D{{Key: "id", Value: req.Deck.ID}}).Decode(&savedDeck)
+	if err != nil {
+		/* That deck isn't saved to the database*/
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	if savedDeck.Owner != user.ID {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+
+	DeckCollection.DeleteOne(ctx, bson.D{{Key: "id", Value: req.Deck.ID}})
+
+	var index *int
+	for i := 0; i < len(user.OwnedDecks); i++ {
+		if user.OwnedDecks[i] == req.Deck.ID {
+			foundIndex := i
+			index = &foundIndex
+		}
+	}
+	if index != nil {
+		user.OwnedDecks[*index] = user.OwnedDecks[len(user.OwnedDecks)-1]
+		user.OwnedDecks = user.OwnedDecks[:len(user.OwnedDecks)-1]
+	}
+	OverwriteUser(*user, false, ctx)
+	//user.OwnedDecks = append(user.OwnedDecks, ret.ID)
+	w.WriteHeader(http.StatusOK)
+
+	//json.NewEncoder(w).Encode(ret)
 }
 
 // Saves deck to Database, overwriting existing deck with same id if present.
@@ -311,7 +370,7 @@ func QueryDecksReq(w http.ResponseWriter, r *http.Request) {
 	if req.Query == "" {
 		query = bson.D{{Key: "ispublic", Value: true}}
 	} else {
-		query = bson.D{{Key: "ispublic", Value: true}, {Key:"$text", Value: bson.D{{Key:"$search", Value:req.Query}}}}
+		query = bson.D{{Key: "ispublic", Value: true}, {Key: "$text", Value: bson.D{{Key: "$search", Value: req.Query}}}}
 	}
 
 	/* Find the decks */

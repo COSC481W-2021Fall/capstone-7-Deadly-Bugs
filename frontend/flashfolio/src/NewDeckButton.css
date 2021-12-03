@@ -1,14 +1,16 @@
 
 .modal {
 	background-color: white;
+	border: 2px solid #24305E;
 	width:minmax(500px, 25%);
+	padding: 7px;
 }
 
 .modal > .header {
 	width: 100%;
-	border-bottom: 1px solid black;
+	border-bottom: 1px solid #24305E;
 	font-size: 18px;
 	text-align: center;
 	padding: 5px;
+	margin-bottom: 5px;
 }
-

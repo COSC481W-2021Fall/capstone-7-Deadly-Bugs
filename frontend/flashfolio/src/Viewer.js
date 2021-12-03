@@ -9,7 +9,7 @@ import { useHistory, useParams } from "react-router-dom"
 import Flashcard from "./Flashcard.js"
 import UserInfoPreview from "./UserInfoPreview.js"
 import { loginContext } from "./App.js"
-import { cloneDeck, getDeck, getUser, saveDeck } from "./Calls.js"
+import { cloneDeck, getDeck, getUser, saveDeck, deleteDeck } from "./Calls.js"
 
 /* Styling */
 import "./Viewer.css"
@@ -86,6 +86,14 @@ export default function Viewer({ viewMode = "view" }) {
 	function saveChanges() {
 		if (loginState !== null) {
 			saveDeck(loginState.tokenId, flashdeck)
+		}
+	}
+
+	/* Deletes the current deck */
+	async function delDeck() {
+		if (loginState !== null) {
+			let resp = await deleteDeck(loginState.tokenId, flashdeck);
+			if (resp.ok) history.push("/load");
 		}
 	}
 
@@ -240,10 +248,23 @@ export default function Viewer({ viewMode = "view" }) {
 				<button id="unshuf" onClick={() => shufOn ? unshufFunction() : null}>Unshuffle</button>)
 			}
 			{viewMode === "edit" && <button onClick={addCard}>Add a card</button>}
-			{viewMode === "edit" && <button onClick={deleteCard}>
-				Delete</button>}
+			{viewMode === "edit" && <button onClick={deleteCard}>Delete</button>}
 			{viewMode === "edit" && <button onClick={saveChanges}>Save Changes</button>}
 			{loginState !== null && <button onClick={cloneD}>Clone Deck</button>}
+			
+			{/* Pop up for delete deck */}
+			<Popup trigger={viewMode === "edit" && <button>Delete Deck</button>} position="right center" modal>
+				{close => (             
+					<div className="modal">
+						<div className="header">
+							{flashdeck.Title}
+						</div>
+						Are you sure you want to delete this deck?<br/>
+						<button onClick={() => {delDeck(); close();}}>Yes</button>
+						<button onClick={close}>No</button>
+					</div>
+				)}
+			</Popup>
 
 			{/* Pop up showing deck information */}
 			<Popup trigger={<button>Info</button>} position="right center" modal>

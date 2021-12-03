@@ -82,6 +82,7 @@ func handleRequests() {
 	router.HandleFunc("/getUser", GetUserReq)
 
 	router.HandleFunc("/queryDecks", QueryDecksReq)
+	router.HandleFunc("/deleteDeck", DeleteDeckReq)
 
 	log.Fatal(http.ListenAndServe(":1337",
 		handlers.CORS(
