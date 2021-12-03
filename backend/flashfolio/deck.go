@@ -203,6 +203,7 @@ func DeleteDeckReq(w http.ResponseWriter, r *http.Request) {
 		user.OwnedDecks[*index] = user.OwnedDecks[len(user.OwnedDecks)-1]
 		user.OwnedDecks = user.OwnedDecks[:len(user.OwnedDecks)-1]
 	}
+	OverwriteUser(*user, false, ctx)
 	//user.OwnedDecks = append(user.OwnedDecks, ret.ID)
 	w.WriteHeader(http.StatusOK)
 
@@ -363,7 +364,7 @@ func QueryDecksReq(w http.ResponseWriter, r *http.Request) {
 	if req.Query == "" {
 		query = bson.D{{Key: "ispublic", Value: true}}
 	} else {
-		query = bson.D{{Key: "ispublic", Value: true}, {Key:"$text", Value: bson.D{{Key:"$search", Value:req.Query}}}}
+		query = bson.D{{Key: "ispublic", Value: true}, {Key: "$text", Value: bson.D{{Key: "$search", Value: req.Query}}}}
 	}
 
 	/* Find the decks */
