@@ -190,6 +190,12 @@ func DeleteDeckReq(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
+
+	if req.Deck.Owner != user.ID {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
 	DeckCollection.DeleteOne(ctx, bson.D{{Key: "id", Value: req.Deck.ID}})
 
 	var index *int
