@@ -191,8 +191,8 @@ func DeleteDeckReq(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.Deck.Owner != user.ID {
-		w.WriteHeader(http.StatusUnauthorized)
+	if savedDeck.Owner != user.ID {
+		w.WriteHeader(http.StatusForbidden)
 		return
 	}
 
