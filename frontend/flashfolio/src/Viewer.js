@@ -90,11 +90,11 @@ export default function Viewer({ viewMode = "view" }) {
 	}
 
 	/* Deletes the current deck */
-	function delDeck() {
+	async function delDeck() {
 		if (loginState !== null) {
-			deleteDeck(loginState.tokenId, flashdeck)
+			let resp = await deleteDeck(loginState.tokenId, flashdeck);
+			if (resp.ok) history.push("/load");
 		}
-		history.push("/load")
 	}
 
 	async function cloneD() {
