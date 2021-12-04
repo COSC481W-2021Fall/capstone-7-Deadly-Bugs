@@ -2,9 +2,7 @@ import React, { useEffect, createContext, useState } from "react"
 
 /* External Dependencies */
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom"
-import { createTheme, ThemeProvider } from '@material-ui/core/styles'
-import {default as MaterialSwitch} from '@material-ui/core/Switch'
-import CssBaseline from '@material-ui/core/CssBaseline';
+
 
 /* Internal Dependencies */
 import Viewer from "./Viewer.js"
@@ -26,25 +24,7 @@ Main entry point for the frontend.
 export const loginContext = createContext(null)
 
 function App() {
-	const storedDarkMode = localStorage.getItem("themeLD") === "true";
-	const [dark, setDark] = useState(storedDarkMode)
 
-	useEffect(() => {
-		localStorage.setItem("themeLD", dark);
-	  }, [dark]);
-	  
-
-    const theme = createTheme({
-        palette: {
-			type: dark ? 'dark' : 'light',
-    		primary: {
-				main: '#aa2e25',
-			},
-    		secondary: {
-     		 main: '#b9f6ca',
-    		},
-        },
-    })
 	const [loginState, setLoginState] = useState(null)
 
 	const [loadedAuthState, setLoadedAuthState] = useState(false)
@@ -77,11 +57,9 @@ function App() {
 	}, [])
 
 	return (
-		<ThemeProvider theme={theme}>
-			<CssBaseline />
+
 		<loginContext.Provider value={{ loginState, setLoginState, loadedAuthState }}>
 			<Navbar />
-			<MaterialSwitch checked={dark} onChange={() => setDark(!dark)} />
 			<Router>
 				{/* Router to create a multi-page application */}
 				<Switch>
@@ -103,7 +81,6 @@ function App() {
 				</Switch>
 			</Router>
 		</loginContext.Provider>
-    </ThemeProvider>
 	)
 }
 
