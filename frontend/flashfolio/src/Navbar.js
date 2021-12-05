@@ -34,12 +34,14 @@ export default function Navbar() {
 		<CssBaseline />
 		<nav className="navbar">
 			<div className="brand-title">Flashfolio</div>
-			<MaterialSwitch checked={dark} onChange={() => setDark(!dark)} />
 			<div className="navbar-links">
 				<ul>
 					<li><a href="/">Home</a></li>
 					<li><a href="/load">Load Deck</a></li>
 				</ul>
+			</div>
+			<div>
+			<MaterialSwitch checked={dark} onChange={() => setDark(!dark)} />
 			</div>
 		</nav>
 		</ThemeProvider>
