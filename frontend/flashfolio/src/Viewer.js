@@ -28,7 +28,7 @@ let shufOrder = []
 let hidden = true
 let isEndGameClicked = false
 let backupOriginalCards = [];
-let incorrectCardCounter = [];
+//let incorrectCardCounter = [];
 
 export default function Viewer({ viewMode = "view" }) {
 	const history = useHistory()
@@ -48,7 +48,12 @@ export default function Viewer({ viewMode = "view" }) {
 
 	const [isPrivate, setIsPrivate] = useState(false)
 
-	const [numOfClicks, setNumOfClicks] = useState(0)
+	//const [numOfClicks, setNumOfClicks] = useState(0)
+
+	/* Game state -- is the user currently playing or viewing their score? */
+	const [gameState, setGameState] = useState("play")
+
+	let gameIsInit = false;
 
 	const handlePrivacyChange = () => {
 		setIsPrivate(!isPrivate)
@@ -64,15 +69,12 @@ export default function Viewer({ viewMode = "view" }) {
 				setTileCards(false)
 			history.replace("/view/" + deckId)
 		}
-	}
+	}	
 
-	function toggleStudyView() {
-		if (viewMode === "view") {
-			history.replace("/study/" + deckId)
-		}
-		else {
-			history.replace("/view/" + deckId)
-		}
+	const toggleStudyView = () => {
+		resetGame();
+		if (viewMode === "study" && gameState === "play") setGameState("review");
+		else history.replace((viewMode === "view" ? "/study/":"/view/") + deckId);
 	}
 
 	/* Shuffles cards in the deck */
@@ -140,6 +142,13 @@ export default function Viewer({ viewMode = "view" }) {
 	}
 
 	useEffect(() => {
+		if (viewMode === "study" && !gameIsInit && flashdeck !== "") {
+			resetGame();
+			gameIsInit = true;
+		}
+	}, [viewMode, flashdeck])
+
+	useEffect(() => {
 		const fetchData = async () => {
 			let deck = await getDeck(Number(deckId), loginState !== null ? loginState.tokenId : "")
 			setFlashdeck(deck)
@@ -178,17 +187,49 @@ export default function Viewer({ viewMode = "view" }) {
 		}
 	}, [cardIterator, flashdeck.Cards, shufOn])
 
+
 	useEffect(() => {
 		if (viewMode === "edit" && loadedAuthState && flashdeck !== "" && (loginState === null || loginState.googleId !== flashdeck.Owner)) {
 			history.replace("/view/" + deckId)
 		}
 	}, [loginState, loadedAuthState, flashdeck, deckId, history, viewMode])
 
-
 	function addCard() {
 		flashdeck.Cards[flashdeck.Cards.length] = { FrontSide: "", BackSide: "" }
 		setCardIterator(flashdeck.Cards.length - 1)
 		setFlashcard(flashdeck.Cards[cardIterator])
+	}
+
+	const getNextCardStudy = () => {
+		let r = shufOn ? shufOrder : [...flashdeck.Cards.keys()]
+		let f = r.filter((i) => !flashdeck.Cards[i].correct)
+		if (f.length === 0) return -1;
+		let c = f.map((i) => flashdeck.Cards[i])
+		let i = c.indexOf(flashdeck.Cards[cardIterator])
+		if (i === -1) return -1;
+		if (i === f.length - 1) return f[0];
+		return f[i+1];
+	}
+
+	const getPrevCardStudy = () => {
+		let r = shufOn ? shufOrder : [...flashdeck.Cards.keys()]
+		let f = r.filter((i) => !flashdeck.Cards[i].correct)
+		if (f.length === 0) return -1;
+		let c = f.map((i) => flashdeck.Cards[i])
+		let i = c.indexOf(flashdeck.Cards[cardIterator])
+		if (i === -1) return -1;
+		if (i === 0) return f[f.length-1];
+		return f[i-1];
+	}
+
+	const nextCard = () => {
+		if (viewMode === "study" && gameState === "play") {
+			let next = getNextCardStudy()
+			console.log(next)
+			setCardIterator(next)
+		} else {
+			setCardIterator(cardIterator + 1)
+		}
 	}
 
 	function deleteCard(card, clear) {
@@ -214,64 +255,43 @@ export default function Viewer({ viewMode = "view" }) {
 		setFlashdeck(copy)
 	}
 
-	function previousCard() {
-		if (cardIterator === 0) {
-			setCardIterator(flashdeck.Cards.length - 1)
+	const resetGame = () => {
+		flashdeck.Cards.map((c) => {c.wrong = 0; c.correct = false;});
+		setGameState("play");
+	}
+
+	const previousCard = () => {
+		if (viewMode === "study" && gameState === "play") {
+			let prev = getPrevCardStudy()
+			console.log(prev)
+			setCardIterator(prev)
 		} else {
-			setCardIterator(cardIterator - 1)
+			if (cardIterator === 0) {
+				setCardIterator(flashdeck.Cards.length - 1)
+			} else {
+				setCardIterator(cardIterator - 1)
+			}
 		}
 	}
 
 	function collectCards(isCorrect) {
-		if (isCorrect)
-			deleteCard(flashdeck.Cards[cardIterator])
-		else {
-			incorrectCardCounter[cardIterator] += 1
-			setCardIterator(cardIterator + 1)
-		}
-	}
-
-	function addGameCard(cardsArray) {
-		let i = 0
-		console.log(cardsArray.length)
-		while (i < cardsArray.length) {
-			flashdeck.Cards[i] = backupOriginalCards[i]
-			i++
-		}
-	}
-
-	function endGame() {
-		setNumOfClicks(numOfClicks + 1)
-		setCardIterator(0)
-		setFlashcard(flashdeck.Cards[0])
-
-		if (viewMode !== "study") {
-			let i = 0;
-			backupOriginalCards = []
-			while (i < flashdeck.Cards.length) {
-				incorrectCardCounter[i] = 0
-				backupOriginalCards.push(flashdeck.Cards[i])
-				i++
-			}
-			toggleStudyView()
+		if (isCorrect) {
+			let i = cardIterator;
+			nextCard();
+			flashdeck.Cards[i].correct = true;
 		}
 		else {
-			addGameCard(backupOriginalCards)
-			if (flashdeck.Cards[0].FrontSide === "" && flashdeck.Cards[0].BackSide === "")
-				deleteCard(flashdeck.Cards[0])
-			setFlashcard(flashdeck.Cards[0])
+			//incorrectCardCounter[cardIterator] += 1
+			flashcard.wrong++;
+			nextCard();
 		}
-		if (numOfClicks === 1) {
-			displaySummary()
-		}
-		if (numOfClicks === 2) {
-			setNumOfClicks(0);
-			toggleStudyView()
-		}
-	}
-
-	function displaySummary() {
 		
+		/* Check if all cards have been set to correct */
+		if (flashdeck.Cards.reduce((t, c) => t && c.correct, true)) {
+			console.log("Game over!");
+			setGameState("review");
+			setCardIterator(0);
+		}
 	}
 
 	/* Import button when editing */
@@ -306,19 +326,18 @@ export default function Viewer({ viewMode = "view" }) {
 			{(loginState !== null && loginState.googleId === flashdeck.Owner) && (viewMode !== "study") &&
 				<button onClick={flipView}> {viewMode === "edit" ? "View Deck" : "Edit Deck"} </button>
 			}
-			{(viewMode !== "edit") && <button onClick={() => endGame()}> {viewMode === "study" ? "End Game" : "Start Game"}</button>}
+			{(viewMode !== "edit") && <button onClick={toggleStudyView}> {viewMode === "study" ? gameState === "play" ? "End Game" : "Return to View" : "Start Game"} </button>}
 			{viewMode === "edit" && <button onClick={changeLayout}>Change Layout</button>}
 			<br />
-			{viewMode === "study" && numOfClicks !== 2 && <button onClick={() => collectCards(true)}>I got it right</button>}
-			{viewMode === "study" && numOfClicks !== 2 && <button onClick={() => collectCards(false)}>I got it wrong</button>}
+			{viewMode === "study" && gameState === "play" && <button onClick={() => collectCards(true)}>I got it right</button>}
+			{viewMode === "study" && gameState === "play" && <button onClick={() => collectCards(false)}>I got it wrong</button>}
 			{tileLayout()}
-			{ numOfClicks===2 && <div> You got the card wrong {incorrectCardCounter[cardIterator]} times</div>}
+			{ viewMode === "study" && gameState === "review" && <div> You got the card wrong {flashcard.wrong} times</div>}
 			<br />
 			{!tileCards && <button
 				onClick={previousCard}
 			>Previous Card</button>}
-			{!tileCards && <button onClick={() => setCardIterator(cardIterator + 1)}
-			>Next Card</button>}
+			{!tileCards && <button onClick={nextCard}>Next Card</button>}
 			{viewMode !== "edit" && (hidden ?
 				<button id="shuf" onClick={() => shufFunction()}>Shuffle</button> :
 				<button id="unshuf" onClick={() => shufOn ? unshufFunction() : null}>Unshuffle</button>)
@@ -340,6 +359,8 @@ export default function Viewer({ viewMode = "view" }) {
 					</div>
 				)}
 			</Popup>
+
+			<button onClick={()=>console.log(flashdeck)}>ayy</button>
 
 			{/* Pop up showing deck information */}
 			<Popup trigger={<button>Info</button>} position="right center" modal>
