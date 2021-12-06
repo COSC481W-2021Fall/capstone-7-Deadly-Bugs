@@ -18,7 +18,7 @@
 }
 
 .navbar-links ul {
-    display: flex;
+    display: inline-flex;
     margin: 0;
     padding: 0;
 }

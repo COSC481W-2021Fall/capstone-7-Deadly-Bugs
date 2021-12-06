@@ -39,9 +39,7 @@ export default function Navbar() {
 					<li><a href="/">Home</a></li>
 					<li><a href="/load">Load Deck</a></li>
 				</ul>
-			</div>
-			<div>
-			<MaterialSwitch checked={dark} onChange={() => setDark(!dark)} />
+				<MaterialSwitch checked={dark} onChange={() => setDark(!dark)} />
 			</div>
 		</nav>
 		</ThemeProvider>
