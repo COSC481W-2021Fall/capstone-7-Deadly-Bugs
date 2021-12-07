@@ -8,7 +8,7 @@ import { useHistory, useParams } from "react-router-dom"
 /* Internal Dependencies */
 import Flashcard from "./Flashcard.js"
 import UserInfoPreview from "./UserInfoPreview.js"
-import { loginContext } from "./App.js"
+import { loginContext, themeContext } from "./App.js"
 import { cloneDeck, getDeck, getUser, saveDeck, deleteDeck } from "./Calls.js"
 
 /* Styling */
@@ -43,6 +43,7 @@ export default function Viewer({ viewMode = "view" }) {
 	const [tileCards, setTileCards] = useState(false)
 
 	const { loginState, loadedAuthState } = useContext(loginContext)
+	const { dark } = useContext(themeContext)
 
 	const [deckOwner, setDeckOwner] = useState(null)
 
@@ -349,7 +350,7 @@ export default function Viewer({ viewMode = "view" }) {
 			{/* Pop up for delete deck */}
 			<Popup trigger={viewMode === "edit" && <button>Delete Deck</button>} position="right center" modal>
 				{close => (             
-					<div className="modal">
+					<div className="modal" data-theme={dark ? "dark" : "light"}>
 						<div className="header">
 							{flashdeck.Title}
 						</div>
@@ -364,7 +365,7 @@ export default function Viewer({ viewMode = "view" }) {
 
 			{/* Pop up showing deck information */}
 			<Popup trigger={<button>Info</button>} position="right center" modal>
-				<div className="modal">
+				<div className="modal" data-theme={dark ? "dark" : "light"}>
 					<div className="header">
 						{flashdeck.Title}
 					</div>

@@ -18,7 +18,7 @@ export default function Navbar() {
     const theme = createTheme({
 		palette: {
 			type: dark ? 'dark' : 'light',
-			text: { primary: dark ? '#989898' : '#000', },
+			text: { primary: dark ? '#fff' : '#000', },
     		primary: {
 				main: '#24305E',
 			},
@@ -30,7 +30,7 @@ export default function Navbar() {
 			MuiCssBaseline: {
 			  '@global': {
 				body: {
-				  backgroundColor: dark ? '#292929' : '#cae1fa',
+				  backgroundColor: dark ? '#292929' : '#738adb',
 				},
 			  },
 			},

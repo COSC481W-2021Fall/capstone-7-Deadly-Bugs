@@ -6,7 +6,7 @@ import { useHistory } from "react-router-dom"
 
 /* Internal Dependencies */
 import { createNewDeck } from "./Calls.js"
-import { loginContext } from "./App.js"
+import { loginContext, themeContext } from "./App.js"
 
 /* Styling */
 import "./NewDeckButton.css"
@@ -15,6 +15,7 @@ import "./NewDeckButton.css"
 function NewDeckButton() {
 
 	const { loginState } = useContext(loginContext)
+	const { dark } = useContext(themeContext)
 	const deckName = useRef()
 	const history = useHistory()
 
@@ -26,7 +27,7 @@ function NewDeckButton() {
 
 	return (
 		<Popup trigger={<button>Create New Deck</button>} position="right center" modal>
-			<div className="modal">
+			<div className="modal" data-theme={dark ? "dark" : "light"}>
 				<div className="header">
 					Create New Deck
 				</div>
