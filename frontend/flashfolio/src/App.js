@@ -3,6 +3,7 @@ import React, { useEffect, createContext, useState } from "react"
 /* External Dependencies */
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom"
 
+
 /* Internal Dependencies */
 import Viewer from "./Viewer.js"
 import Load from "./Load.js"
@@ -56,6 +57,7 @@ function App() {
 	}, [])
 
 	return (
+
 		<loginContext.Provider value={{ loginState, setLoginState, loadedAuthState }}>
 			<Navbar />
 			<Router>

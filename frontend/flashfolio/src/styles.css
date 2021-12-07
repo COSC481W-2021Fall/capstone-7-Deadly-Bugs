@@ -9,7 +9,7 @@
 body {
 	background-color: #cae1fa;
 	font-family: 'Archivo', sans-serif;
-	font-size: 16px;
+	font-size: 16px !important;
 	text-align: center;
 }
 
@@ -30,7 +30,7 @@ button, a.faux-button {
 	border-style: none;
 	border-radius: 8px;
 	box-shadow: 2.5px 5px 5px rgba(0, 0, 0, 0.4);
-	font-size: 20px;
+	font-size: 20px !important;
 	margin:10px;
 	padding:10px;
 	cursor: context-menu;
