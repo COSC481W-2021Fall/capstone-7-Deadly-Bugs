@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useContext } from "react"
 import { createTheme, ThemeProvider } from '@material-ui/core/styles'
 import {default as MaterialSwitch} from '@material-ui/core/Switch'
 import CssBaseline from '@material-ui/core/CssBaseline';
+import { themeContext } from "./App.js"
 
 /* Styling */
 import "./background_styles.css"
 import "./App.css"
 
 export default function Navbar() {
-	const [dark, setDark] = useState(localStorage.getItem("themeLD") === "true")
+	const { dark, setDark } = useContext(themeContext)
 	
 	useEffect(() => {
 		localStorage.setItem("themeLD", dark);

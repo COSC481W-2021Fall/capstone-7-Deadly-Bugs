@@ -22,12 +22,15 @@ Main entry point for the frontend.
 
 /* Context provides user info to child components */
 export const loginContext = createContext(null)
+export const themeContext = createContext(null)
 
 function App() {
 
 	const [loginState, setLoginState] = useState(null)
 
 	const [loadedAuthState, setLoadedAuthState] = useState(false)
+
+	const [dark, setDark] = useState(localStorage.getItem("themeLD") === "true")
 
 	/* This may be of use later -- as such leave it here commented.
 	const { signIn, loaded } = useGoogleLogin({
@@ -59,6 +62,7 @@ function App() {
 	return (
 
 		<loginContext.Provider value={{ loginState, setLoginState, loadedAuthState }}>
+			<themeContext.Provider value={{ dark, setDark }}>
 			<Navbar />
 			<Router>
 				{/* Router to create a multi-page application */}
@@ -83,6 +87,7 @@ function App() {
 					</Route>
 				</Switch>
 			</Router>
+			</themeContext.Provider>
 		</loginContext.Provider>
 	)
 }
