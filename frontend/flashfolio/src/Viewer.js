@@ -373,8 +373,9 @@ export default function Viewer({ viewMode = "view" }) {
 					<br />
 					Created by:
 					<br />
-					<img src={deckOwner === null ? "" : deckOwner.ProfilePicture} alt="deck owner" />
-					{deckOwner === null ? "" : deckOwner.NickName}
+					<img src={deckOwner === null ? "" : deckOwner.ProfilePicture} alt="Deck Owner:" />
+					<a href={deckOwner === null ? "" : "/profile"  + deckOwner.ID + "/"}>{deckOwner === null ? "" : deckOwner.NickName}</a>
+
 					{viewMode === "edit" &&
 						<>
 							<br />

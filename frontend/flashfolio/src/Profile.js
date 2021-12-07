@@ -51,7 +51,6 @@ export default function Profile() {
 				<img src={user === null ? "" : user.ProfilePicture} alt="" />
 				<div className="profileText">
 					{user === null ? "" : user.NickName + "'s Profile Page"} <br />
-					{userId === null ? "" : "User Id: " + userId}<br />
 				</div>
 			</div>
 			<hr />

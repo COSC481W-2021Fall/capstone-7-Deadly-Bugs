@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react"
 import { createTheme, ThemeProvider } from '@material-ui/core/styles'
 import {default as MaterialSwitch} from '@material-ui/core/Switch'
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { themeContext } from "./App.js"
+import { loginContext, themeContext } from "./App.js"
 
 /* Styling */
 import "./background_styles.css"
@@ -10,7 +10,8 @@ import "./App.css"
 
 export default function Navbar() {
 	const { dark, setDark } = useContext(themeContext)
-	
+	const { loginState } = useContext(loginContext)
+
 	useEffect(() => {
 		localStorage.setItem("themeLD", dark);
 	}, [dark]);
@@ -41,11 +42,11 @@ export default function Navbar() {
 		<ThemeProvider theme={theme}>
 		<CssBaseline />
 		<nav className="navbar">
-			<div className="brand-title">Flashfolio</div>
+			<div className="brand-title"><a href="/">Flashfolio</a></div>
 			<div className="navbar-links">
 				<ul>
-					<li><a href="/">Home</a></li>
 					<li><a href="/load">Load Deck</a></li>
+					<li><a href={loginState === null ? "/profile/" : "/profile/" + loginState.googleId}>Profile</a></li>
 				</ul>
 				<MaterialSwitch checked={dark} onChange={() => setDark(!dark)} />
 			</div>

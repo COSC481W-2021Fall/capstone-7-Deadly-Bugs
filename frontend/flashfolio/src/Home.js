@@ -18,13 +18,6 @@ export default function Home() {
 		history.push("/load")
 	}
 
-	const profileButton = () => {
-		if (loginState === null)
-			history.push("/profile/")
-		else
-			history.push("/profile/" + loginState.googleId)
-	}
-
 	return (
 		<div class="container" data-theme={dark ? "dark" : "light"}>
 			<div class="left">
@@ -51,7 +44,6 @@ export default function Home() {
 							<NewDeckButton />
 						</>}
 					{/*<UserInfoPreview />*/}
-					<button onClick={profileButton}>Profile</button>
 				</div>
 			</div>
 		</div>
