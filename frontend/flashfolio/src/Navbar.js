@@ -7,26 +7,33 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import "./background_styles.css"
 import "./App.css"
 
-
 export default function Navbar() {
-	const storedDarkMode = localStorage.getItem("themeLD") === "true";
-	const [dark, setDark] = useState(storedDarkMode)
-
+	const [dark, setDark] = useState(localStorage.getItem("themeLD") === "true")
+	
 	useEffect(() => {
 		localStorage.setItem("themeLD", dark);
-	  }, [dark]);
-	  
+	}, [dark]);
 
     const theme = createTheme({
-        palette: {
+		palette: {
 			type: dark ? 'dark' : 'light',
+			text: { primary: dark ? '#989898' : '#000', },
     		primary: {
-				main: '#aa2e25',
+				main: '#24305E',
 			},
     		secondary: {
-     		 main: '#b9f6ca',
+     		 	main: '#dd5f5f',
     		},
         },
+		overrides: {
+			MuiCssBaseline: {
+			  '@global': {
+				body: {
+				  backgroundColor: dark ? '#292929' : '#cae1fa',
+				},
+			  },
+			},
+		},
     })
 
 	return (

@@ -3,9 +3,8 @@
 	margin: 0;
 	padding: 0;
   }
-  
+
 .container {
-	/*background-color: white;*/
 	display: -webkit-box;  /* OLD - iOS 6-, Safari 3.1-6, BB7 */
   	display: -ms-flexbox;  /* TWEENER - IE 10 */
   	display: -webkit-flex; /* NEW - Safari 6.1+. iOS 7.1+, BB10 */
@@ -34,6 +33,7 @@ h1 {
 	background-image: linear-gradient(to bottom right,#F76C6C,#054790);
 	box-shadow: 5px 0px 15px rgba(0, 0, 0, 0.4);
 	width:60%;
+	color:white;
 }
 
 .right {
@@ -91,6 +91,7 @@ h1 {
 
 .buttons div {
 	display: inline-block;
+	border-radius: 8px 0px 0px 8px !important;
 }
 
 .buttons button:active {
