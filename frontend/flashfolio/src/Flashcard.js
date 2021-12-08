@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from "react"
+import React, { useEffect, useRef, useState, useContext } from "react"
+import { themeContext } from "./App.js"
 
 /* Styling */
 import "./Flashcard.css"
@@ -6,6 +7,7 @@ import "./Flashcard.css"
 
 export default function Flashcard({ flashcard, editMode = false, delfunc }) {
 
+	const { dark } = useContext(themeContext)
 	const [flip, setFlip] = useState(false)
 	const [showEditor, setShowEditor] = useState(false)
 
@@ -86,7 +88,7 @@ export default function Flashcard({ flashcard, editMode = false, delfunc }) {
 				<button onClick={deleteCard}>
 					Delete
 				</button> : ""}
-			<div data-testid="card" onClick={cardClick} class="card">
+			<div data-testid="card" onClick={cardClick} class="card" data-theme={dark ? "darkFlashcard" : "lightFlashcard"}>
 				{cardContents()}
 			</div>
 		</div>

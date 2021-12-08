@@ -1,6 +1,5 @@
-
 .modal {
-	background-color: white;
+	background-color: var(--bg-color);
 	border: 2px solid #24305E;
 	width:minmax(500px, 25%);
 	padding: 7px;

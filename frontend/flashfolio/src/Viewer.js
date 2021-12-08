@@ -7,9 +7,11 @@ import { useHistory, useParams } from "react-router-dom"
 
 /* Internal Dependencies */
 import Flashcard from "./Flashcard.js"
-import UserInfoPreview from "./UserInfoPreview.js"
-import { loginContext } from "./App.js"
+import UserProfilePreview from "./UserProfilePreview.js"
+import { loginContext, themeContext } from "./App.js"
 import { cloneDeck, getDeck, getUser, saveDeck, deleteDeck } from "./Calls.js"
+
+
 
 /* Styling */
 import "./Viewer.css"
@@ -43,8 +45,7 @@ export default function Viewer({ viewMode = "view" }) {
 	const [tileCards, setTileCards] = useState(false)
 
 	const { loginState, loadedAuthState } = useContext(loginContext)
-
-	const [deckOwner, setDeckOwner] = useState(null)
+	const { dark } = useContext(themeContext)
 
 	const [isPrivate, setIsPrivate] = useState(false)
 
@@ -161,7 +162,6 @@ export default function Viewer({ viewMode = "view" }) {
 			const fetchData = async () => {
 				setFlashcard(flashdeck.Cards[0])
 				let owner = await getUser(flashdeck.Owner)
-				setDeckOwner(owner)
 				/* Set Privacy toggle to match deck info */
 				setIsPrivate(!flashdeck.IsPublic)
 			}
@@ -226,6 +226,7 @@ export default function Viewer({ viewMode = "view" }) {
 		if (viewMode === "study" && gameState === "play") {
 			let next = getNextCardStudy()
 			console.log(next)
+			next = next !== -1 ? next : 0
 			setCardIterator(next)
 		} else {
 			setCardIterator(cardIterator + 1)
@@ -264,6 +265,7 @@ export default function Viewer({ viewMode = "view" }) {
 		if (viewMode === "study" && gameState === "play") {
 			let prev = getPrevCardStudy()
 			console.log(prev)
+			prev = prev !== -1 ? prev : 0
 			setCardIterator(prev)
 		} else {
 			if (cardIterator === 0) {
@@ -319,10 +321,7 @@ export default function Viewer({ viewMode = "view" }) {
 
 	return (
 		<div>
-			<UserInfoPreview />
-			Title: {flashdeck.Title}
-			DeckId: {deckId}
-			<br />
+			<h2>{flashdeck.Title}</h2>
 			{(loginState !== null && loginState.googleId === flashdeck.Owner) && (viewMode !== "study") &&
 				<button onClick={flipView}> {viewMode === "edit" ? "View Deck" : "Edit Deck"} </button>
 			}
@@ -343,13 +342,12 @@ export default function Viewer({ viewMode = "view" }) {
 				<button id="unshuf" onClick={() => shufOn ? unshufFunction() : null}>Unshuffle</button>)
 			}
 			{viewMode === "edit" && <button onClick={addCard}>Add a card</button>}
-			{viewMode === "edit" && <button onClick={deleteCard}>Delete</button>}
 			{viewMode === "edit" && <button onClick={saveChanges}>Save Changes</button>}
 			{viewMode !== "study" && loginState !== null && <button onClick={cloneD}>Clone Deck</button>}
 			{/* Pop up for delete deck */}
 			<Popup trigger={viewMode === "edit" && <button>Delete Deck</button>} position="right center" modal>
 				{close => (             
-					<div className="modal">
+					<div className="modal" data-theme={dark ? "dark" : "light"}>
 						<div className="header">
 							{flashdeck.Title}
 						</div>
@@ -360,11 +358,9 @@ export default function Viewer({ viewMode = "view" }) {
 				)}
 			</Popup>
 
-			<button onClick={()=>console.log(flashdeck)}>ayy</button>
-
 			{/* Pop up showing deck information */}
 			<Popup trigger={<button>Info</button>} position="right center" modal>
-				<div className="modal">
+				<div className="modal" data-theme={dark ? "dark" : "light"}>
 					<div className="header">
 						{flashdeck.Title}
 					</div>
@@ -372,8 +368,8 @@ export default function Viewer({ viewMode = "view" }) {
 					<br />
 					Created by:
 					<br />
-					<img src={deckOwner === null ? "" : deckOwner.ProfilePicture} alt="deck owner" />
-					{deckOwner === null ? "" : deckOwner.NickName}
+					<UserProfilePreview userId={flashdeck.Owner} />
+
 					{viewMode === "edit" &&
 						<>
 							<br />

@@ -2,8 +2,18 @@
 /*
 visual styling for the flashcard preview
 */
+
+:root {
+	--bg-color: white;
+	
+  }
+  
+  [data-theme="darkPreview"] {
+	--bg-color: #738adb;
+  }
+
 .card_preview {
-	background-color: white;
+	background-color: var(--bg-color);
 	border-radius: 8px;
 	box-shadow: 2.5px 5px 5px rgba(0, 0, 0, 0.4);
 	height: 150px;
@@ -12,4 +22,9 @@ visual styling for the flashcard preview
 	/* Center Text */
 	display: grid;
 	place-items: center;
+}
+
+.card_preview_user_info {
+	display:grid;
+	place-items:center;
 }
