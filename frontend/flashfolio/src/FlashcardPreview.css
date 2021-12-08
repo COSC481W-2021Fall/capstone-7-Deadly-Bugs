@@ -23,3 +23,8 @@ visual styling for the flashcard preview
 	display: grid;
 	place-items: center;
 }
+
+.card_preview_user_info {
+	display:grid;
+	place-items:center;
+}

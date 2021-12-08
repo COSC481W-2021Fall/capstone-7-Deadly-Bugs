@@ -7,9 +7,11 @@ import { useHistory, useParams } from "react-router-dom"
 
 /* Internal Dependencies */
 import Flashcard from "./Flashcard.js"
-import UserInfoPreview from "./UserInfoPreview.js"
+import UserProfilePreview from "./UserProfilePreview.js"
 import { loginContext, themeContext } from "./App.js"
 import { cloneDeck, getDeck, getUser, saveDeck, deleteDeck } from "./Calls.js"
+
+
 
 /* Styling */
 import "./Viewer.css"
@@ -44,8 +46,6 @@ export default function Viewer({ viewMode = "view" }) {
 
 	const { loginState, loadedAuthState } = useContext(loginContext)
 	const { dark } = useContext(themeContext)
-
-	const [deckOwner, setDeckOwner] = useState(null)
 
 	const [isPrivate, setIsPrivate] = useState(false)
 
@@ -162,7 +162,6 @@ export default function Viewer({ viewMode = "view" }) {
 			const fetchData = async () => {
 				setFlashcard(flashdeck.Cards[0])
 				let owner = await getUser(flashdeck.Owner)
-				setDeckOwner(owner)
 				/* Set Privacy toggle to match deck info */
 				setIsPrivate(!flashdeck.IsPublic)
 			}
@@ -320,7 +319,6 @@ export default function Viewer({ viewMode = "view" }) {
 
 	return (
 		<div>
-			<UserInfoPreview />
 			Title: {flashdeck.Title}
 			DeckId: {deckId}
 			<br />
@@ -373,8 +371,7 @@ export default function Viewer({ viewMode = "view" }) {
 					<br />
 					Created by:
 					<br />
-					<img src={deckOwner === null ? "" : deckOwner.ProfilePicture} alt="Deck Owner:" />
-					<a href={deckOwner === null ? "" : "/profile"  + deckOwner.ID + "/"}>{deckOwner === null ? "" : deckOwner.NickName}</a>
+					<UserProfilePreview userId={flashdeck.Owner} />
 
 					{viewMode === "edit" &&
 						<>

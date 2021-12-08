@@ -1,0 +1,15 @@
+
+.proprev {
+	float:center;
+	display:flex;
+}
+
+.proprev img {
+	width:50px;
+	border-radius:50%;
+}
+
+.proprev_text {
+	margin: auto 0;
+	padding:5px;
+}

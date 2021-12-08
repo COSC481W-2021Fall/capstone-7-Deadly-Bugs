@@ -3,6 +3,7 @@ import { createTheme, ThemeProvider } from '@material-ui/core/styles'
 import {default as MaterialSwitch} from '@material-ui/core/Switch'
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { loginContext, themeContext } from "./App.js"
+import UserProfilePreview from "./UserProfilePreview.js"
 
 /* Styling */
 import "./background_styles.css"
@@ -46,7 +47,7 @@ export default function Navbar() {
 			<div className="navbar-links">
 				<ul>
 					<li><a href="/load">Load Deck</a></li>
-					<li><a href={loginState === null ? "/profile/" : "/profile/" + loginState.googleId}>Profile</a></li>
+					<li>{loginState === null ? "" : <UserProfilePreview userId={loginState.googleId} showName={false} size={30} />}</li>
 				</ul>
 				<MaterialSwitch checked={dark} onChange={() => setDark(!dark)} />
 			</div>
