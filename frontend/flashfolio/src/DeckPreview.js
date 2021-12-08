@@ -29,9 +29,9 @@ export default function DeckPreview({ deckId }) {
 	}, [deck])
 	if (deck !== null) return (
 		<div>
-			Title: {deck.Title}
+			{deck.Title}
 			<div className="card_preview" data-theme={dark ? "darkPreview" : "lightPreview"}>{firstFlashcard}</div>
-			<div className="care_preview_user_info"><UserProfilePreview userId={deck.Owner} /></div>
+			<div className="card_preview_user_info"><UserProfilePreview userId={deck.Owner} /></div>
 		</div>
 	)
 	else return null

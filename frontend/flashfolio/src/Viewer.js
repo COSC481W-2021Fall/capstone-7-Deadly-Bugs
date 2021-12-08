@@ -226,6 +226,7 @@ export default function Viewer({ viewMode = "view" }) {
 		if (viewMode === "study" && gameState === "play") {
 			let next = getNextCardStudy()
 			console.log(next)
+			next = next !== -1 ? next : 0
 			setCardIterator(next)
 		} else {
 			setCardIterator(cardIterator + 1)
@@ -264,6 +265,7 @@ export default function Viewer({ viewMode = "view" }) {
 		if (viewMode === "study" && gameState === "play") {
 			let prev = getPrevCardStudy()
 			console.log(prev)
+			prev = prev !== -1 ? prev : 0
 			setCardIterator(prev)
 		} else {
 			if (cardIterator === 0) {
@@ -319,9 +321,7 @@ export default function Viewer({ viewMode = "view" }) {
 
 	return (
 		<div>
-			Title: {flashdeck.Title}
-			DeckId: {deckId}
-			<br />
+			<h2>{flashdeck.Title}</h2>
 			{(loginState !== null && loginState.googleId === flashdeck.Owner) && (viewMode !== "study") &&
 				<button onClick={flipView}> {viewMode === "edit" ? "View Deck" : "Edit Deck"} </button>
 			}
@@ -342,7 +342,6 @@ export default function Viewer({ viewMode = "view" }) {
 				<button id="unshuf" onClick={() => shufOn ? unshufFunction() : null}>Unshuffle</button>)
 			}
 			{viewMode === "edit" && <button onClick={addCard}>Add a card</button>}
-			{viewMode === "edit" && <button onClick={deleteCard}>Delete</button>}
 			{viewMode === "edit" && <button onClick={saveChanges}>Save Changes</button>}
 			{viewMode !== "study" && loginState !== null && <button onClick={cloneD}>Clone Deck</button>}
 			{/* Pop up for delete deck */}
@@ -358,8 +357,6 @@ export default function Viewer({ viewMode = "view" }) {
 					</div>
 				)}
 			</Popup>
-
-			<button onClick={()=>console.log(flashdeck)}>ayy</button>
 
 			{/* Pop up showing deck information */}
 			<Popup trigger={<button>Info</button>} position="right center" modal>

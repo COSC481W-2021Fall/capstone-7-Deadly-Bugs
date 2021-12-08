@@ -63,19 +63,19 @@ export default function Load() {
 
 	return (
 		<div>
-			<div>
-				<input type="text" ref={queryField} onChange={updateQuery}/>
+			<div style={{padding:10}}>
+				Search: <input type="text" ref={queryField} onChange={updateQuery}/>
 			</div>
 			{loginState !== null && query === "" &&
 				<>
-					<h3>My Decks:</h3><br />
+					<br/><h2>My Decks:</h2>
 					<div className="flash-grid">
 						{myDecks.map((deck, index) => {
 							return <div key={deck} onClick={() => { visit(deck) }}><DeckPreview deckId={deck} /></div>
 						})}
 					</div>
 				</>}
-			<h3>Public Decks:</h3><br />
+			<br/><h2>Public Decks:</h2>
 			<div className="flash-grid">
 				{decks.length === 0 ? "No Decks Found" : decks.map((deck, index) => {
 					if (decks.length === index + 1) {
